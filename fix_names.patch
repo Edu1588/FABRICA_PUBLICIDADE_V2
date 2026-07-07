@@ -1,0 +1,36 @@
+--- src/pages/Admin.tsx
++++ src/pages/Admin.tsx
+@@ -420,13 +420,11 @@
+             const imgData = canvas.toDataURL('image/png').split(',')[1];
+             
+-            let clientName = selectedClientData?.name || 'loja';
+-            clientName = clientName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+-            let cardName = slides[i].title || slides[i].type;
+-            cardName = cardName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+-            let vehicleName = '';
+-            if (slides[i].type === 'veiculo') {
+-              vehicleName = `_${slides[i].modelo || 'veiculo'}`.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+-            }
+-            const filename = `${clientName}_carrossel_unimaisveiculos_${cardName}${vehicleName}.png`;
++            let placa = 'placa';
++            let vehicleSlide = slides.find(s => s.type === 'veiculo');
++            if (vehicleSlide && vehicleSlide.title) {
++                placa = vehicleSlide.title.split('_')[0];
++            }
++            const paddedIndex = String(i + 1).padStart(2, '0');
++            const filename = `${placa}_carrossel_unimais_${paddedIndex}.png`;
+             zip.file(filename, imgData, {base64: true});
+         }
+       }
+@@ -436,4 +434,7 @@
+       let vehicleSlide = slides.find(s => s.type === 'veiculo');
+-      let clientName = selectedClientData?.name || 'loja';
+-      clientName = clientName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
++      let placa = 'placa';
++      if (vehicleSlide && vehicleSlide.title) {
++          placa = vehicleSlide.title.split('_')[0];
++      }
+       const content = await zip.generateAsync({type: "blob"});
+-      saveAs(content, `${clientName}_carrossel_unimaisveiculos.zip`);
++      saveAs(content, `${placa}_carrossel_unimais.zip`);
+       showToast('Carrossel exportado com sucesso (ZIP)!', 'success');

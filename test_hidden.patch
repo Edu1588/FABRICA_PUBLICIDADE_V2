@@ -1,0 +1,9 @@
+--- src/pages/Admin.tsx
++++ src/pages/Admin.tsx
+@@ -402,6 +402,7 @@
+       let vehicleSlideRef = slides.find(s => s.type === 'veiculo');
+       if (vehicleSlideRef && vehicleSlideRef.title) {
+           placa = vehicleSlideRef.title.split('_')[0].toLowerCase();
+       }
+ 
+       for (let i = 0; i < slides.length; i++) {

@@ -1,0 +1,27 @@
+--- src/pages/Admin.tsx
++++ src/pages/Admin.tsx
+@@ -420,16 +420,13 @@
+             const imgData = canvas.toDataURL('image/png').split(',')[1];
+             
+-            // Clean slide filename parts to avoid duplicate _carrossel_unimais or broken text
+-            let slideName = slides[i].type as string; // 'capa' or 'final'
++            let clientName = selectedClientData?.name || 'loja';
++            clientName = clientName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
++            let cardName = slides[i].title || slides[i].type;
++            cardName = cardName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
++            let vehicleName = '';
+             if (slides[i].type === 'veiculo') {
+-              let cleanTitle = slides[i].title || 'veiculo';
+-              cleanTitle = cleanTitle.toLowerCase()
+-                .replace(/_carrossel_unimais/g, '')
+-                .replace(/unimais_carrossel_/g, '')
+-                .replace(/[^a-z0-9]+/g, '_')
+-                .replace(/^_+|_+$/g, '');
+-              slideName = cleanTitle || 'veiculo';
++              vehicleName = `_${slides[i].modelo || 'veiculo'}`.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+             }
+-            const paddedIndex = String(i + 1).padStart(2, '0');
+-            const filename = `unimais_carrossel_${paddedIndex}_${slideName}.png`;
++            const filename = `${clientName}_carrossel_unimaisveiculos_${cardName}${vehicleName}.png`;
+             zip.file(filename, imgData, {base64: true});
+         }
