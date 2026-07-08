@@ -4,7 +4,8 @@ import {
   Lock, 
   LogOut, 
   Plus, 
-  Trash2, 
+  Trash2,
+  RotateCcw, 
   Users, 
   ArrowLeft, 
   ChevronRight, 
@@ -15,7 +16,8 @@ import {
   Sliders,
   Settings,
   Grid,
-  FileText
+  FileText,
+  Loader2
 } from 'lucide-react';
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
@@ -151,24 +153,31 @@ export default function Admin() {
     const newSlide: CarouselSlide = {
       id: crypto.randomUUID(),
       type,
-      title: baseSlide ? baseSlide.title : (type === 'veiculo' ? 'NOVO VEÍCULO' : type === 'capa' ? 'NOVA CAPA' : 'NOVO FINAL'),
+      title: type === 'veiculo' ? 'NOVO VEÍCULO' : type === 'capa' ? 'NOVA CAPA' : 'NOVO FINAL',
       fabricante: baseSlide ? baseSlide.fabricante : '',
       modelo: baseSlide ? baseSlide.modelo : '',
       descricao: baseSlide ? baseSlide.descricao : '',
-      imageUrl: baseSlide ? baseSlide.imageUrl : '',
-      zoom: baseSlide ? baseSlide.zoom : 1,
-      posX: baseSlide ? baseSlide.posX : 0,
-      posY: baseSlide ? baseSlide.posY : 0,
-      condicao1Label: '', condicao1Val: '',
-      condicao2Label: '', condicao2Val: '',
-      condicao3Label: '', condicao3Val: '',
-      condicao4Label: '', condicao4Val: '',
-      lojasCapa: '',
+      imageUrl: '',
+      zoom: 1,
+      posX: 0,
+      posY: 0,
+      condicao1Label: baseSlide ? baseSlide.condicao1Label : '', condicao1Val: baseSlide ? baseSlide.condicao1Val : '',
+      condicao2Label: baseSlide ? baseSlide.condicao2Label : '', condicao2Val: baseSlide ? baseSlide.condicao2Val : '',
+      condicao3Label: baseSlide ? baseSlide.condicao3Label : '', condicao3Val: baseSlide ? baseSlide.condicao3Val : '',
+      condicao4Label: baseSlide ? baseSlide.condicao4Label : '', condicao4Val: baseSlide ? baseSlide.condicao4Val : '',
+      lojasCapa: baseSlide ? baseSlide.lojasCapa : '',
       website: baseSlide ? baseSlide.website : ''
     };
-    const updated = [...slides, newSlide];
+    let updated = [...slides, newSlide];
+    updated.sort((a, b) => {
+        if (a.type === 'capa') return -1;
+        if (b.type === 'capa') return 1;
+        if (a.type === 'final') return 1;
+        if (b.type === 'final') return -1;
+        return 0;
+    });
     setSlides(updated);
-    setActiveSlideIndex(updated.length - 1);
+    setActiveSlideIndex(updated.indexOf(newSlide));
   };
 
   const handleDeleteSlide = (index: number) => {
@@ -186,12 +195,32 @@ export default function Admin() {
   
   const activeSlide = slides[activeSlideIndex];
 
+  const globalVehicleFields = ['fabricante', 'modelo', 'descricao', 'condicao1Label', 'condicao1Val', 'condicao2Label', 'condicao2Val', 'condicao3Label', 'condicao3Val', 'condicao4Label', 'condicao4Val', 'title'];
+
   const updateActiveSlideField = (field: keyof CarouselSlide, value: any) => {
-    setSlides(prevSlides => prevSlides.map((s, idx) => idx === activeSlideIndex ? { ...s, [field]: value } : s));
+    setSlides(prevSlides => prevSlides.map((s, idx) => {
+      if (idx === activeSlideIndex) return { ...s, [field]: value };
+      if (s.type === 'veiculo' && globalVehicleFields.includes(field as string) && prevSlides[activeSlideIndex].type === 'veiculo') {
+        return { ...s, [field]: value };
+      }
+      return s;
+    }));
   };
 
   const updateMultipleActiveSlideFields = (updates: Partial<CarouselSlide>) => {
-    setSlides(prevSlides => prevSlides.map((s, idx) => idx === activeSlideIndex ? { ...s, ...updates } : s));
+    setSlides(prevSlides => prevSlides.map((s, idx) => {
+      if (idx === activeSlideIndex) return { ...s, ...updates };
+      if (s.type === 'veiculo' && prevSlides[activeSlideIndex].type === 'veiculo') {
+        const vehicleUpdates: any = {};
+        for (const key of Object.keys(updates)) {
+          if (globalVehicleFields.includes(key)) {
+            vehicleUpdates[key] = (updates as any)[key];
+          }
+        }
+        return { ...s, ...vehicleUpdates };
+      }
+      return s;
+    }));
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -239,6 +268,47 @@ export default function Admin() {
     } finally {
       setScraping(false);
     }
+  };
+
+  const handleClearData = () => {
+    setScrapeQuery('');
+    
+    setSlides(prevSlides => {
+      const firstVeiculoIndex = prevSlides.findIndex(s => s.type === 'veiculo');
+      const filteredSlides = prevSlides.filter((s, idx) => s.type !== 'veiculo' || idx === firstVeiculoIndex);
+      
+      const newSlides = filteredSlides.map(s => {
+        if (s.type === 'veiculo') {
+          return {
+            ...s,
+            fabricante: '',
+            modelo: '',
+            descricao: '',
+            title: 'NOVO VEÍCULO',
+            condicao1Label: '', condicao1Val: '',
+            condicao2Label: '', condicao2Val: '',
+            condicao3Label: '', condicao3Val: '',
+            condicao4Label: '', condicao4Val: '',
+            imageUrl: '',
+            zoom: 1,
+            posX: 0,
+            posY: 0
+          };
+        }
+        return s;
+      });
+      
+      const veiculoIdx = newSlides.findIndex(s => s.type === 'veiculo');
+      if (veiculoIdx !== -1) {
+        setTimeout(() => setActiveSlideIndex(veiculoIdx), 0);
+      } else {
+        setTimeout(() => setActiveSlideIndex(0), 0);
+      }
+      
+      return newSlides;
+    });
+    
+    setToast({ message: 'Dados limpos com sucesso.', type: 'success' });
   };
 
   // Image Input Ref for file upload
@@ -307,7 +377,7 @@ export default function Admin() {
           id: crypto.randomUUID(),
           type: 'capa',
           title: 'CAPA DO CARROSSEL',
-          imageUrl: 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274799/odxwrvzl99npzp7kqi5d.png',
+          imageUrl: 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
           zoom: 1,
           posX: 0,
           posY: 0,
@@ -935,7 +1005,15 @@ export default function Admin() {
 
 
                         {activeSlide.type === 'veiculo' && (
-                          <div className="flex flex-col sm:flex-row items-end gap-3 mb-2 bg-[#C46A1A]/10 p-3 rounded-xl border border-[#C46A1A]/30">
+                          <>
+                          <style dangerouslySetInnerHTML={{__html: `
+                            @keyframes slideRight {
+                              0% { transform: translateX(-100%); }
+                              100% { transform: translateX(200%); }
+                            }
+                          `}} />
+                          <div className="flex flex-col mb-2 bg-[#C46A1A]/10 p-3 rounded-xl border border-[#C46A1A]/30 relative overflow-hidden">
+                            <div className="flex flex-col sm:flex-row items-end gap-3 relative z-10">
                             <div className="flex-1 w-full space-y-1.5">
                               <label className="text-[#C46A1A] text-[9px] font-mono tracking-wider block">Importar Dados (Placa ou Modelo)</label>
                               <input
@@ -950,11 +1028,30 @@ export default function Admin() {
                             <button
                                 onClick={handleScrape}
                                 disabled={scraping || !scrapeQuery}
-                                className="bg-[#C46A1A] text-black text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-lg hover:bg-white disabled:opacity-50 transition-colors w-full sm:w-auto h-8 flex items-center justify-center shrink-0"
+                                className="bg-[#C46A1A] text-black text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-lg hover:bg-white disabled:opacity-50 transition-colors w-full sm:w-auto h-8 flex items-center justify-center shrink-0 gap-2"
                               >
-                                {scraping ? 'Buscando...' : 'Importar'}
+                                {scraping ? (
+                                  <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    <span>Buscando...</span>
+                                  </>
+                                ) : 'Importar'}
                               </button>
+                              <button
+                                onClick={handleClearData}
+                                className="bg-transparent border border-[#C46A1A]/30 text-[#C46A1A] text-[10px] font-bold uppercase tracking-widest px-3 py-2 rounded-lg hover:bg-[#C46A1A]/10 transition-colors w-full sm:w-auto h-8 flex items-center justify-center shrink-0 gap-2"
+                                title="Zerar dados de veículos"
+                              >
+                                <RotateCcw className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            {scraping && (
+                              <div className="absolute bottom-0 left-0 w-full h-0.5 overflow-hidden">
+                                <div className="h-full w-1/2 bg-[#C46A1A]" style={{ animation: 'slideRight 1.5s infinite linear' }} />
+                              </div>
+                            )}
                           </div>
+                          </>
                         )}
 
                         {/* Slide Type Switcher */}
@@ -1280,16 +1377,7 @@ export default function Admin() {
                             Baixar PDF
                           </button>
 
-                        {/* Slide Title (Local reference) */}
-                        <div className="space-y-1.5 pt-4 border-t border-white/5">
-                          <label className="text-white/60 uppercase text-[9px] tracking-wider block">Identificador (Placa / Título do Slide)</label>
-                          <input
-                            type="text"
-                            value={activeSlide.title}
-                            onChange={e => updateActiveSlideField('title', e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, ''))}
-                            className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white"
-                          />
-                        </div>
+
 
                         </div>
                       </div>
@@ -1315,7 +1403,7 @@ export default function Admin() {
                             // A. COVER LAYOUT (FIXED IMAGE)
                             <div className="flex-1 w-full h-full relative">
                               <img 
-                                src={activeSlide.imageUrl || "https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274799/odxwrvzl99npzp7kqi5d.png"} 
+                                src={activeSlide.imageUrl || "https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png"} 
                                 alt="Capa" 
                                 className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" 
                               />
