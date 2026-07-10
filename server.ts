@@ -27,7 +27,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: '50mb' }));
 
   // API route for scraping vehicle data
   app.post("/api/scrape-vehicle", async (req, res) => {
@@ -121,6 +121,47 @@ ${cleanHtml}
     } catch (error) {
       console.error("Error scraping vehicle:", error);
       return res.status(500).json({ error: "Erro ao buscar dados do veículo." });
+    }
+  });
+
+  // API route for enhancing an image using Cloudinary
+  app.post("/api/enhance-image", async (req, res) => {
+    try {
+      const { image } = req.body;
+      if (!image) {
+        return res.status(400).json({ error: "Image data is required" });
+      }
+
+      const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+      const apiKey = process.env.CLOUDINARY_API_KEY;
+      const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+      if (!cloudName || !apiKey || !apiSecret) {
+        return res.status(500).json({ error: "Credenciais do Cloudinary não configuradas." });
+      }
+
+      const cloudinary = require('cloudinary').v2;
+      cloudinary.config({
+        cloud_name: cloudName,
+        api_key: apiKey,
+        api_secret: apiSecret
+      });
+
+      // We upload the base64 image and apply transformations.
+      // 1. e_improve to enhance lighting and contrast
+      // 2. e_gen_remove:prompt_watermark;logo;text to remove watermarks
+      const result = await cloudinary.uploader.upload(image, {
+        folder: "auto_enhancements",
+        transformation: [
+          { effect: "improve" },
+          { effect: "gen_remove:prompt_watermark;logo;text" }
+        ]
+      });
+
+      return res.json({ success: true, enhancedImage: result.secure_url });
+    } catch (error) {
+      console.error("Error enhancing image with Cloudinary:", error);
+      return res.status(500).json({ error: "Erro ao melhorar a imagem via Cloudinary: " + (error.message || String(error)) });
     }
   });
 

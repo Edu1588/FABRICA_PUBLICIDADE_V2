@@ -5,6 +5,7 @@ import {
   LogOut, 
   Plus, 
   Trash2,
+  RefreshCw,
   RotateCcw, 
   Users, 
   ArrowLeft, 
@@ -239,7 +240,32 @@ export default function Admin() {
 
   // Scraping State
   const [scraping, setScraping] = useState(false);
+  const [enhancing, setEnhancing] = useState(false);
   const [scrapeQuery, setScrapeQuery] = useState('');
+
+  const handleEnhanceImage = async () => {
+    if (!activeSlide || !activeSlide.imageUrl) return;
+    setEnhancing(true);
+    setToast({ message: 'Melhorando imagem com IA (pode levar alguns segundos)...', type: 'success' });
+    try {
+      const response = await fetch('/api/enhance-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: activeSlide.imageUrl })
+      });
+      const data = await response.json();
+      if (data.success && data.enhancedImage) {
+        updateActiveSlideField('imageUrl', data.enhancedImage);
+        setToast({ message: 'Imagem melhorada com sucesso!', type: 'success' });
+      } else {
+        setToast({ message: data.error || 'Erro ao melhorar imagem.', type: 'error' });
+      }
+    } catch (error) {
+      setToast({ message: 'Erro de comunicação ao melhorar imagem.', type: 'error' });
+    } finally {
+      setEnhancing(false);
+    }
+  };
 
   const handleScrape = async () => {
     if (!scrapeQuery) return;
@@ -1154,14 +1180,31 @@ export default function Admin() {
                           <div className="space-y-3">
                             <div className="flex gap-2">
                               {/* Trigger file input */}
-                              <button
-                                type="button"
-                                onClick={() => fileInputRef.current?.click()}
-                                className="flex-1 bg-[#1a1410] hover:bg-[#C46A1A]/20 text-[#FF7A00] border border-[#C46A1A]/30 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer font-bold"
-                              >
-                                <Upload className="w-4 h-4" />
-                                Upload de Imagem
-                              </button>
+                              <div className="flex-1 flex flex-col gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => fileInputRef.current?.click()}
+                                  className="w-full bg-[#1a1410] hover:bg-[#C46A1A]/20 text-[#FF7A00] border border-[#C46A1A]/30 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer font-bold"
+                                >
+                                  <Upload className="w-4 h-4" />
+                                  Upload de Imagem
+                                </button>
+                                {activeSlide.imageUrl && activeSlide.imageUrl.startsWith('data:image') && (
+                                  <button
+                                    type="button"
+                                    onClick={handleEnhanceImage}
+                                    disabled={enhancing}
+                                    className="w-full bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 text-[#3B82F6] border border-[#3B82F6]/30 py-2 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer font-bold text-[10px] uppercase tracking-wider disabled:opacity-50"
+                                  >
+                                    {enhancing ? (
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                      <RefreshCw className="w-3.5 h-3.5" />
+                                    )}
+                                    {enhancing ? 'Melhorando...' : 'Melhorar Imagem'}
+                                  </button>
+                                )}
+                              </div>
                               <input
                                 type="file"
                                 ref={fileInputRef}
