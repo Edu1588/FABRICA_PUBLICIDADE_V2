@@ -1,4 +1,5 @@
 import express from "express";
+import * as fs from "fs";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import * as cheerio from "cheerio";
@@ -32,14 +33,37 @@ async function startServer() {
   // API route for scraping vehicle data
   app.post("/api/scrape-vehicle", async (req, res) => {
     try {
-      const { search } = req.body;
-      if (!search) {
-        return res.status(400).json({ error: "Search term is required" });
+      
+      // 1. Search for the vehicle
+      const { search, client } = req.body;
+      if (!search) return res.status(400).json({ error: "Search term is required" });
+      const normalizedSearch = search.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      
+      if (client === 'meta') {
+        try {
+          const metaRes = await fetch('https://metaveiculos.com.br/vehicles.json');
+          const metaVehicles = await metaRes.json();
+          const vehicle = metaVehicles.find(v => v.plate === normalizedSearch || v.model.toLowerCase().includes(search.toLowerCase()) || v.version.toLowerCase().includes(search.toLowerCase()));
+          
+          if (vehicle) {
+            return res.json({
+              success: true,
+              data: {
+                montadora: vehicle.brand,
+                modelo: vehicle.model,
+                descricao: vehicle.version
+              }
+            });
+          } else {
+            return res.status(404).json({ error: "Veículo não encontrado no site da Meta Veículos." });
+          }
+        } catch (err) {
+          console.error("Meta search error", err);
+          return res.status(500).json({ error: "Erro ao buscar no site da Meta Veículos." });
+        }
       }
 
-      // 1. Search for the vehicle
       // If it's a specific test plate from the user, return the mock data directly
-      const normalizedSearch = search.toUpperCase().replace(/[^A-Z0-9]/g, '');
       if (normalizedSearch === 'GAP4D01') {
         return res.json({
           success: true,
@@ -124,48 +148,47 @@ ${cleanHtml}
     }
   });
 
-  // API route for enhancing an image using Cloudinary
-  app.post("/api/enhance-image", async (req, res) => {
+
+
+  // Analytics Routes
+  app.post("/api/track", (req, res) => {
     try {
-      const { image } = req.body;
-      if (!image) {
-        return res.status(400).json({ error: "Image data is required" });
+      const { path, client_id, user_agent } = req.body;
+      const dataPath = process.cwd() + "/data/analytics.json";
+      let analytics = { pageViews: [], leads: [] };
+      if (fs.existsSync(dataPath)) {
+        analytics = JSON.parse(fs.readFileSync(dataPath, "utf8"));
       }
+      analytics.pageViews.push({
+        path,
+        client_id,
+        user_agent,
+        timestamp: new Date().toISOString()
+      });
+      fs.writeFileSync(dataPath, JSON.stringify(analytics, null, 2));
+      return res.json({ success: true });
+    } catch(err) {
+      console.error(err);
+      return res.status(500).json({ error: "Failed to track", details: err.message, stack: err.stack });
+    }
+  });
 
-      const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-      const apiKey = process.env.CLOUDINARY_API_KEY;
-      const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-      if (!cloudName || !apiKey || !apiSecret) {
-        return res.status(500).json({ error: "Credenciais do Cloudinary não configuradas." });
+  app.get("/api/analytics", (req, res) => {
+    try {
+      const dataPath = process.cwd() + "/data/analytics.json";
+      let analytics = { pageViews: [], leads: [] };
+      if (fs.existsSync(dataPath)) {
+        analytics = JSON.parse(fs.readFileSync(dataPath, "utf8"));
       }
-
-      const cloudinary = require('cloudinary').v2;
-      cloudinary.config({
-        cloud_name: cloudName,
-        api_key: apiKey,
-        api_secret: apiSecret
-      });
-
-      // We upload the base64 image and apply transformations.
-      // 1. e_improve to enhance lighting and contrast
-      // 2. e_gen_remove:prompt_watermark;logo;text to remove watermarks
-      const result = await cloudinary.uploader.upload(image, {
-        folder: "auto_enhancements",
-        transformation: [
-          { effect: "improve" },
-          { effect: "gen_remove:prompt_watermark;logo;text" }
-        ]
-      });
-
-      return res.json({ success: true, enhancedImage: result.secure_url });
-    } catch (error) {
-      console.error("Error enhancing image with Cloudinary:", error);
-      return res.status(500).json({ error: "Erro ao melhorar a imagem via Cloudinary: " + (error.message || String(error)) });
+      return res.json(analytics);
+    } catch(err) {
+      console.error(err);
+      return res.status(500).json({ error: "Failed to get analytics" });
     }
   });
 
   // Vite middleware for development
+
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },

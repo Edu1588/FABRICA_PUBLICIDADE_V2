@@ -5,7 +5,6 @@ import {
   LogOut, 
   Plus, 
   Trash2,
-  RefreshCw,
   RotateCcw, 
   Users, 
   ArrowLeft, 
@@ -18,8 +17,15 @@ import {
   Settings,
   Grid,
   FileText,
-  Loader2
+  Loader2,
+  LayoutDashboard,
+  Palette,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { AdminDashboard } from '../components/AdminDashboard';
+import { DesignBrandbook } from '../components/DesignBrandbook';
+
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import JSZip from 'jszip';
@@ -75,6 +81,18 @@ interface CarouselSlide {
 export default function Admin() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('admin_theme');
+    if (savedTheme) setTheme(savedTheme as 'dark' | 'light');
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('admin_theme', newTheme);
+  };
   const [errorMsg, setErrorMsg] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -114,9 +132,10 @@ export default function Admin() {
   };
 
   // Unified Workflow
-  const [activeTab, setActiveTab] = useState<'clientes' | 'config'>('clientes');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'clientes' | 'config'>('clientes');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showCarrosseis, setShowCarrosseis] = useState(false);
+  const [showDesign, setShowDesign] = useState(false);
   const [activeEditor, setActiveEditor] = useState<'destaque' | 'ofertas' | null>(null);
   const [showEditClient, setShowEditClient] = useState(false);
   
@@ -240,32 +259,8 @@ export default function Admin() {
 
   // Scraping State
   const [scraping, setScraping] = useState(false);
-  const [enhancing, setEnhancing] = useState(false);
   const [scrapeQuery, setScrapeQuery] = useState('');
 
-  const handleEnhanceImage = async () => {
-    if (!activeSlide || !activeSlide.imageUrl) return;
-    setEnhancing(true);
-    setToast({ message: 'Melhorando imagem com IA (pode levar alguns segundos)...', type: 'success' });
-    try {
-      const response = await fetch('/api/enhance-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: activeSlide.imageUrl })
-      });
-      const data = await response.json();
-      if (data.success && data.enhancedImage) {
-        updateActiveSlideField('imageUrl', data.enhancedImage);
-        setToast({ message: 'Imagem melhorada com sucesso!', type: 'success' });
-      } else {
-        setToast({ message: data.error || 'Erro ao melhorar imagem.', type: 'error' });
-      }
-    } catch (error) {
-      setToast({ message: 'Erro de comunicação ao melhorar imagem.', type: 'error' });
-    } finally {
-      setEnhancing(false);
-    }
-  };
 
   const handleScrape = async () => {
     if (!scrapeQuery) return;
@@ -274,7 +269,7 @@ export default function Admin() {
       const res = await fetch('/api/scrape-vehicle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ search: scrapeQuery })
+        body: JSON.stringify({ search: scrapeQuery, client: selectedClientData?.name?.toLowerCase().includes('meta') ? 'meta' : 'unimais' })
       });
       const data = await res.json();
       if (data.success && data.data) {
@@ -282,7 +277,7 @@ export default function Admin() {
           fabricante: data.data.montadora || '',
           modelo: data.data.modelo || '',
           descricao: data.data.descricao || '',
-          title: `${scrapeQuery.toUpperCase().replace(/[^A-Z0-9]/g, '')}_carrossel_unimais`
+          title: `${scrapeQuery.toUpperCase().replace(/[^A-Z0-9]/g, '')}_carrossel_${selectedClientData?.name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'unimais'}`
         });
         setToast({ message: 'Dados importados com sucesso!', type: 'success' });
         setScrapeQuery('');
@@ -403,11 +398,11 @@ export default function Admin() {
           id: crypto.randomUUID(),
           type: 'capa',
           title: 'CAPA DO CARROSSEL',
-          imageUrl: 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+          imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
           zoom: 1,
           posX: 0,
           posY: 0,
-          website: 'unimaisveiculos.com.br'
+          website: selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : 'unimaisveiculos.com.br'
         });
       }
 
@@ -418,11 +413,11 @@ export default function Admin() {
           id: crypto.randomUUID(),
           type: 'final',
           title: 'FINAL DO CARROSSEL',
-          imageUrl: 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png',
+          imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png',
           zoom: 1,
           posX: 0,
           posY: 0,
-          website: 'unimaisveiculos.com.br'
+          website: selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : 'unimaisveiculos.com.br'
         });
       }
 
@@ -532,7 +527,8 @@ export default function Admin() {
                 placa = vehicleSlideRef.title.split('_')[0].toLowerCase();
             }
             const paddedIndex = String(i + 1).padStart(2, '0');
-            const filename = `${placa}_carrossel_unimais_${paddedIndex}.png`;
+            const clientNameSafe = selectedClientData?.name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'unimais';
+            const filename = `${placa}_carrossel_${clientNameSafe}_${paddedIndex}.png`;
             zip.file(filename, imgData, {base64: true});
         }
       }
@@ -545,7 +541,7 @@ export default function Admin() {
           placa = vehicleSlide.title.split('_')[0].toLowerCase();
       }
       const content = await zip.generateAsync({type: "blob"});
-      saveAs(content, `${placa}_carrossel_unimais.zip`);
+      saveAs(content, `${placa}_carrossel_${selectedClientData?.name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'unimais'}.zip`);
       showToast('Carrossel exportado com sucesso (ZIP)!', 'success');
       
     } catch (err) {
@@ -612,12 +608,12 @@ export default function Admin() {
         let fileFriendlyTitle = 'completo';
         if (vehicleSlide) {
           fileFriendlyTitle = vehicleSlide.title.toLowerCase()
-            .replace(/_carrossel_unimais/g, '')
-            .replace(/unimais_carrossel_/g, '')
+            .replace(new RegExp(`_carrossel_${selectedClientData?.name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'unimais'}`, 'g'), '')
+            .replace(new RegExp(`${selectedClientData?.name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'unimais'}_carrossel_`, 'g'), '')
             .replace(/[^a-z0-9]+/g, '_')
             .replace(/^_+|_+$/g, '');
         }
-        pdf.save(`unimais_carrossel_${fileFriendlyTitle}.pdf`);
+        pdf.save(`${selectedClientData?.name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'unimais'}_carrossel_${fileFriendlyTitle}.pdf`);
         showToast('PDF do carrossel baixado com sucesso!', 'success');
       }
       
@@ -628,7 +624,7 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07070a] text-[#F5F2EC] flex flex-col selection:bg-[#C46A1A]/40">
+    <div className={`${theme === 'light' ? 'theme-light' : ''} min-h-screen bg-[#07070a] text-[#F5F2EC] flex flex-col selection:bg-[#C46A1A]/40`}>
       
       {/* Toast Notification */}
       {toast && (
@@ -759,9 +755,27 @@ export default function Admin() {
               <nav className="space-y-2 font-mono text-xs uppercase tracking-wider">
                 <button
                   onClick={() => {
+                    setActiveTab('dashboard');
+                    setSelectedClientId(null);
+                    setShowCarrosseis(false);
+                    setShowDesign(false);
+                    setActiveEditor(null);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
+                    activeTab === 'dashboard' 
+                      ? 'bg-[#18120e] text-[#FF7A00] border-l-2 border-[#C46A1A]' 
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => {
                     setActiveTab('clientes');
                     setSelectedClientId(null);
                     setShowCarrosseis(false);
+                    setShowDesign(false);
                     setActiveEditor(null);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
@@ -778,6 +792,7 @@ export default function Admin() {
                     setActiveTab('config');
                     setSelectedClientId(null);
                     setShowCarrosseis(false);
+                    setShowDesign(false);
                     setActiveEditor(null);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
@@ -795,7 +810,15 @@ export default function Admin() {
 
             {/* Sidebar Footer */}
             <div className="p-6 border-t border-white/5 space-y-4">
-              <button
+              
+              <button 
+                onClick={toggleTheme}
+                className="w-full flex items-center justify-center gap-2 bg-[#111116] hover:bg-[#161620] text-white/60 hover:text-white text-[10px] uppercase font-mono tracking-widest py-2.5 rounded-lg cursor-pointer transition-all border border-white/5 mb-3"
+              >
+                {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
+              </button>
+<button
                 onClick={handleLogout}
                 className="w-full flex items-center justify-center gap-2 bg-[#200e0e] hover:bg-red-950 text-red-400 text-[10px] uppercase font-mono tracking-widest py-2.5 rounded-lg cursor-pointer transition-all border border-red-950/20"
               >
@@ -827,6 +850,11 @@ export default function Admin() {
                 </span>
               </div>
             </header>
+
+            {/* Dashboard */}
+            {activeTab === 'dashboard' && !selectedClientId && (
+              <AdminDashboard clients={clients} />
+            )}
 
             {/* STEP 1: Clientes List */}
             {activeTab === 'clientes' && !selectedClientId && (
@@ -880,7 +908,7 @@ export default function Admin() {
             )}
 
             {/* STEP 2: Selected Client -> Show Option: "Carrossel" */}
-            {activeTab === 'clientes' && selectedClientId && !showCarrosseis && !showEditClient && (
+            {activeTab === 'clientes' && selectedClientId && !showCarrosseis && !showDesign && !showEditClient && (
               <div className="space-y-6 animate-fade-in">
                 
                 <button 
@@ -911,7 +939,7 @@ export default function Admin() {
                     </div>
                   </div>
 
-                  {selectedClientData?.name?.toLowerCase().includes('unimais') ? (
+                  {selectedClientData?.name?.toLowerCase().includes('unimais') || selectedClientData?.name?.toLowerCase().includes('meta') ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {/* Option: Card Carrosseis */}
                       <div 
@@ -926,30 +954,73 @@ export default function Admin() {
                           Card Carrosseis
                         </h4>
                         
-                        <p className="text-xs text-white/50 font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
                           Selecione entre o Carrossel Destaque e o Carrossel Ofertas para realizar as edições.
                         </p>
-
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-mono text-[10px] uppercase tracking-widest text-white/40 group-hover:text-white transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-mono text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
                           <span>Acessar Carrosseis</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+
+                      {/* Option: Design */}
+                      <div 
+                        onClick={() => setShowDesign(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                          <Palette className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-admin-heading)' }}>
+                          Design & Brandbook
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Gerencie a identidade visual, paleta de cores e moodboard do cliente.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-mono text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                          <span>Acessar Design</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center py-20 text-center border border-white/5 bg-white/[0.02] rounded-xl border-dashed">
-                      <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                        <div className="w-1.5 h-1.5 bg-[#C46A1A] rounded-full animate-pulse" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      {/* Option: Design */}
+                      <div 
+                        onClick={() => setShowDesign(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                          <Palette className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-admin-heading)' }}>
+                          Design & Brandbook
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Gerencie a identidade visual, paleta de cores e moodboard do cliente.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-mono text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                          <span>Acessar Design</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
-                      <h4 className="text-sm font-light uppercase tracking-widest text-white mb-2" style={{ fontFamily: 'var(--font-admin-heading)' }}>
-                        Sem Conteúdo
-                      </h4>
-                      <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
-                        Nenhum módulo ativo para este cliente no momento.
-                      </p>
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* STEP 3.2: Design */}
+            {activeTab === 'clientes' && selectedClientId && showDesign && (
+              <div className="space-y-6">
+                <button 
+                  onClick={() => setShowDesign(false)}
+                  className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/40 hover:text-white transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Voltar para opções de {selectedClientData?.name || 'Cliente'}
+                </button>
+                <DesignBrandbook client={selectedClientData!} />
               </div>
             )}
 
@@ -1007,7 +1078,7 @@ export default function Admin() {
                   className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/40 hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Voltar para opções de Unimais
+                  Voltar para opções de {selectedClientData?.name}
                 </button>
 
                 {/* Grid Split: Left = Controls, Right = Live Preview & Slides list */}
@@ -1189,21 +1260,6 @@ export default function Admin() {
                                   <Upload className="w-4 h-4" />
                                   Upload de Imagem
                                 </button>
-                                {activeSlide.imageUrl && activeSlide.imageUrl.startsWith('data:image') && (
-                                  <button
-                                    type="button"
-                                    onClick={handleEnhanceImage}
-                                    disabled={enhancing}
-                                    className="w-full bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 text-[#3B82F6] border border-[#3B82F6]/30 py-2 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer font-bold text-[10px] uppercase tracking-wider disabled:opacity-50"
-                                  >
-                                    {enhancing ? (
-                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                    ) : (
-                                      <RefreshCw className="w-3.5 h-3.5" />
-                                    )}
-                                    {enhancing ? 'Melhorando...' : 'Melhorar Imagem'}
-                                  </button>
-                                )}
                               </div>
                               <input
                                 type="file"
@@ -1444,12 +1500,45 @@ export default function Admin() {
                           {activeSlide.type === 'capa' ? (
                             
                             // A. COVER LAYOUT (FIXED IMAGE)
-                            <div className="flex-1 w-full h-full relative">
-                              <img 
-                                src={activeSlide.imageUrl || "https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png"} 
-                                alt="Capa" 
-                                className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" 
-                              />
+                            <div className="flex-1 w-full h-full relative overflow-hidden bg-black">
+                              {/* If Meta, show the uploaded image as background and fixed frame on top. Otherwise, just show the uploaded image. */}
+                              {selectedClientData?.name?.toLowerCase().includes('meta') ? (
+                                <>
+                                  {(activeSlide.imageUrl && !activeSlide.imageUrl.includes('hnxtcxhrqr4ejekmfkea') && !activeSlide.imageUrl.includes('ze7bf5yd9ozh3tsccopb')) && (
+                                    <img
+                                      src={activeSlide.imageUrl}
+                                      alt="Carro Capa"
+                                      className="absolute max-w-none origin-center z-0"
+                                      style={{
+                                        width: `${100 * activeSlide.zoom}%`,
+                                        height: `${100 * activeSlide.zoom}%`,
+                                        left: `calc(50% + ${activeSlide.posX}px)`,
+                                        top: `calc(50% + ${activeSlide.posY}px)`,
+                                        transform: 'translate(-50%, -50%)',
+                                        objectFit: 'cover',
+                                        cursor: 'move',
+                                        pointerEvents: 'auto'
+                                      }}
+                                      onMouseDown={handleMouseDown}
+                                      onMouseMove={handleMouseMove}
+                                      onMouseUp={handleMouseUp}
+                                      onMouseLeave={handleMouseUp}
+                                      crossOrigin="anonymous"
+                                    />
+                                  )}
+                                  <img 
+                                    src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png" 
+                                    alt="Capa Overlay" 
+                                    className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" crossOrigin="anonymous" 
+                                  />
+                                </>
+                              ) : (
+                                <img 
+                                  src={activeSlide.imageUrl || "https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png"} 
+                                  alt="Capa" 
+                                  className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" 
+                                />
+                              )}
                             </div>
 
                           ) : activeSlide.type === 'veiculo' ? (
@@ -1476,24 +1565,33 @@ export default function Admin() {
 
                               {/* FIXED PNG OVERLAY */}
                               <img 
-                                src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/ujijynb4i1ovomlekkrj.png" 
+                                src={selectedClientData?.name?.toLowerCase().includes('meta') ? "https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/fiowzjsmie0jn35bn49h.png" : "https://res.cloudinary.com/djw0tqmiw/image/upload/v1784051477/ox5x9ezq4stcwbocpbdg.png"} 
                                 alt="Base Frame" 
                                 className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" crossOrigin="anonymous" 
                               />
                                 
                               {/* Header Texts (Transparent background) */}
-                              <div className="absolute top-[25px] left-0 w-full px-[20px] z-20 pointer-events-none font-saira uppercase italic" style={{ fontFamily: '"Saira Extra Condensed", sans-serif' }}>
-                                <div className="text-[#0377f9] leading-none font-light tracking-widest italic" style={{ fontSize: '24px', color: '#0377f9', marginBottom: '-4px' }}>
+                              <div className="absolute top-[25px] left-0 w-full px-[20px] z-20 pointer-events-none uppercase italic" style={{ fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '"Saira Extra Condensed", sans-serif' }}>
+                                <div className={`leading-none tracking-widest italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white' : 'text-[#0377f9] font-light'}`} style={{ fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '13px' : '24px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#0377f9', marginBottom: '-4px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Oswald", sans-serif' : undefined }}>
                                   {activeSlide.fabricante || 'FABRICANTE'}
                                 </div>
-                                <div className="text-[#1b3265] leading-none font-black tracking-tighter italic" style={{ fontSize: '48px', color: '#1b3265', marginBottom: '2px', marginTop: '-8px' }}>
+                                <div className={`leading-none tracking-tighter italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? '' : 'text-[#1b3265] font-black'}`} style={{ 
+                                  fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '32px' : '48px', 
+                                  marginBottom: '2px', 
+                                  marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '4px' : '-8px',
+                                  fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Anton", sans-serif' : undefined,
+                                  color: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '#1b3265',
+                                  background: selectedClientData?.name?.toLowerCase().includes('meta') ? 'linear-gradient(180deg, #FF6B00 20%, #FF8C00 50%, #FF6B00 80%)' : undefined,
+                                  WebkitBackgroundClip: selectedClientData?.name?.toLowerCase().includes('meta') ? 'text' : undefined,
+                                  WebkitTextFillColor: selectedClientData?.name?.toLowerCase().includes('meta') ? 'transparent' : undefined,
+                                  filter: selectedClientData?.name?.toLowerCase().includes('meta') ? 'drop-shadow(3px 3px 2px rgba(0,0,0,0.6))' : undefined,
+                                }}>
                                   {activeSlide.modelo || 'MODELO'}
                                 </div>
-                                <div className="text-black leading-none font-bold tracking-wide italic" style={{ fontSize: '13px', color: '#000000', marginTop: '-2px' }}>
+                                <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Oswald", sans-serif' : undefined }}>
                                   {activeSlide.descricao || 'DESCRIÇÃO COMPLETA'}
                                 </div>
                               </div>
-
                               <div className="flex-1 z-20 pointer-events-none"></div>
 
                               
@@ -1503,7 +1601,7 @@ export default function Admin() {
                             // C. FINAL TEMPLATE (FIXED IMAGE)
                             <div className="flex-1 w-full h-full relative">
                               <img 
-                                src={activeSlide.imageUrl || "https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png"} 
+                                src={selectedClientData?.name?.toLowerCase().includes('meta') ? "https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png" : (activeSlide.imageUrl || "https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png")} 
                                 alt="Final" 
                                 className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" 
                               />
@@ -1511,14 +1609,14 @@ export default function Admin() {
                           )}
 
                           {/* GLOBALLY SHARED WEB FOOTER BAR - Only show if not capa or final, or overlay it? Actually, if capa and final are fixed full-height images, they probably contain the footer. We will only render it for veiculo if the PNG doesn't have it. We'll render it absolutely at the bottom for veiculo. */}
-                          {activeSlide.type === 'veiculo' && (
+                          {activeSlide.type === 'veiculo' && !selectedClientData?.name?.toLowerCase().includes('meta') && (
                             <div className="absolute bottom-0 left-0 right-0 bg-[#012d6a] text-white py-2 flex items-center justify-center gap-1 text-[8px] font-mono tracking-widest uppercase border-t border-cyan-400/10 z-20">
                               <svg className="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <line x1="2" y1="12" x2="22" y2="12"></line>
                                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                               </svg>
-                              <span>{activeSlide.website || 'UNIMAISVEICULOS.COM.BR'}</span>
+                              <span>{activeSlide.website || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : 'UNIMAISVEICULOS.COM.BR')}</span>
                             </div>
                           )}
 

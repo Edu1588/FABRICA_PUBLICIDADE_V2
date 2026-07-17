@@ -11,6 +11,17 @@ export default function HomeV2() {
 
   // We handle loading state in this component to reveal the content
   useEffect(() => {
+
+    // Track page view
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        path: window.location.pathname,
+        user_agent: navigator.userAgent
+      })
+    }).catch(console.error);
+
     // Artificial delay to show loader
     const timer = setTimeout(() => {
       setLoading(false);
