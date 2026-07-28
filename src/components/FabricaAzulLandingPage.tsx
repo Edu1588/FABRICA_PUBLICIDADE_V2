@@ -208,20 +208,39 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
                 </button>
               </div>
 
-              {/* Minimalist Metrics */}
-              <div className="grid grid-cols-3 gap-6 sm:gap-10  pt-8 max-w-2xl text-right">
-                <div className="flex flex-col items-end">
-                  <div className="text-3xl font-black text-white mb-1">+2K</div>
-                  <div className="text-xs text-cyan-400 font-bold uppercase tracking-wider">Peças / Mês</div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <div className="text-3xl font-black text-white mb-1">+160</div>
-                  <div className="text-xs text-cyan-400 font-bold uppercase tracking-wider">Reels & Vídeos</div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <div className="text-3xl font-black text-white mb-1">+1.2M</div>
-                  <div className="text-xs text-cyan-400 font-bold uppercase tracking-wider">Alcance</div>
-                </div>
+              {/* Floating Glass Boxes Metrics */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 max-w-2xl">
+                <motion.div 
+                  whileHover={{ y: -4 }}
+                  className="bg-[#0f172a]/80 border border-white/15 backdrop-blur-md rounded-2xl p-4 shadow-xl text-right flex flex-col items-end"
+                >
+                  <div className="text-2xl sm:text-3xl font-black text-white mb-0.5 tracking-tight">+1M</div>
+                  <div className="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">Alcance</div>
+                </motion.div>
+
+                <motion.div 
+                  whileHover={{ y: -4 }}
+                  className="bg-[#0f172a]/80 border border-white/15 backdrop-blur-md rounded-2xl p-4 shadow-xl text-right flex flex-col items-end"
+                >
+                  <div className="text-2xl sm:text-3xl font-black text-white mb-0.5 tracking-tight">+2M</div>
+                  <div className="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">Impressões</div>
+                </motion.div>
+
+                <motion.div 
+                  whileHover={{ y: -4 }}
+                  className="bg-[#0f172a]/80 border border-white/15 backdrop-blur-md rounded-2xl p-4 shadow-xl text-right flex flex-col items-end"
+                >
+                  <div className="text-2xl sm:text-3xl font-black text-white mb-0.5 tracking-tight">+70</div>
+                  <div className="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">Peças p/ Feed</div>
+                </motion.div>
+
+                <motion.div 
+                  whileHover={{ y: -4 }}
+                  className="bg-[#0f172a]/80 border border-white/15 backdrop-blur-md rounded-2xl p-4 shadow-xl text-right flex flex-col items-end"
+                >
+                  <div className="text-2xl sm:text-3xl font-black text-white mb-0.5 tracking-tight">+160</div>
+                  <div className="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">Stories / Mês</div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -275,7 +294,6 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
       
       <section id="pilares" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto ">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white uppercase tracking-tight font-display">
             ESTRUTURA CONTÍNUA, ESCALÁVEL E INTEGRADA 360°
           </h2>
@@ -344,11 +362,11 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="text-[11px] font-mono font-bold text-cyan-300 uppercase mb-1">{pillar.sub}</div>
-                  <h3 className="text-lg font-extrabold text-slate-400 uppercase mb-2 font-display">{pillar.title}</h3>
-                  <p className="text-xs text-slate-200 leading-relaxed font-sans mb-4">{pillar.desc}</p>
+                  <h3 className="text-lg font-extrabold text-slate-200 uppercase mb-2 font-display">{pillar.title}</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed font-sans mb-4">{pillar.desc}</p>
                 </div>
 
-                <div className="pt-3  space-y-1.5">
+                <div className="pt-3 border-t border-white/10 space-y-1.5">
                   {pillar.bullets.map((b, bi) => (
                     <div key={bi} className="text-[11px] text-cyan-200 flex items-center gap-1.5 font-semibold">
                       <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
@@ -401,24 +419,23 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
                 <span className="bg-amber-400 text-black px-2.5 py-0.5 rounded text-[10px] font-black">Layout Oficial</span>
               </div>
 
-              <div 
-                className="relative w-full h-80 rounded-2xl overflow-hidden p-6 flex flex-col justify-end shadow-2xl mb-4 border border-white/10" 
-                style={{ 
-                  backgroundImage: `linear-gradient(to right, rgba(10,28,106,0.95), rgba(13,59,133,0.7)), url('${CRUZE_IMAGE}')`, 
-                  backgroundSize: 'cover', 
-                  backgroundPosition: 'center' 
-                }}
-              >
-                <div className="relative z-10">
-                  <span className="inline-block bg-amber-400 text-black font-black text-[10px] px-3 py-1 rounded uppercase mb-2 shadow">
-                    Balão Premiado!
-                  </span>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white uppercase leading-none font-display drop-shadow-md">
-                    MÊS DE ANIVERSÁRIO AZUL VEÍCULOS
-                  </h3>
-                  <p className="text-xs text-cyan-300 mt-2 font-mono font-bold">
-                    PAGAMOS ATÉ 100% TABELA FIPE • TAXAS A PARTIR DE 1.19% A.M.
-                  </p>
+              <div className="w-full bg-white shadow-xl p-5 rounded-xl border border-white/10 mb-4">
+                <div className="text-[10px] font-bold text-[#0a1c6a] mb-3 uppercase tracking-wider">
+                  Exemplo de Estrutura — Key Visual
+                </div>
+                <div className="w-full h-48 bg-[#0a1c6a] relative mb-4 rounded-sm overflow-hidden flex flex-col justify-end p-4 shadow-inner">
+                  <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-blue-400/80 blur-sm"></div>
+                  <div className="w-3/4 h-4 bg-white rounded-xs mb-2"></div>
+                  <div className="w-1/2 h-2.5 bg-white/40 rounded-xs"></div>
+                </div>
+                <div className="grid grid-cols-4 gap-2 mb-3">
+                  <div className="h-8 bg-[#060d20] rounded-xs" title="#060d20"></div>
+                  <div className="h-8 bg-[#0a1c6a] rounded-xs" title="#0a1c6a"></div>
+                  <div className="h-8 bg-[#3b82f6] rounded-xs" title="#3b82f6"></div>
+                  <div className="h-8 bg-gray-400 rounded-xs" title="Neutral"></div>
+                </div>
+                <div className="text-[10px] text-gray-500 text-center font-medium font-sans">
+                  Paleta e composição padronizadas por campanha
                 </div>
               </div>
 
@@ -453,154 +470,154 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {/* Instagram */}
-          <div className="rounded-2xl overflow-hidden shadow-xl border border-pink-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(8,21,56,0.95)), url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
+          <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <InstagramLogo />
                   <div>
-                    <h3 className="text-base font-extrabold text-white uppercase">INSTAGRAM</h3>
-                    <div className="text-[10px] font-mono text-pink-300">Conteúdo Diário & Reels</div>
+                    <h3 className="text-base font-extrabold text-slate-900 uppercase">INSTAGRAM</h3>
+                    <div className="text-[11px] font-mono text-pink-600 font-semibold">Conteúdo Diário & Reels</div>
                   </div>
                 </div>
-                <span className="bg-pink-500/20 text-pink-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                <span className="bg-pink-100 text-pink-700 border border-pink-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
                   Relacionamento
                 </span>
               </div>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+              <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
                 Canal principal de engajamento, apresentação de veículos do estoque, enquetes interativas em Stories e Reels de alto impacto.
               </p>
-              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
-                <span>Frequência: Diária</span>
-                <span className="text-slate-300 font-mono font-bold">+160 Posts / Mês</span>
-              </div>
+            </div>
+            <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
+              <span>Frequência: Diária</span>
+              <span className="text-slate-900 font-mono font-bold">+160 Posts / Mês</span>
             </div>
           </div>
 
           {/* Facebook */}
-          <div className="rounded-2xl overflow-hidden shadow-xl border border-blue-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(13,34,82,0.95)), url('https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
+          <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <FacebookLogo />
                   <div>
-                    <h3 className="text-base font-extrabold text-white uppercase">FACEBOOK</h3>
-                    <div className="text-[10px] font-mono text-blue-300">Audiência Sênior & Família</div>
+                    <h3 className="text-base font-extrabold text-slate-900 uppercase">FACEBOOK</h3>
+                    <div className="text-[11px] font-mono text-blue-600 font-semibold">Audiência Sênior & Família</div>
                   </div>
                 </div>
-                <span className="bg-blue-500/20 text-blue-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                <span className="bg-blue-100 text-blue-700 border border-blue-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
                   Alcance Família
                 </span>
               </div>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+              <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
                 Comunicação voltada a perfis de compradores de veículos seminovos de maior valor agregado e ofertas de financiamento bancário.
               </p>
-              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
-                <span>Atração Local</span>
-                <span className="text-slate-300 font-mono font-bold">100% Sincronizado</span>
-              </div>
+            </div>
+            <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
+              <span>Atração Local</span>
+              <span className="text-slate-900 font-mono font-bold">100% Sincronizado</span>
             </div>
           </div>
 
           {/* Google Ads */}
-          <div className="rounded-2xl overflow-hidden shadow-xl border border-emerald-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(10,43,36,0.95)), url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
+          <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <GoogleAdsLogo />
                   <div>
-                    <h3 className="text-base font-extrabold text-white uppercase">GOOGLE ADS</h3>
-                    <div className="text-[10px] font-mono text-emerald-300">Rede de Pesquisa & Busca</div>
+                    <h3 className="text-base font-extrabold text-slate-900 uppercase">GOOGLE ADS</h3>
+                    <div className="text-[11px] font-mono text-emerald-600 font-semibold">Rede de Pesquisa & Busca</div>
                   </div>
                 </div>
-                <span className="bg-emerald-500/20 text-emerald-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                <span className="bg-emerald-100 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
                   Intenção de Compra
                 </span>
               </div>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+              <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
                 Anúncios de busca ativados exatamente quando o cliente procura por "comprar carro seminovo", palavras-chave de modelos e termos regionais.
               </p>
-              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
-                <span>Conversão Direta</span>
-                <span className="text-slate-300 font-mono font-bold">Alta Qualidade</span>
-              </div>
+            </div>
+            <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
+              <span>Conversão Direta</span>
+              <span className="text-slate-900 font-mono font-bold">Alta Qualidade</span>
             </div>
           </div>
 
           {/* Meta Ads */}
-          <div className="rounded-2xl overflow-hidden shadow-xl border border-blue-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(12,40,96,0.95)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
+          <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <MetaLogo />
                   <div>
-                    <h3 className="text-base font-extrabold text-white uppercase">META ADS</h3>
-                    <div className="text-[10px] font-mono text-cyan-300">Tráfego Pago & Leads</div>
+                    <h3 className="text-base font-extrabold text-slate-900 uppercase">META ADS</h3>
+                    <div className="text-[11px] font-mono text-blue-600 font-semibold">Tráfego Pago & Leads</div>
                   </div>
                 </div>
-                <span className="bg-cyan-500/20 text-cyan-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                <span className="bg-blue-100 text-blue-700 border border-blue-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
                   Leads no ZAP
                 </span>
               </div>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+              <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
                 Gestão de orçamentos patrocinados com direcionamento dos cliques direto para o WhatsApp das equipes de vendas de cada loja.
               </p>
-              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
-                <span>Segmentação Local</span>
-                <span className="text-slate-300 font-mono font-bold">Otimização Diária</span>
-              </div>
+            </div>
+            <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
+              <span>Segmentação Local</span>
+              <span className="text-slate-900 font-mono font-bold">Otimização Diária</span>
             </div>
           </div>
 
           {/* RD Station */}
-          <div className="rounded-2xl overflow-hidden shadow-xl border border-amber-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(58,37,10,0.95)), url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
+          <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <RDStationLogo />
                   <div>
-                    <h3 className="text-base font-extrabold text-white uppercase">RD STATION</h3>
-                    <div className="text-[10px] font-mono text-amber-300">Inbound & CRM Sync</div>
+                    <h3 className="text-base font-extrabold text-slate-900 uppercase">RD STATION</h3>
+                    <div className="text-[11px] font-mono text-amber-600 font-semibold">Inbound & CRM Sync</div>
                   </div>
                 </div>
-                <span className="bg-amber-500/20 text-amber-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                <span className="bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
                   Inbound CRM
                 </span>
               </div>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+              <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
                 Captura de cadastros provenientes das Landing Pages de feirões, automação de emails e nutrição da base de contatos.
               </p>
-              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
-                <span>Nutrição Automática</span>
-                <span className="text-slate-300 font-mono font-bold">CRM Integrado</span>
-              </div>
+            </div>
+            <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
+              <span>Nutrição Automática</span>
+              <span className="text-slate-900 font-mono font-bold">CRM Integrado</span>
             </div>
           </div>
 
           {/* WhatsApp Vendas */}
-          <div className="rounded-2xl overflow-hidden shadow-xl border border-emerald-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(11,43,36,0.95)), url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
+          <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0">
                     <PhoneCall className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-extrabold text-white uppercase">WHATSAPP VENDAS</h3>
-                    <div className="text-[10px] font-mono text-emerald-300">Conversão de Atendimento</div>
+                    <h3 className="text-base font-extrabold text-slate-900 uppercase">WHATSAPP VENDAS</h3>
+                    <div className="text-[11px] font-mono text-emerald-600 font-semibold">Conversão de Atendimento</div>
                   </div>
                 </div>
-                <span className="bg-emerald-500/20 text-emerald-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
                   Atendimento Rápido
                 </span>
               </div>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+              <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
                 Envio imediato do lead capturado no tráfego para os consultores de plantão da Azul Veículos, reduzindo o tempo de resposta.
               </p>
-              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
-                <span>Canal Oficial</span>
-                <span className="text-slate-300 font-mono font-bold">100% Direto</span>
-              </div>
+            </div>
+            <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
+              <span>Canal Oficial</span>
+              <span className="text-slate-900 font-mono font-bold">100% Direto</span>
             </div>
           </div>
         </div>
