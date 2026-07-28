@@ -1,10 +1,10 @@
 import { SlideData } from '../types';
 
 export const SLIDES_DATA: SlideData[] = [
-  // SLIDE 1: Capa (1/20)
+  // SLIDE 1: 1: Capa (1/20)
   {
     id: 1,
-    slideNumber: "01 / 20",
+    slideNumber: "01 / 19",
     category: "capa",
     categoryLabel: "Relatório Técnico",
     title: "OPERAÇÃO INTEGRADA DE MARKETING",
@@ -15,10 +15,10 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Apresentação da Operação Integrada de Marketing da Azul Veículos conduzida pela agência Fábrica Publicidade & Digital."
   },
 
-  // SLIDE 2: Introdução (2/20)
+  // SLIDE 2: 2: Introdução (2/20)
   {
     id: 2,
-    slideNumber: "02 / 20",
+    slideNumber: "02 / 19",
     category: "introducao",
     categoryLabel: "02 / Introdução",
     title: "APRESENTAÇÃO",
@@ -34,10 +34,10 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Visão introdutória enfatizando o caráter vivo e contínuo da operação de marketing da Azul Veículos."
   },
 
-  // SLIDE 3: Natureza da Operação (3/20) - SLIDE EXCLUSIVO E DEDICADO COM IMAGENS
+  // SLIDE 3: 3: Natureza da Operação (3/20) - SLIDE EXCLUSIVO E DEDICADO COM IMAGENS
   {
     id: 3,
-    slideNumber: "03 / 20",
+    slideNumber: "03 / 19",
     category: "natureza",
     categoryLabel: "03 / Natureza da Operação",
     title: "NATUREZA DA OPERAÇÃO",
@@ -58,8 +58,8 @@ export const SLIDES_DATA: SlideData[] = [
         id: "criativa",
         title: "Atuação Criativa",
         category: "Design & Audiovisual",
-        description: "Criação de identidades visuais, Key Visuals, redação, peças gráficas para redes, jornalzinhos e produção audiovisual.",
-        imageUrl: "https://images.unsplash.com/photo-1567177662154-dfeb4c93b6ae?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y3JpYXRpdmlkYWRlfGVufDB8fDB8fHwy",
+        description: "Suporte diário à equipe Web e Marketing da Azul, gestão de demandas urgentes, alterações rápidas de condições comerciais e fluxo contínuo de aprovações.",
+        imageUrl: "https://res.cloudinary.com/ifuatk2z/image/upload/v1785278875/azulveic_jsromh.png",
         iconName: "Palette",
         badge: "Criação"
       },
@@ -67,7 +67,7 @@ export const SLIDES_DATA: SlideData[] = [
         id: "tecnologia",
         title: "Atuação Tecnológica",
         category: "Digital & Plataformas",
-        description: "Desenvolvimento e manutenção do portal azulveiculos.com.br, landing pages de feirões, SEO e automação no RD Station.",
+        description: "Desenvolvimento e manutenção do portal azulveiculos.com.br, landing pages de feirões, SEO e automação no Ferramenta de Inbound Marketing.",
         imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
         iconName: "Cpu",
         badge: "Tecnologia"
@@ -77,7 +77,7 @@ export const SLIDES_DATA: SlideData[] = [
         title: "Atuação Operacional",
         category: "Atendimento & Workflow",
         description: "Suporte diário às unidades, gestão de demandas urgentes, alterações rápidas de condições comerciais e fluxo contínuo de aprovações.",
-        imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop",
+        imageUrl: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGVtcHJlc2F8ZW58MHx8MHx8fDI%3D",
         iconName: "Workflow",
         badge: "Operação"
       }
@@ -85,32 +85,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Detalhamento exclusivo dos 4 pilares da Natureza da Operação com suporte visual e fotográfico."
   },
 
-  // SLIDE 4: Modelo Operacional (4/20)
+  // SLIDE 4: 5: Organização (5/20)
   {
     id: 4,
-    slideNumber: "04 / 20",
-    category: "modelo",
-    categoryLabel: "04 / Modelo Operacional",
-    title: "VISÃO GERAL",
-    subtitle: "O modelo conecta cinco frentes complementares em um fluxo contínuo da estratégia à execução.",
-    layoutType: "connected_flow",
-    stepItems: [
-      { number: "01", title: "Estratégia", description: "Planejamento, calendário comercial e direcionamento." },
-      { number: "02", title: "Criação", description: "Conceito, design, copy e produção de conteúdo." },
-      { number: "03", title: "Tecnologia", description: "Website, integrações e plataformas digitais." },
-      { number: "04", title: "Performance", description: "Gestão de tráfego, mídia paga e otimização." },
-      { number: "05", title: "Suporte", description: "Atendimento, demandas e continuidade." }
-    ],
-    bgImageUrl: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop",
-    presenterNotes: "Os 5 pilares fundamentais da operação integrada."
-  },
-
-  // SLIDE 5: Organização (5/20)
-  {
-    id: 5,
-    slideNumber: "05 / 20",
+    slideNumber: "04 / 19",
     category: "organizacao",
-    categoryLabel: "05 / Organização",
+    categoryLabel: "04 / Organização",
     title: "ESTRUTURA DA OPERAÇÃO",
     subtitle: "Matriz organizacional dedicada à conta da Azul Veículos.",
     layoutType: "organogram",
@@ -127,12 +107,12 @@ export const SLIDES_DATA: SlideData[] = [
       },
       {
         title: "Criação",
-        items: ["Design", "Copywriting", "Social Media", "Produção Audiovisual", "Motion Design", "Desenvolvimento Web"],
+        items: ["Design", "Copywriting", "Social Media", "Material Offline", "Produção Audiovisual", "Motion Design", "Desenvolvimento Web"],
         icon: "PenTool"
       },
       {
         title: "Tecnologia & Mídia",
-        items: ["Google Ads", "Meta Ads", "RD Station"],
+        items: ["Google Ads", "Meta Ads", "Ferramenta de Inbound Marketing"],
         icon: "Cpu"
       },
       {
@@ -149,38 +129,40 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Detalhamento da equipe multidisciplinar dedicada."
   },
 
-  // SLIDE 6: Estratégia (6/20)
+  // SLIDE 5: 6: Estratégia (6/20)
   {
-    id: 6,
-    slideNumber: "06 / 20",
+    id: 5,
+    slideNumber: "05 / 19",
     category: "estrategia",
-    categoryLabel: "06 / Estratégia",
+    categoryLabel: "05 / Estratégia",
     title: "PLANEJAMENTO ESTRATÉGICO",
-    subtitle: "DIRETRIZES E METODOLOGIA",
+    subtitle: "DIRETRIZES, GOVERNANÇA E METODOLOGIA 360°",
     layoutType: "dual_matrix",
     tableData: [
-      { item: "Planejamento de campanhas", description: "Definição de objetivos, calendário e abordagem criativa de cada campanha antes do início da produção." },
-      { item: "Calendário comercial", description: "Mapeamento das datas comemorativas, feirões e ações sazonais relevantes para o setor automotivo." },
-      { item: "Naming", description: "Criação de nomes e assinaturas para campanhas e promoções específicas de cada loja." },
-      { item: "Conceitos criativos", description: "Desenvolvimento da ideia central que orienta a comunicação de cada campanha." },
-      { item: "Estratégia comercial", description: "Alinhamento entre marketing e vendas para priorizar veículos, condições e metas de cada período." }
+      { item: "Planejamento de campanhas", description: "Definição rigorosa de objetivos, calendário tático e abordagem criativa de cada campanha antes do início da produção." },
+      { item: "Calendário comercial", description: "Mapeamento estratégico de datas comemorativas, feirões regionais e ações sazonais de alto impacto para o setor automotivo." },
+      { item: "Naming e Assinaturas", description: "Criação de nomes, motes e assinaturas exclusivas para campanhas, salões e promoções especiais de cada unidade." },
+      { item: "Conceitos criativos", description: "Desenvolvimento da ideia central e storytelling que orienta unificadamente a comunicação multicanal." },
+      { item: "Estratégia comercial alinhada", description: "Sinergia permanente entre marketing e equipes de vendas para priorizar modelos, taxas e metas de cada período." },
+      { item: "Matriz de Oportunidades", description: "Identificação antecipada de tendências de mercado e comportamento do consumidor automotivo." }
     ],
     tableData2: [
-      { item: "Planejamento digital", description: "Definição de canais, formatos e frequência de publicação para redes sociais e mídia paga." },
-      { item: "Planejamento institucional", description: "Estruturação da comunicação de marca, independente de campanhas promocionais pontuais." },
-      { item: "Planejamento de mídia", description: "Distribuição do investimento entre plataformas e formatos conforme o objetivo de cada ação." },
-      { item: "Cronograma", description: "Organização dos prazos de criação, aprovação e publicação de cada entrega." },
-      { item: "Integração entre lojas", description: "Alinhamento da comunicação entre as diferentes unidades da Azul Veículos." }
+      { item: "Planejamento digital e multicanal", description: "Arquitetura de canais, formatos dinâmicos e frequência otimizada para redes sociais, portal e mídia paga." },
+      { item: "Planejamento institucional", description: "Consolidação contínua da autoridade de marca, reputação de atendimento e diferenciais competitivos." },
+      { item: "Alocação inteligente de mídia", description: "Distribuição estratégica de verbas e formatos conforme o funil de conversão e objetivos de lead." },
+      { item: "Cronograma e governança de prazos", description: "Gestão integrada de prazos de criação, validação executiva e publicação em tempo real." },
+      { item: "Sinergia entre unidades", description: "Padronização de diretrizes com flexibilidade para demandas específicas de cada praça da Azul Veículos." },
+      { item: "Auditoria de Performance", description: "Revisão periódica de KPIs de alcance, conversão e retorno sobre campanhas executadas." }
     ],
-    presenterNotes: "Atividades de planejamento que antecedem a execução das peças."
+    presenterNotes: "Atividades aprofundadas de planejamento estratégico que estruturam o ecossistema de marketing da Azul Veículos."
   },
 
-  // SLIDE 7: Rotina Operacional (7/20)
+  // SLIDE 6: 7: Rotina Operacional (7/20)
   {
-    id: 7,
-    slideNumber: "07 / 20",
+    id: 6,
+    slideNumber: "06 / 19",
     category: "rotina",
-    categoryLabel: "07 / Rotina Operacional",
+    categoryLabel: "06 / Rotina Operacional",
     title: "ATENDIMENTO E GESTÃO",
     subtitle: "WORKFLOW E ETAPAS DA JORNADA",
     layoutType: "process_stakeholders",
@@ -193,12 +175,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Fluxo passo-a-passo de como as solicitações caminham até a entrega final."
   },
 
-  // SLIDE 8: Interface com e Fluxo (8/20)
+  // SLIDE 7: 8: Interface com e Fluxo (8/20)
   {
-    id: 8,
-    slideNumber: "08 / 20",
+    id: 7,
+    slideNumber: "07 / 19",
     category: "rotina",
-    categoryLabel: "08 / Interface e Fluxo",
+    categoryLabel: "07 / Interface e Fluxo",
     title: "INTERFACE COM",
     subtitle: "STAKEHOLDERS E CRITÉRIOS DE FLUXO",
     layoutType: "process_stakeholders",
@@ -215,12 +197,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Como a agência faz interface com a diretoria, equipe de vendas e agentes bancários."
   },
 
-  // SLIDE 9: Gestão Comercial (9/20)
+  // SLIDE 8: 9: Gestão Comercial (9/20)
   {
-    id: 9,
-    slideNumber: "09 / 20",
+    id: 8,
+    slideNumber: "08 / 19",
     category: "rotina",
-    categoryLabel: "09 / Comercial",
+    categoryLabel: "08 / Comercial",
     title: "GESTÃO COMERCIAL",
     subtitle: "SUPORTE ÀS UNIDADES E VENDAS",
     layoutType: "dual_matrix",
@@ -236,12 +218,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Entregas ligadas ao suporte da força de vendas."
   },
 
-  // SLIDE 10: Design Estratégico (10/20)
+  // SLIDE 9: 10: Design Estratégico (10/20)
   {
-    id: 10,
-    slideNumber: "10 / 20",
+    id: 9,
+    slideNumber: "09 / 19",
     category: "criacao",
-    categoryLabel: "10 / Criação",
+    categoryLabel: "09 / Criação",
     title: "DESIGN ESTRATÉGICO",
     subtitle: "CONCEITOS E KEY VISUAL",
     layoutType: "design_keyvisual",
@@ -256,12 +238,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Padronização de Key Visuals e identidade de marca."
   },
 
-  // SLIDE 11: Produção Criativa (11/20)
+  // SLIDE 10: 11: Produção Criativa (11/20)
   {
-    id: 11,
-    slideNumber: "11 / 20",
+    id: 10,
+    slideNumber: "10 / 19",
     category: "criacao",
-    categoryLabel: "11 / Criação",
+    categoryLabel: "10 / Criação",
     title: "PRODUÇÃO CRIATIVA",
     subtitle: "ENTREGÁVEIS GRÁFICOS E DIGITAIS",
     layoutType: "dual_matrix",
@@ -270,7 +252,7 @@ export const SLIDES_DATA: SlideData[] = [
       { item: "Posts", description: "Conteúdos estáticos para o feed das redes sociais." },
       { item: "Stories", description: "Conteúdos verticais de curta duração para Instagram e Facebook." },
       { item: "Carrosséis", description: "Sequências de imagens para aprofundar uma mensagem ou apresentar múltiplos veículos." },
-      { item: "Jornalzinhos", description: "Encartes promocionais com ofertas e condições vigentes." },
+      { item: "material offline e produção audiovisual", description: "Encartes promocionais com ofertas e condições vigentes." },
       { item: "Email Marketing", description: "Comunicações diretas para a base de contatos da Azul Veículos." }
     ],
     tableData2: [
@@ -283,12 +265,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Diversidade de formatos gráficos estáticos e digitais."
   },
 
-  // SLIDE 12: Produção Audiovisual (12/20)
+  // SLIDE 11: 12: Produção Audiovisual (12/20)
   {
-    id: 12,
-    slideNumber: "12 / 20",
+    id: 11,
+    slideNumber: "11 / 19",
     category: "criacao",
-    categoryLabel: "12 / Criação",
+    categoryLabel: "11 / Criação",
     title: "PRODUÇÃO AUDIOVISUAL",
     subtitle: "VÍDEOS, REELS E MOTION DESIGN",
     layoutType: "dual_matrix",
@@ -309,12 +291,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Captação presencial, gravação com equipamento profissional e mobile."
   },
 
-  // SLIDE 13: Marketing Digital (13/20)
+  // SLIDE 12: 13: Marketing Digital (13/20)
   {
-    id: 13,
-    slideNumber: "13 / 20",
+    id: 12,
+    slideNumber: "12 / 19",
     category: "digital",
-    categoryLabel: "13 / Digital",
+    categoryLabel: "12 / Digital",
     title: "MARKETING DIGITAL",
     subtitle: "CANAIS E ECOSSISTEMA ONLINE",
     layoutType: "dual_matrix",
@@ -326,19 +308,19 @@ export const SLIDES_DATA: SlideData[] = [
     ],
     tableData2: [
       { item: "Meta", description: "Gestão unificada de anúncios no Instagram e no Facebook.", tag: "Tráfego Pago" },
-      { item: "RD Station", description: "Automação de relacionamento e qualificação de leads.", tag: "Inbound & CRM" },
+      { item: "Ferramenta de Inbound Marketing", description: "Automação de relacionamento e qualificação de leads.", tag: "Inbound & CRM" },
       { item: "Landing Pages", description: "Páginas de conversão vinculadas às campanhas ativas.", tag: "Conversão" },
       { item: "Email Marketing", description: "Comunicação direta com a base de contatos já captados.", tag: "Nutrição de Base" }
     ],
     presenterNotes: "Visão estratégica de como cada canal digital é aproveitado."
   },
 
-  // SLIDE 14: Gestão de Tráfego (14/20)
+  // SLIDE 13: 14: Gestão de Tráfego (14/20)
   {
-    id: 14,
-    slideNumber: "14 / 20",
+    id: 13,
+    slideNumber: "13 / 19",
     category: "performance",
-    categoryLabel: "14 / Performance",
+    categoryLabel: "13 / Performance",
     title: "GESTÃO DE TRÁFEGO",
     subtitle: "GOOGLE ADS & META ADS",
     layoutType: "traffic_split",
@@ -353,12 +335,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Investimento contínuo em anúncios de alta performance."
   },
 
-  // SLIDE 15: Tecnologia (15/20)
+  // SLIDE 14: 15: Tecnologia (15/20)
   {
-    id: 15,
-    slideNumber: "15 / 20",
+    id: 14,
+    slideNumber: "14 / 19",
     category: "tecnologia",
-    categoryLabel: "15 / Tecnologia",
+    categoryLabel: "14 / Tecnologia",
     title: "TECNOLOGIA",
     subtitle: "PLATAFORMA & INTEGRAÇÕES · AZULVEICULOS.COM.BR",
     layoutType: "tech_web",
@@ -375,12 +357,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Manutenção técnica e evolução constante do portal web."
   },
 
-  // SLIDE 16: Comunicação Offline (16/20)
+  // SLIDE 15: 16: Comunicação Offline (16/20)
   {
-    id: 16,
-    slideNumber: "16 / 20",
+    id: 15,
+    slideNumber: "15 / 19",
     category: "fisica",
-    categoryLabel: "16 / Produção Física",
+    categoryLabel: "15 / Produção Física",
     title: "COMUNICAÇÃO OFFLINE",
     subtitle: "SINALIZAÇÃO E MATERIAL IMPRESSO",
     layoutType: "dual_matrix",
@@ -399,12 +381,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Atuação presencial de PDV e fachadas das unidades."
   },
 
-  // SLIDE 17: Flexibilidade Operacional (17/20)
+  // SLIDE 16: 17: Flexibilidade Operacional (17/20)
   {
-    id: 17,
-    slideNumber: "17 / 20",
+    id: 16,
+    slideNumber: "16 / 19",
     category: "continuidade",
-    categoryLabel: "17 / Continuidade",
+    categoryLabel: "16 / Continuidade",
     title: "FLEXIBILIDADE OPERACIONAL",
     subtitle: "COMO A OPERAÇÃO RESPONDE",
     layoutType: "dual_matrix",
@@ -417,18 +399,18 @@ export const SLIDES_DATA: SlideData[] = [
     tableData2: [
       { item: "Urgências", description: "Atendimento a demandas com prazo reduzido, fora do fluxo padrão." },
       { item: "Atendimento fora do horário", description: "Suporte em horários não convencionais quando a operação exige." },
-      { item: "Demandas de finais de semana", description: "Continuidade do atendimento em datas de maior movimento comercial." },
+      
       { item: "Suporte contínuo", description: "Disponibilidade permanente da equipe para a operação da Azul Veículos." }
     ],
     presenterNotes: "A agência adapta suas entregas a mudanças rápidas do mercado automotivo."
   },
 
-  // SLIDE 18: Indicadores Operacionais (18/20)
+  // SLIDE 17: 18: Indicadores Operacionais (18/20)
   {
-    id: 18,
-    slideNumber: "18 / 20",
+    id: 17,
+    slideNumber: "17 / 19",
     category: "indicadores",
-    categoryLabel: "18 / Indicadores Operacionais",
+    categoryLabel: "17 / Indicadores Operacionais",
     title: "INDICADORES OPERACIONAIS",
     subtitle: "MÉDIAS MENSAIS DE ENTREGAS DA CONTA",
     layoutType: "indicators_table",
@@ -446,9 +428,9 @@ export const SLIDES_DATA: SlideData[] = [
       { item: "Conceitos criativos & KVs", description: "2 / mês" },
       { item: "Identidade visual de campanhas", description: "2 / mês" },
       { item: "Materiais institucionais", description: "16 / mês" },
-      { item: "Jornalzinhos promocionais", description: "30 / mês" },
+      { item: "material offline e produção audiovisual promocionais", description: "30 / mês" },
       { item: "Banners para Website", description: "6 / mês" },
-      { item: "Email Marketing (RD Station)", description: "4 a 8 / mês" }
+      { item: "Email Marketing (Ferramenta de Inbound Marketing)", description: "4 a 8 / mês" }
     ],
     tableHeader3: "AUDIOVISUAL, TRÁFEGO & TECH",
     tableData3: [
@@ -460,34 +442,33 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Indicadores operacionais consolidados da conta da Azul Veículos."
   },
 
-  // SLIDE 19: Resumo Executivo (19/20)
+  // SLIDE 18: 19: Resumo Executivo (19/20)
   {
-    id: 19,
-    slideNumber: "19 / 20",
+    id: 18,
+    slideNumber: "18 / 19",
     category: "indicadores",
-    categoryLabel: "19 / Síntese",
+    categoryLabel: "18 / Síntese",
     title: "RESUMO EXECUTIVO",
     subtitle: "PRINCIPAIS MÉTRICAS DA OPERAÇÃO",
     layoutType: "executive_summary",
     metrics: [
       { value: "+160", numericValue: 160, label: "Stories mensais", category: "Redes Sociais" },
       { value: "+70", numericValue: 70, label: "Peças para Feed", category: "Redes Sociais" },
-      { value: "30", numericValue: 30, label: "Jornalzinhos", category: "Criativa" },
+      { value: "30", numericValue: 30, label: "material offline e produção audiovisual", category: "Criativa" },
       { value: "+60", numericValue: 60, label: "Anúncios gerenciados", category: "Mídia & Tech" },
       { value: "6", numericValue: 6, label: "Banners Website", category: "Mídia & Tech" },
       { value: "16", numericValue: 16, label: "Materiais institucionais", category: "Criativa" },
-      { value: "10", numericValue: 10, label: "Roteiros", category: "Audiovisual" },
       { value: "12", numericValue: 12, label: "Conteúdos por loja", category: "Redes Sociais" }
     ],
     presenterNotes: "Visão quantitativa de alto impacto dos números mensais da conta."
   },
 
-  // SLIDE 20: Conclusão (20/20)
+  // SLIDE 19: 20: Conclusão (20/20)
   {
-    id: 20,
-    slideNumber: "20 / 20",
+    id: 19,
+    slideNumber: "19 / 19",
     category: "conclusao",
-    categoryLabel: "20 / CONCLUSÃO",
+    categoryLabel: "19 / CONCLUSÃO",
     title: "CONCLUSÃO OPERACIONAL",
     subtitle: "SUPORTE CONTÍNUO E INTEGRAÇÃO 360°",
     layoutType: "conclusion",

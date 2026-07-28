@@ -14,11 +14,11 @@ Seu objetivo é ajudar quem está lendo o relatório a encontrar informações r
 CONTEXTO DO RELATÓRIO:
 1. Modelo Operacional (5 pilares): Estratégia, Criação, Tecnologia, Performance, Suporte Operacional.
 2. Atendimento: A jornada flui em Atendimento Diário -> Gestão de Demandas -> Aprovações -> Reuniões. Interface com Diretoria, Vendedores e Bancos.
-3. Produção Criativa & Design: KV (Key Visual), Logotipos, Campanhas, Posts, Stories, Carrosséis, Jornalzinhos, Email Marketing, Materiais Institucionais, Banners, Mockups.
+3. Produção Criativa & Design: KV (Key Visual), Logotipos, Campanhas, Posts, Stories, Carrosséis, material offline e produção audiovisual, Email Marketing, Materiais Institucionais, Banners, Mockups.
 4. Produção Audiovisual: Planejamento, Roteiros (10/mês), Gravações, Filmmaker (4/mês), Mobile Makers (6 a 8/mês), Motion Graphics, Reels, Stories.
 5. Tecnologia: Atualizações e correções do site (azulveiculos.com.br), Landing Pages, Integrações com CRM/WhatsApp.
 6. Mídia / Tráfego: Mais de 60 anúncios gerenciados via Google Ads e Meta Ads. Segmentação, Remarketing, relatórios mensais.
-7. Resumo de Entregas (Mensais): +160 Stories, +70 Peças para feed, 30 Jornalzinhos promocionais, 6 Banners de Site, 16 Materiais institucionais, 10 Roteiros, 12 conteúdos individuais por loja.
+7. Resumo de Entregas (Mensais): +160 Stories, +70 Peças para feed, 30 material offline e produção audiovisual promocionais, 6 Banners de Site, 16 Materiais institucionais, 10 Roteiros, 12 conteúdos individuais por loja.
 8. Conclusão: Operação contínua e escalável, altamente flexível para trocas de ofertas e urgências.
 
 REGRAS:
@@ -61,11 +61,11 @@ export const AiAssistantChat: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const apiKey = process.env.GEMINI_API_KEY || '';
+      const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY || '';
       if (!apiKey) {
         // Fallback response if GEMINI_API_KEY is not defined locally
         setTimeout(() => {
-          let botReply = 'Com base no relatório da Azul Veículos, operamos 5 pilares: Estratégia, Criação, Tecnologia, Performance e Suporte. Temos entregas mensais de +160 stories, +70 peças de feed, 30 jornalzinhos e +60 anúncios ativos.';
+          let botReply = 'Com base no relatório da Azul Veículos, operamos 5 pilares: Estratégia, Criação, Tecnologia, Performance e Suporte. Temos entregas mensais de +160 stories, +70 peças de feed, 30 material offline e produção audiovisual e +60 anúncios ativos.';
           if (currentInput.toLowerCase().includes('audiovisual') || currentInput.toLowerCase().includes('vídeo') || currentInput.toLowerCase().includes('reels')) {
             botReply = 'Na área Audiovisual, produzimos mensalmente 6 a 8 vídeos Mobile Makers, 4 vídeos de campanha com Filmmaker profissional e elaboramos cerca de 10 roteiros.';
           } else if (currentInput.toLowerCase().includes('tráfego') || currentInput.toLowerCase().includes('ads') || currentInput.toLowerCase().includes('mídia')) {

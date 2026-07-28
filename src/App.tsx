@@ -29,7 +29,7 @@ export default function App() {
     <LanguageProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Construction />} />
+          <Route path="/" element={<ApresentacaoFabricaAzul />} />
           <Route path="/home" element={<HomeV2 />} />
           <Route path="/v2" element={<HomeV2 />} />
           <Route path="/admin" element={<Admin />} />

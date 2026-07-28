@@ -18,10 +18,20 @@ import {
 
 export default function ApresentacaoFabricaAzul() {
   const [slides, setSlides] = useState<SlideData[]>(() => {
-    const saved = localStorage.getItem('azul_slides_data_v1');
+    let saved = null;
+    try {
+      saved = localStorage.getItem('azul_slides_data_v2');
+    } catch (err) {
+      console.warn('localStorage is not accessible');
+    }
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        } else {
+          return SLIDES_DATA;
+        }
       } catch (e) {
         console.error('Erro ao carregar slides salvos:', e);
       }
@@ -37,7 +47,11 @@ export default function ApresentacaoFabricaAzul() {
   const [isPrintMode, setIsPrintMode] = useState<boolean>(false);
 
   useEffect(() => {
-    localStorage.setItem('azul_slides_data_v1', JSON.stringify(slides));
+    try {
+      localStorage.setItem('azul_slides_data_v2', JSON.stringify(slides));
+    } catch (err) {
+      console.warn('localStorage is not accessible');
+    }
   }, [slides]);
 
   const totalSlides = slides.length;

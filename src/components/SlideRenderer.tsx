@@ -90,7 +90,7 @@ const GoogleAdsLogo = () => (
   </svg>
 );
 
-const RDStationLogo = () => (
+const InboundMarketingLogo = () => (
   <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="#00D2B6">
     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
   </svg>
@@ -734,15 +734,15 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
 
 
           {/* ==================== SLIDE 7: ROTINA OPERACIONAL (PROCESS STEPS) ==================== */}
-          {slide.id === 7 && (
+          {(slide.id === 6 || slide.id === 7 || slide.id === 8 || slide.id === 10 || slide.id === 11 || slide.id === 13 || slide.layoutType === 'process_stakeholders') && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-8 md:p-14 pb-20">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
-                07 / Rotina Operacional
+                {slide.categoryLabel}
               </div>
 
               <motion.div variants={containerVariants} initial="hidden" animate="animate" className="my-auto w-full">
                 <motion.h1 variants={itemVariants} className="font-display font-black italic text-3xl md:text-4xl text-[#111111] uppercase mb-8">
-                  ATENDIMENTO E GESTÃO
+                  {slide.title}
                 </motion.h1>
 
                 {/* 4 Journey Steps equal width and height */}
@@ -862,10 +862,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                     <div className="text-[10px] font-bold text-[#0a1c6a] mb-3 uppercase tracking-wider">
                       Exemplo de Estrutura — Key Visual
                     </div>
-                    <div className="w-full h-48 bg-[#0a1c6a] relative mb-4 rounded-sm overflow-hidden flex flex-col justify-end p-4 shadow-inner">
-                      <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-blue-400/80 blur-sm"></div>
-                      <div className="w-3/4 h-4 bg-white rounded-xs mb-2"></div>
-                      <div className="w-1/2 h-2.5 bg-white/40 rounded-xs"></div>
+                    <div className="w-full h-48 bg-gray-100 relative mb-4 rounded-sm overflow-hidden flex items-center justify-center shadow-inner">
+                      <img 
+                        src="https://res.cloudinary.com/ifuatk2z/image/upload/v1785278990/Carrossel_1_ayrdkg.jpg" 
+                        alt="Key Visual" 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
                     <div className="grid grid-cols-4 gap-2 mb-3">
                       <div className="h-8 bg-[#060d20] rounded-xs" title="#060d20"></div>
@@ -928,10 +931,10 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
 
                   <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between mb-3">
-                      <RDStationLogo />
+                      <InboundMarketingLogo />
                       <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full uppercase">Inbound</span>
                     </div>
-                    <h3 className="font-bold text-slate-900 text-sm mb-1">RD Station</h3>
+                    <h3 className="font-bold text-slate-900 text-sm mb-1">Ferramenta de Inbound Marketing</h3>
                     <p className="text-xs text-gray-600 font-sans leading-snug">Automação de e-mail marketing, nutrição de leads e gestão de bases qualificadas.</p>
                   </div>
 

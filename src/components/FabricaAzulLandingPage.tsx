@@ -38,7 +38,7 @@ const GoogleAdsLogo = () => (
     <path d="M12.5 18.5L19.5 3.5H13.5L6.5 18.5H12.5Z" fill="#34A853"/>
   </svg>
 );
-const RDStationLogo = () => (
+const InboundMarketingLogo = () => (
   <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="#00D2B6">
     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
   </svg>
@@ -280,12 +280,7 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
                 className="w-full h-88 object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-transparent to-transparent"></div>
-              <div className="absolute bottom-4 left-4 right-4 bg-[#0f172a]/50 border border-white/5 backdrop-blur-sm p-4 rounded-xl backdrop-blur-md shadow-lg">
-                <div className="text-xs font-bold text-white uppercase flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-cyan-400" /> Sede & Lojas da Azul Veículos
-                </div>
-                <div className="text-[11px] text-cyan-300 mt-1">Atendimento, presença em loja e suporte contínuo para os consultores de vendas</div>
-              </div>
+
             </div>
           </div>
         </div>
@@ -316,7 +311,7 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
             {
               title: "Atuação Criativa",
               sub: "Design & Audiovisual",
-              desc: "Criação de identidades visuais, Key Visuals, redação, peças gráficas para redes, jornalzinhos e produção audiovisual.",
+              desc: "Criação de identidades visuais, Key Visuals, redação, peças gráficas para redes, material offline e produção audiovisual e produção audiovisual.",
               img: "https://images.unsplash.com/photo-1567177662154-dfeb4c93b6ae?w=500&auto=format&fit=crop&q=60",
               badge: "Criação",
               icon: Palette,
@@ -325,11 +320,11 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
             {
               title: "Atuação Tecnológica",
               sub: "Digital & Plataformas",
-              desc: "Desenvolvimento e manutenção do portal azulveiculos.com.br, landing pages de feirões, SEO e automação no RD Station.",
+              desc: "Desenvolvimento e manutenção do portal azulveiculos.com.br, landing pages de feirões, SEO e automação no Ferramenta de Inbound Marketing.",
               img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
               badge: "Tecnologia",
               icon: Cpu,
-              bullets: ["Site azulveiculos.com.br", "Landing Pages de Lojas", "Integrador RD Station"]
+              bullets: ["Site azulveiculos.com.br", "Landing Pages de Lojas", "Integrador Ferramenta de Inbound Marketing"]
             },
             {
               title: "Atuação Operacional",
@@ -338,7 +333,7 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
               img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop",
               badge: "Operação",
               icon: Headphones,
-              bullets: ["SLA de Alterações 24h", "Atendimento às Lojas", "Suporte em Fim de Semana"]
+              bullets: ["SLA de Alterações 24h", "Atendimento às Lojas", "Atendimento Exclusivo"]
             }
           ].map((pillar, idx) => (
             <motion.div 
@@ -396,9 +391,9 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
           <div className="lg:col-span-6 space-y-4">
             {[
               { title: "Key Visuals de Feirões", icon: Palette, desc: "Conceituação de artes para Feirão de Aniversário, Balão Premiado, Tabela FIPE 100% e Taxas Reduzidas." },
-              { title: "Enxoval Digital para Social", icon: Share2, desc: "Adaptados para Feed, Stories com enquetes, Carrosséis e Banners para transmissão em WhatsApp." },
+              { title: "Enxoval Digital para Social", icon: Share2, desc: "Adaptados para Feed, Stories com email marketing, Carrosséis e Banners para transmissão em WhatsApp." },
               { title: "Gravação de Vídeos em Loja", icon: Video, desc: "Filmmakers e Mobile Makers dedicados gravando o estoque real, ofertas do dia e apresentações." },
-              { title: "Edição Acelerada com Motion", icon: Layers3, desc: "Transições dinâmicas, vinhetas com logo da Azul Veículos e legendas em formato Reels/TikTok." }
+              { title: "Edição Acelerada com Motion", icon: Layers3, desc: "Transições dinâmicas, vinhetas com logo da Azul Veículos e legendas em formato Reels/." }
             ].map((item, idx) => (
               <div key={idx} className="bg-gradient-to-r from-white/5 to-[#081738] border border-white/10 p-4 rounded-2xl flex items-start gap-4 shadow-lg hover:border-white/10 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-blue-950 border border-white/10 text-cyan-300 flex items-center justify-center shrink-0">
@@ -450,7 +445,7 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
                   <div className="text-slate-400 font-bold uppercase text-[11px] flex items-center gap-1">
                     <Megaphone className="w-3.5 h-3.5 text-cyan-400" /> Offline / PDV
                   </div>
-                  <div className="text-slate-300 text-[11px] font-sans mt-1">Faixas, Banners, Jornalzinhos</div>
+                  <div className="text-slate-300 text-[11px] font-sans mt-1">Faixas, Banners, material offline e produção audiovisual</div>
                 </div>
               </div>
             </div>
@@ -485,7 +480,7 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
-                Canal principal de engajamento, apresentação de veículos do estoque, enquetes interativas em Stories e Reels de alto impacto.
+                Canal principal de engajamento, apresentação de veículos do estoque, email marketing interativas em Stories e Reels de alto impacto.
               </p>
             </div>
             <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
@@ -569,14 +564,14 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
             </div>
           </div>
 
-          {/* RD Station */}
+          {/* Ferramenta de Inbound Marketing */}
           <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <RDStationLogo />
+                  <InboundMarketingLogo />
                   <div>
-                    <h3 className="text-base font-extrabold text-slate-900 uppercase">RD STATION</h3>
+                    <h3 className="text-base font-extrabold text-slate-900 uppercase">Ferramenta de Inbound Marketing</h3>
                     <div className="text-[11px] font-mono text-amber-600 font-semibold">Inbound & CRM Sync</div>
                   </div>
                 </div>
@@ -585,61 +580,13 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
-                Captura de cadastros provenientes das Landing Pages de feirões, automação de emails e nutrição da base de contatos.
+                Captura de cadastros provenientes das , automação de emails e nutrição da base de contatos.
               </p>
             </div>
             <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
               <span>Nutrição Automática</span>
               <span className="text-slate-900 font-mono font-bold">CRM Integrado</span>
             </div>
-          </div>
-
-          {/* WhatsApp Vendas */}
-          <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0">
-                    <PhoneCall className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-extrabold text-slate-900 uppercase">WHATSAPP VENDAS</h3>
-                    <div className="text-[11px] font-mono text-emerald-600 font-semibold">Conversão de Atendimento</div>
-                  </div>
-                </div>
-                <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                  Atendimento Rápido
-                </span>
-              </div>
-              <p className="text-xs text-slate-700 font-sans leading-relaxed mb-4">
-                Envio imediato do lead capturado no tráfego para os consultores de plantão da Azul Veículos, reduzindo o tempo de resposta.
-              </p>
-            </div>
-            <div className="text-[11px] text-blue-700 font-semibold pt-3 flex items-center justify-between border-t border-slate-100">
-              <span>Canal Oficial</span>
-              <span className="text-slate-900 font-mono font-bold">100% Direto</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Financial Partner Banks */}
-        <div className="bg-[#0f172a]/50 backdrop-blur-sm border border-white/10 p-6 rounded-2xl">
-          
-          <h3 className="text-lg font-extrabold text-white uppercase mb-4 font-display">
-            SINALIZAÇÃO DE BANCOS E FINANCEIRAS INTEGRADA
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[
-              { bank: "SANTANDER", rate: "Taxa Promocional 1.19%" },
-              { bank: "BV FINANCEIRA", rate: "Aprovação Facilitada" },
-              { bank: "ITAÚ REINVENTA", rate: "Primeira Parcela 90 dias" },
-              { bank: "BRADESCO AUTO", rate: "Tabela FIPE 100%" }
-            ].map((partner, pi) => (
-              <div key={pi} className="bg-[#0f172a]/50 border border-white/5 backdrop-blur-sm p-3.5 rounded-xl text-center">
-                <div className="text-xs font-black text-slate-400 uppercase">{partner.bank}</div>
-                <div className="text-[11px] text-slate-200 mt-0.5 font-sans">{partner.rate}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -651,9 +598,7 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white uppercase tracking-tight font-display">
             WEBSITE OFICIAL DA AZUL VEÍCULOS AO VIVO
           </h2>
-          <p className="text-sm text-slate-300 mt-2">
-            Simulador de navegação ao vivo do portal <strong className="text-white">azulveiculos.com.br</strong> com rolagem automática contínua para apresentação executiva.
-          </p>
+
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -732,9 +677,9 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
 
             <div className="space-y-3 divide-y divide-blue-800/40 font-sans">
               {[
-                { title: "Website Institucional", desc: "Página oficial com catálogo completo de seminovos e botão de WhatsApp direto para os vendedores." },
-                { title: "Landing Pages de Feirões", desc: "Páginas dedicadas para eventos de alta conversão com formulários Inbound capturados no RD Station." },
-                { title: "Integração com ERP de Lojas", desc: "Sincronização do catálogo de veículos disponíveis em tempo real nas unidades." },
+                { title: "Website Institucional", desc: "Página oficial com catálogo completo de veículos seminovos e botão de WhatsApp direto para os vendedores." },
+                { title: "", desc: "Páginas dedicadas para eventos de alta conversão com formulários Inbound capturados no Ferramenta de Inbound Marketing." },
+                { title: "Integração com ERP", desc: "Sincronização do catálogo de veículos disponíveis em tempo real nas unidades." },
                 { title: "Atualização de Ofertas", desc: "Publicação imediata de banners de topo e promoções vigentes do mês." },
                 { title: "SEO Automotivo Regional", desc: "Otimização contínua para buscas no Google nas cidades da área de cobertura." },
                 { title: "Suporte Técnico 24/7", desc: "Monitoramento de disponibilidade e ajustes acelerados na plataforma." }
@@ -768,11 +713,11 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
           {[
             { value: "+160", label: "Stories mensais", cat: "Redes Sociais", icon: Video },
             { value: "+70", label: "Peças para Feed", cat: "Redes Sociais", icon: Palette },
-            { value: "30", label: "Jornalzinhos / Mês", cat: "Criativa", icon: Megaphone },
+            { value: "+16", label: "Reels e Vídeos", cat: "Audiovisual", icon: Video },
+            { value: "30", label: "material offline e produção audiovisual / Mês", cat: "Criativa", icon: Megaphone },
             { value: "+60", label: "Anúncios Gerenciados", cat: "Mídia & Tech", icon: Cpu },
             { value: "6", label: "Banners Website", cat: "Mídia & Tech", icon: Globe },
             { value: "16", label: "Materiais Institucionais", cat: "Criativa", icon: Layers },
-            { value: "10", label: "Roteiros de Vídeo", cat: "Audiovisual", icon: Video },
             { value: "12", label: "Conteúdos por Loja", cat: "Redes Sociais", icon: Building2 }
           ].map((metric, idx) => (
             <motion.div 
