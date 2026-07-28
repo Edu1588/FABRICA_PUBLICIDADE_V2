@@ -1,3 +1,48 @@
+
+const InstagramLogo = () => (
+  <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="none">
+    <radialGradient id="igGrad" cx="30%" cy="107%" r="130%">
+      <stop offset="0%" stopColor="#fdf497" />
+      <stop offset="5%" stopColor="#fdf497" />
+      <stop offset="45%" stopColor="#fd5949" />
+      <stop offset="60%" stopColor="#d6249f" />
+      <stop offset="90%" stopColor="#285AEB" />
+    </radialGradient>
+    <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#igGrad)" />
+    <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" stroke="white" strokeWidth="1.8" fill="none" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+  </svg>
+);
+const FacebookLogo = () => (
+  <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="#1877F2">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+  </svg>
+);
+const GoogleLogo = () => (
+  <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24">
+    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+  </svg>
+);
+const MetaLogo = () => (
+  <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="#0081FB">
+    <path d="M12 7.002c-2.316 0-4.408 1.12-5.748 2.817C4.912 11.517 4 14 4 15.5c0 2.21 1.79 3.5 3.5 3.5 1.5 0 2.87-.82 4.5-2.76 1.63 1.94 3 2.76 4.5 2.76 1.71 0 3.5-1.29 3.5-3.5 0-1.5-.912-3.983-2.252-5.681C16.408 8.122 14.316 7.002 12 7.002zm-3.5 9.998c-.83 0-1.5-.67-1.5-1.5 0-.96.67-2.6 1.75-3.96 1.01-1.27 2.22-2.04 3.25-2.04.5 0 .93.18 1.25.5-1.42 1.67-3.25 4.35-4.75 7 z"/>
+  </svg>
+);
+const GoogleAdsLogo = () => (
+  <svg className="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="none">
+    <path d="M3.5 18.5L10.5 3.5H16.5L9.5 18.5H3.5Z" fill="#FFBC00"/>
+    <path d="M20.5 18.5C22.1569 18.5 23.5 17.1569 23.5 15.5C23.5 13.8431 22.1569 12.5 20.5 12.5C18.8431 12.5 17.5 13.8431 17.5 15.5C17.5 17.1569 18.8431 18.5 20.5 18.5Z" fill="#4285F4"/>
+    <path d="M12.5 18.5L19.5 3.5H13.5L6.5 18.5H12.5Z" fill="#34A853"/>
+  </svg>
+);
+const RDStationLogo = () => (
+  <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="#00D2B6">
+    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+  </svg>
+);
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { SlideData } from '../types';
@@ -48,7 +93,7 @@ import {
 
 const FABRICA_WHITE_LOGO = "https://res.cloudinary.com/ifuatk2z/image/upload/v1785252180/1196_300-8_bd1oqo.png";
 const AZUL_LOGO = "https://res.cloudinary.com/ifuatk2z/image/upload/v1785183130/logo_Azul_spqf9c.svg";
-const CRUZE_IMAGE = "https://res.cloudinary.com/ifuatk2z/image/upload/v1785183140/CRUZE_AZUL_hl4hny.png";
+const CRUZE_IMAGE = "https://res.cloudinary.com/ifuatk2z/image/upload/v1785266948/CRUZE_AZUL_2_rn1jkx.png";
 const LOJA_IMAGE = "https://azulveiculos.com.br/img/azul-loja-1.png";
 
 interface LandingPageProps {
@@ -397,9 +442,8 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* ================= SECTION: CANAIS DO ECOSSISTEMA DIGITAL COM LOGOS E ÍCONES (SLIDES 13 & 14) ================= */}
-      <section id="digital" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto  bg-[#0f172a]/30 rounded-3xl my-8">
+      <section id="digital" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-[#0f172a]/30 rounded-3xl my-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white uppercase tracking-tight font-display">
             CANAIS DO ECOSSISTEMA DIGITAL & TRÁFEGO PAGO
           </h2>
@@ -407,160 +451,160 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
             Estratégia multicanal conectando redes sociais, busca patrocinada no Google, anúncios na Meta e automação de leads.
           </p>
         </div>
-
-        {/* 5 Channels Rich Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {/* Instagram */}
-          <div className="bg-gradient-to-br from-[#1a0c2e] via-[#0d1642] to-[#081538] border border-pink-500/40 p-5 rounded-2xl shadow-xl hover:border-pink-400 transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
-                  IG
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-pink-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(8,21,56,0.95)), url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <InstagramLogo />
+                  <div>
+                    <h3 className="text-base font-extrabold text-white uppercase">INSTAGRAM</h3>
+                    <div className="text-[10px] font-mono text-pink-300">Conteúdo Diário & Reels</div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-white uppercase">INSTAGRAM</h3>
-                  <div className="text-[10px] font-mono text-pink-300">Conteúdo Diário & Reels</div>
-                </div>
+                <span className="bg-pink-500/20 text-pink-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                  Relacionamento
+                </span>
               </div>
-              <span className="bg-pink-500/20 text-pink-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                Relacionamento
-              </span>
-            </div>
-            <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
-              Canal principal de engajamento, apresentação de veículos do estoque, enquetes interativas em Stories e Reels de alto impacto.
-            </p>
-            <div className="text-[11px] text-cyan-300 font-semibold  pt-2 flex items-center justify-between">
-              <span>Frequência: Diária</span>
-              <span className="text-slate-400 font-mono font-bold">+160 Posts / Mês</span>
+              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+                Canal principal de engajamento, apresentação de veículos do estoque, enquetes interativas em Stories e Reels de alto impacto.
+              </p>
+              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
+                <span>Frequência: Diária</span>
+                <span className="text-slate-300 font-mono font-bold">+160 Posts / Mês</span>
+              </div>
             </div>
           </div>
 
           {/* Facebook */}
-          <div className="bg-gradient-to-br from-[#0c183a] via-[#0d2252] to-[#081538] border border-blue-500/40 p-5 rounded-2xl shadow-xl hover:border-blue-400 transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg shadow-md">
-                  fb
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-blue-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(13,34,82,0.95)), url('https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <FacebookLogo />
+                  <div>
+                    <h3 className="text-base font-extrabold text-white uppercase">FACEBOOK</h3>
+                    <div className="text-[10px] font-mono text-blue-300">Audiência Sênior & Família</div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-white uppercase">FACEBOOK</h3>
-                  <div className="text-[10px] font-mono text-blue-300">Audiência Sênior & Família</div>
-                </div>
+                <span className="bg-blue-500/20 text-blue-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                  Alcance Família
+                </span>
               </div>
-              <span className="bg-blue-500/20 text-blue-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                Alcance Família
-              </span>
-            </div>
-            <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
-              Comunicação voltada a perfis de compradores de veículos seminovos de maior valor agregado e ofertas de financiamento bancário.
-            </p>
-            <div className="text-[11px] text-cyan-300 font-semibold  pt-2 flex items-center justify-between">
-              <span>Atração Local</span>
-              <span className="text-slate-400 font-mono font-bold">100% Sincronizado</span>
+              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+                Comunicação voltada a perfis de compradores de veículos seminovos de maior valor agregado e ofertas de financiamento bancário.
+              </p>
+              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
+                <span>Atração Local</span>
+                <span className="text-slate-300 font-mono font-bold">100% Sincronizado</span>
+              </div>
             </div>
           </div>
 
           {/* Google Ads */}
-          <div className="bg-gradient-to-br from-[#0a201c] via-[#0b2b24] to-[#081538] border border-emerald-500/40 p-5 rounded-2xl shadow-xl hover:border-emerald-400 transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-lg shadow-md">
-                  G
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-emerald-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(10,43,36,0.95)), url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <GoogleAdsLogo />
+                  <div>
+                    <h3 className="text-base font-extrabold text-white uppercase">GOOGLE ADS</h3>
+                    <div className="text-[10px] font-mono text-emerald-300">Rede de Pesquisa & Busca</div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-white uppercase">GOOGLE ADS</h3>
-                  <div className="text-[10px] font-mono text-emerald-300">Rede de Pesquisa & Busca</div>
-                </div>
+                <span className="bg-emerald-500/20 text-emerald-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                  Intenção de Compra
+                </span>
               </div>
-              <span className="bg-emerald-500/20 text-emerald-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                Intenção de Compra
-              </span>
-            </div>
-            <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
-              Anúncios de busca ativados exatamente quando o cliente procura por "comprar carro seminovo", palavras-chave de modelos e termos regionais.
-            </p>
-            <div className="text-[11px] text-cyan-300 font-semibold  pt-2 flex items-center justify-between">
-              <span>Conversão Direta</span>
-              <span className="text-slate-400 font-mono font-bold">Alta Qualidade</span>
+              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+                Anúncios de busca ativados exatamente quando o cliente procura por "comprar carro seminovo", palavras-chave de modelos e termos regionais.
+              </p>
+              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
+                <span>Conversão Direta</span>
+                <span className="text-slate-300 font-mono font-bold">Alta Qualidade</span>
+              </div>
             </div>
           </div>
 
           {/* Meta Ads */}
-          <div className="bg-gradient-to-br from-[#0c1c3a] via-[#0a2860] to-[#081538] border border-blue-500/40 p-5 rounded-2xl shadow-xl hover:border-blue-400 transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-2xl shadow-md">
-                  ∞
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-blue-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(12,40,96,0.95)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <MetaLogo />
+                  <div>
+                    <h3 className="text-base font-extrabold text-white uppercase">META ADS</h3>
+                    <div className="text-[10px] font-mono text-cyan-300">Tráfego Pago & Leads</div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-white uppercase">META ADS</h3>
-                  <div className="text-[10px] font-mono text-cyan-300">Tráfego Pago & Leads</div>
-                </div>
+                <span className="bg-cyan-500/20 text-cyan-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                  Leads no ZAP
+                </span>
               </div>
-              <span className="bg-cyan-500/20 text-cyan-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                Leads no ZAP
-              </span>
-            </div>
-            <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
-              Gestão de orçamentos patrocinados com direcionamento dos cliques direto para o WhatsApp das equipes de vendas de cada loja.
-            </p>
-            <div className="text-[11px] text-cyan-300 font-semibold  pt-2 flex items-center justify-between">
-              <span>Segmentação Local</span>
-              <span className="text-slate-400 font-mono font-bold">Otimização Diária</span>
+              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+                Gestão de orçamentos patrocinados com direcionamento dos cliques direto para o WhatsApp das equipes de vendas de cada loja.
+              </p>
+              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
+                <span>Segmentação Local</span>
+                <span className="text-slate-300 font-mono font-bold">Otimização Diária</span>
+              </div>
             </div>
           </div>
 
           {/* RD Station */}
-          <div className="bg-gradient-to-br from-[#2a1b0a] via-[#3a250a] to-[#081538] border border-amber-500/40 p-5 rounded-2xl shadow-xl hover:border-amber-400 transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-amber-500 text-black flex items-center justify-center font-black text-lg shadow-md">
-                  RD
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-amber-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(58,37,10,0.95)), url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <RDStationLogo />
+                  <div>
+                    <h3 className="text-base font-extrabold text-white uppercase">RD STATION</h3>
+                    <div className="text-[10px] font-mono text-amber-300">Inbound & CRM Sync</div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-white uppercase">RD STATION</h3>
-                  <div className="text-[10px] font-mono text-slate-200">Inbound & CRM Sync</div>
-                </div>
+                <span className="bg-amber-500/20 text-amber-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                  Inbound CRM
+                </span>
               </div>
-              <span className="bg-amber-500/20 text-slate-200 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                Inbound CRM
-              </span>
-            </div>
-            <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
-              Captura de cadastros provenientes das Landing Pages de feirões, automação de emails e nutrição da base de contatos.
-            </p>
-            <div className="text-[11px] text-cyan-300 font-semibold  pt-2 flex items-center justify-between">
-              <span>Nutrição Automática</span>
-              <span className="text-slate-400 font-mono font-bold">CRM Integrado</span>
+              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+                Captura de cadastros provenientes das Landing Pages de feirões, automação de emails e nutrição da base de contatos.
+              </p>
+              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
+                <span>Nutrição Automática</span>
+                <span className="text-slate-300 font-mono font-bold">CRM Integrado</span>
+              </div>
             </div>
           </div>
 
-          {/* WhatsApp Direct */}
-          <div className="bg-gradient-to-br from-[#0a201c] via-[#0b2b24] to-[#081538] border border-emerald-500/40 p-5 rounded-2xl shadow-xl hover:border-emerald-400 transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-lg shadow-md">
-                  WA
+          {/* WhatsApp Vendas */}
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-emerald-500/40 relative group transition-all" style={{ backgroundImage: `linear-gradient(to bottom, rgba(10,12,24,0.9), rgba(11,43,36,0.95)), url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=500&auto=format&fit=crop&q=60')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
+                    <PhoneCall className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-white uppercase">WHATSAPP VENDAS</h3>
+                    <div className="text-[10px] font-mono text-emerald-300">Conversão de Atendimento</div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-white uppercase">WHATSAPP VENDAS</h3>
-                  <div className="text-[10px] font-mono text-emerald-300">Conversão de Atendimento</div>
-                </div>
+                <span className="bg-emerald-500/20 text-emerald-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                  Atendimento Rápido
+                </span>
               </div>
-              <span className="bg-emerald-500/20 text-emerald-300 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                Atendimento Rápido
-              </span>
-            </div>
-            <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
-              Envio imediato do lead capturado no tráfego para os consultores de plantão da Azul Veículos, reduzindo o tempo de resposta.
-            </p>
-            <div className="text-[11px] text-cyan-300 font-semibold  pt-2 flex items-center justify-between">
-              <span>Canal Oficial</span>
-              <span className="text-slate-400 font-mono font-bold">100% Direto</span>
+              <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+                Envio imediato do lead capturado no tráfego para os consultores de plantão da Azul Veículos, reduzindo o tempo de resposta.
+              </p>
+              <div className="text-[11px] text-cyan-300 font-semibold pt-2 flex items-center justify-between border-t border-white/10">
+                <span>Canal Oficial</span>
+                <span className="text-slate-300 font-mono font-bold">100% Direto</span>
+              </div>
             </div>
           </div>
         </div>
-
+        
         {/* Financial Partner Banks */}
         <div className="bg-[#0f172a]/50 backdrop-blur-sm border border-white/10 p-6 rounded-2xl">
           
@@ -705,14 +749,14 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { value: "+2.000", label: "Peças Publicitárias / Mês", cat: "Volume Criativo", icon: Palette },
-            { value: "+160", label: "Stories & Reels Gravados", cat: "Audiovisual", icon: Video },
-            { value: "+1,2M", label: "Pessoas Alcançadas / Mês", cat: "Alcance Digital", icon: Globe },
-            { value: "100%", label: "Atendimento às Lojas", cat: "Cobertura Unidades", icon: Building2 },
-            { value: "+30", label: "Landing Pages de Feirões", cat: "Inbound & Tech", icon: Cpu },
-            { value: "+50.000", label: "Leads Gerados / Ano", cat: "Inbound Vendas", icon: Zap },
-            { value: "24h", label: "SLA de Alterações Ágeis", cat: "Atendimento", icon: Clock },
-            { value: "360°", label: "Integração On e Offline", cat: "Estratégia Total", icon: Layers }
+            { value: "+160", label: "Stories mensais", cat: "Redes Sociais", icon: Video },
+            { value: "+70", label: "Peças para Feed", cat: "Redes Sociais", icon: Palette },
+            { value: "30", label: "Jornalzinhos / Mês", cat: "Criativa", icon: Megaphone },
+            { value: "+60", label: "Anúncios Gerenciados", cat: "Mídia & Tech", icon: Cpu },
+            { value: "6", label: "Banners Website", cat: "Mídia & Tech", icon: Globe },
+            { value: "16", label: "Materiais Institucionais", cat: "Criativa", icon: Layers },
+            { value: "10", label: "Roteiros de Vídeo", cat: "Audiovisual", icon: Video },
+            { value: "12", label: "Conteúdos por Loja", cat: "Redes Sociais", icon: Building2 }
           ].map((metric, idx) => (
             <motion.div 
               key={idx}
