@@ -18,7 +18,7 @@ export const PrintView: React.FC<PrintViewProps> = ({ slides, onBack }) => {
   }, []);
 
   return (
-    <div className="bg-[#030712] min-h-screen text-slate-100 p-4 md:p-6 select-none">
+    <div className="bg-[#030712] min-h-screen text-slate-100 p-4 md:p-6 select-none print:p-0 print:m-0 print:bg-[#060d20]">
       {/* Top action bar - Hidden during print */}
       <div className="no-print max-w-6xl mx-auto mb-6 bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-2xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-3">

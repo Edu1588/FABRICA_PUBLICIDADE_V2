@@ -282,13 +282,13 @@ body {
 
 @media print {
   @page {
-    size: 297mm 210mm;
+    size: landscape;
     margin: 0;
   }
 
   html, body, #root {
-    width: 297mm !important;
-    height: 210mm !important;
+    width: 100% !important;
+    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     background-color: #060d20 !important;
@@ -309,9 +309,9 @@ body {
     min-height: 210mm !important;
     max-width: 297mm !important;
     max-height: 210mm !important;
-    page-break-before: always !important;
+    page-break-before: auto !important;
+    break-before: auto !important;
     page-break-after: always !important;
-    break-before: page !important;
     break-after: page !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -325,9 +325,10 @@ body {
     padding: 0 !important;
   }
 
-  .print-page-wrapper:first-of-type {
-    page-break-before: avoid !important;
-    break-before: avoid !important;
+  .print-page-wrapper:last-child,
+  .print-page-wrapper:last-of-type {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   /* Force all motion elements to be fully rendered and visible immediately for print */
