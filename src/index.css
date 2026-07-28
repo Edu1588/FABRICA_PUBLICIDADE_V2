@@ -341,3 +341,19 @@ body {
   }
 }
 
+@keyframes slowVerticalScroll {
+  0% {
+    transform: translateY(0%);
+  }
+  50% {
+    transform: translateY(-40%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+.animate-slow-vertical-scroll {
+  animation: slowVerticalScroll 32s ease-in-out infinite;
+}
+

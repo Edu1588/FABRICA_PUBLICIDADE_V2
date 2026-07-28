@@ -135,6 +135,19 @@ const AnimatedStringValue: React.FC<{ value: string }> = ({ value }) => {
   );
 };
 
+const FABRICA_WHITE_LOGO = "https://res.cloudinary.com/ifuatk2z/image/upload/v1785252180/1196_300-8_bd1oqo.png";
+
+const RenderSlideFooterContent = ({ text }: { text: string }) => (
+  <div className="flex items-center justify-between w-full">
+    <span>{text}</span>
+    <img 
+      src={FABRICA_WHITE_LOGO} 
+      alt="Fábrica Publicidade" 
+      className="h-5 md:h-6 object-contain opacity-90 filter brightness-0 invert" 
+    />
+  </div>
+);
+
 export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, isExport = false }) => {
 
   const slideVariants = isExport ? {
@@ -269,8 +282,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
               </motion.div>
 
               {/* Footer text */}
-              <div className="relative z-20 text-white/50 text-[10px] md:text-[11px] uppercase tracking-wider font-medium">
-                Documento técnico-operacional - Julho de 2026 - Uso interno e confidencial - Fábrica Publicidade & Digital
+              <div className="relative z-20 flex items-center justify-between w-full text-white/70 text-[10px] md:text-[11px] uppercase tracking-wider font-medium">
+                <span>Documento técnico-operacional - Julho de 2026 - Uso interno e confidencial - Fábrica Publicidade & Digital</span>
+                <img 
+                  src={FABRICA_WHITE_LOGO} 
+                  alt="Fábrica Publicidade" 
+                  className="h-6 md:h-7 object-contain opacity-90 filter brightness-0 invert" 
+                />
               </div>
             </div>
           )}
@@ -281,7 +299,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
             <div className="w-full h-full bg-white text-slate-800 flex flex-col justify-between relative pb-16">
               <div className="flex h-full w-full flex-1">
                 {/* Left Content Area - Full Text Paragraphs */}
-                <motion.div variants={containerVariants} initial="hidden" animate="animate" className="w-full lg:w-7/12 p-8 md:p-14 lg:p-16 flex flex-col justify-center relative bg-white">
+                <motion.div variants={containerVariants} initial="hidden" animate="animate" className={`${isExport ? 'w-7/12' : 'w-full lg:w-7/12'} print:w-7/12 p-8 md:p-14 lg:p-16 print:p-8 flex flex-col justify-center relative bg-white`}>
                   <motion.div variants={itemVariants} className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-4">
                     02 / Introdução
                   </motion.div>
@@ -314,11 +332,14 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="hidden lg:flex w-5/12 relative bg-[#060d20] overflow-hidden items-center justify-center border-l border-gray-200"
+                  className={`${isExport ? 'flex w-5/12' : 'hidden lg:flex w-5/12'} print:flex print:w-5/12 relative bg-[#060d20] overflow-hidden items-center justify-center border-l border-gray-200`}
                 >
                   <img 
                     src={slide.bgImageUrl || "https://images.unsplash.com/photo-1580274455191-1c62238fa333?q=80&w=1000&auto=format&fit=crop"} 
                     alt="Azul Veículos Showroom" 
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1580274455191-1c62238fa333?q=80&w=1000&auto=format&fit=crop";
+                    }}
                     className="w-full h-full object-cover opacity-80"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#060d20] via-transparent to-transparent opacity-90"></div>
@@ -342,7 +363,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </div>
 
-              <div className="slide-footer-bar">02/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="02/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -447,7 +468,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar">03/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="03/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -474,7 +495,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                     VISÃO GERAL
                   </motion.h1>
                 </div>
-                <div className="hidden sm:inline-flex items-center gap-2 bg-blue-950/80 border border-cyan-500/40 px-3.5 py-1.5 rounded-full">
+                <div className="hidden sm:inline-flex print:inline-flex items-center gap-2 bg-blue-950/80 border border-cyan-500/40 px-3.5 py-1.5 rounded-full">
                   <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
                   <span className="text-[11px] font-bold text-cyan-300 uppercase font-mono">FLUXO OPERACIONAL 360°</span>
                 </div>
@@ -533,7 +554,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </motion.div>
 
-              <div className="slide-footer-bar bg-slate-950 text-slate-400">04/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar bg-slate-950 text-slate-400"><RenderSlideFooterContent text="04/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -640,7 +661,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar bg-slate-950 text-slate-400 relative z-10">05/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar bg-slate-950 text-slate-400 relative z-10"><RenderSlideFooterContent text="05/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -707,7 +728,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar">06/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="06/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -725,7 +746,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.h1>
 
                 {/* 4 Journey Steps equal width and height */}
-                <div className="flex flex-col md:flex-row items-stretch justify-between w-full gap-4">
+                <div className={`${isExport ? 'flex-row' : 'flex-col md:flex-row'} print:flex-row items-stretch justify-between w-full gap-4 print:gap-2`}>
                   {slide.stepItems?.map((step, idx) => (
                     <React.Fragment key={idx}>
                       <motion.div variants={itemVariants} className="bg-white border border-gray-200 p-6 md:p-8 rounded-xl flex-1 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
@@ -741,7 +762,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                       </motion.div>
 
                       {idx < (slide.stepItems?.length || 0) - 1 && (
-                        <div className="hidden md:flex items-center justify-center px-1 shrink-0">
+                        <div className={`${isExport ? 'flex' : 'hidden md:flex'} print:flex items-center justify-center px-1 shrink-0`}>
                           <ChevronRight className="w-8 h-8 text-[#cdd7e5]" />
                         </div>
                       )}
@@ -750,7 +771,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar">07/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="07/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -795,7 +816,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </motion.div>
 
-              <div className="slide-footer-bar">08/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="08/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -805,7 +826,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
             <div className="w-full h-full bg-white text-slate-900 flex flex-col justify-between relative pb-16">
               <div className="flex h-full w-full flex-1">
                 {/* Left Column (7/12) */}
-                <motion.div variants={containerVariants} initial="hidden" animate="animate" className="w-full lg:w-7/12 p-8 md:p-14 flex flex-col justify-center">
+                <motion.div variants={containerVariants} initial="hidden" animate="animate" className={`${isExport ? 'w-7/12' : 'w-full lg:w-7/12'} print:w-7/12 p-8 md:p-14 print:p-6 flex flex-col justify-center`}>
                   <motion.div variants={itemVariants} className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-4">
                     10 / Criação
                   </motion.div>
@@ -836,7 +857,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
 
                 {/* Right Column (5/12) Mockup */}
-                <div className="hidden lg:flex w-5/12 bg-gray-50 p-10 items-center justify-center border-l border-gray-100">
+                <div className={`${isExport ? 'flex w-5/12' : 'hidden lg:flex w-5/12'} print:flex print:w-5/12 bg-gray-50 p-10 print:p-6 items-center justify-center border-l border-gray-100`}>
                   <div className="w-full max-w-sm bg-white shadow-xl p-5 rounded-sm border border-gray-100">
                     <div className="text-[10px] font-bold text-[#0a1c6a] mb-3 uppercase tracking-wider">
                       Exemplo de Estrutura — Key Visual
@@ -859,7 +880,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </div>
 
-              <div className="slide-footer-bar">10/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="10/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -952,7 +973,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </motion.div>
 
-              <div className="slide-footer-bar">13/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="13/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -1019,7 +1040,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </motion.div>
 
-              <div className="slide-footer-bar">14/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="14/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -1036,9 +1057,9 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                   TECNOLOGIA
                 </motion.h1>
 
-                <div className="flex flex-col lg:flex-row gap-6 w-full items-stretch">
+                <div className={`${isExport ? 'flex-row' : 'flex-col lg:flex-row'} print:flex-row gap-6 print:gap-4 w-full items-stretch`}>
                   {/* Realistic Website Simulation Mockup */}
-                  <motion.div variants={itemVariants} className="w-full lg:w-6/12 bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 flex flex-col">
+                  <motion.div variants={itemVariants} className={`${isExport ? 'w-6/12' : 'w-full lg:w-6/12'} print:w-6/12 bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 flex flex-col`}>
                     {/* Browser Address Bar */}
                     <div className="bg-[#0b1b3d] h-9 w-full flex items-center px-3 gap-2 shrink-0">
                       <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
@@ -1050,93 +1071,28 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                       </div>
                     </div>
 
-                    {/* Website Canvas Area */}
-                    <div className="flex-1 bg-slate-100 flex flex-col justify-between overflow-hidden text-[11px]">
-                      {/* Header / Navbar */}
-                      <div className="bg-[#0d3b85] text-white px-4 py-2 flex items-center justify-between shadow-md">
-                        <img 
-                          src="https://res.cloudinary.com/ifuatk2z/image/upload/v1785183130/logo_Azul_spqf9c.svg" 
-                          alt="Azul Veículos" 
-                          className="h-6 object-contain filter brightness-0 invert"
+                    {/* Website Canvas Area - Live Embedded Site with Autoscroll */}
+                    <div className="flex-1 bg-slate-900 relative overflow-hidden h-[360px]">
+                      <div className="w-full h-[1800px] animate-slow-vertical-scroll">
+                        <iframe
+                          src="https://www.azulveiculos.com.br/"
+                          title="Site Oficial Azul Veículos"
+                          className="w-full h-full border-0"
+                          loading="lazy"
                         />
-                        <div className="hidden sm:flex items-center gap-3 text-[9px] font-bold tracking-wider uppercase opacity-90">
-                          <span className="text-amber-300">HOME</span>
-                          <span>ESTOQUE</span>
-                          <span>VENDA SEU CARRO</span>
-                          <span>BLOG</span>
-                          <span>CONTATO</span>
-                        </div>
-                        <Search className="w-3.5 h-3.5 text-white/80" />
-                      </div>
-
-                      {/* Hero Banner Section */}
-                      <div className="bg-gradient-to-r from-[#0d3b85] via-[#1048a3] to-[#0d3b85] text-white p-4 relative overflow-hidden">
-                        <div className="absolute right-2 -bottom-2 opacity-20">
-                          <span className="text-6xl font-black italic">AZUL</span>
-                        </div>
-                        <div className="inline-block bg-amber-400 text-black text-[8px] font-extrabold px-2 py-0.5 rounded uppercase mb-1">
-                          BALÃO PREMIADO!
-                        </div>
-                        <h4 className="font-extrabold text-xs sm:text-sm text-white uppercase tracking-tight">
-                          MÊS DE ANIVERSÁRIO AZUL VEÍCULOS
-                        </h4>
-                        <p className="text-[9px] text-blue-100 mt-1 font-sans leading-tight">
-                          PAGAMOS ATÉ 100% TABELA FIPE | TROCA COM TROCO | TAXAS A PARTIR DE 1.19% A.M.
-                        </p>
-                      </div>
-
-                      {/* Vehicle Search Box */}
-                      <div className="p-3 bg-white border-b border-gray-200">
-                        <div className="flex items-center gap-2 mb-2">
-                          <button className="bg-[#0d3b85] text-white text-[9px] font-bold px-2.5 py-1 rounded">Compre seu carro</button>
-                          <button className="bg-gray-100 text-gray-700 text-[9px] font-bold px-2.5 py-1 rounded">Venda seu carro</button>
-                        </div>
-                        <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            readOnly 
-                            value="Digite a marca ou modelo do veículo..." 
-                            className="bg-gray-50 border border-gray-200 rounded text-[9px] px-2.5 py-1 w-full text-gray-400 font-sans" 
-                          />
-                          <button className="bg-amber-400 text-black font-bold text-[9px] px-3 py-1 rounded shrink-0">Buscar</button>
-                        </div>
-                      </div>
-
-                      {/* Mini Inventory Grid */}
-                      <div className="p-3 bg-slate-50 flex-1">
-                        <div className="text-[10px] font-bold text-slate-800 uppercase tracking-wider mb-2 flex items-center justify-between">
-                          <span>Carros em Destaque</span>
-                          <span className="text-[9px] text-blue-700 underline cursor-pointer">Ver todos (120+)</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="bg-white border border-gray-200 rounded p-2 shadow-xs">
-                            <div className="w-full h-12 bg-slate-200 rounded mb-1 flex items-center justify-center text-slate-400 font-bold text-[9px]">
-                              AUDI A1 1.4 TFSI
-                            </div>
-                            <div className="font-bold text-slate-900 text-[10px]">R$ 74.900</div>
-                            <button className="w-full mt-1 bg-[#0d3b85] text-white text-[8px] font-bold py-0.5 rounded">VER PARCELAS</button>
-                          </div>
-                          <div className="bg-white border border-gray-200 rounded p-2 shadow-xs">
-                            <div className="w-full h-12 bg-slate-200 rounded mb-1 flex items-center justify-center text-slate-400 font-bold text-[9px]">
-                              CHEVROLET CRUZE
-                            </div>
-                            <div className="font-bold text-slate-900 text-[10px]">R$ 124.900</div>
-                            <button className="w-full mt-1 bg-[#0d3b85] text-white text-[8px] font-bold py-0.5 rounded">VER PARCELAS</button>
-                          </div>
-                        </div>
                       </div>
                     </div>
 
-                    <div className="p-2.5 border-t border-gray-200 text-[10px] text-slate-600 bg-gray-50 font-sans flex items-center justify-between">
-                      <span>Website Oficial — azulveiculos.com.br</span>
+                    <div className="p-2 border-t border-gray-200 text-[10px] text-slate-600 bg-gray-50 font-sans flex items-center justify-between shrink-0">
+                      <span>Website Ao Vivo — azulveiculos.com.br</span>
                       <span className="text-emerald-600 font-bold flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Online & Sincronizado
+                        <CheckCircle2 className="w-3 h-3" /> Transmissão Ao Vivo
                       </span>
                     </div>
                   </motion.div>
 
                   {/* Right Column Technical Table */}
-                  <motion.div variants={itemVariants} className="w-full lg:w-6/12 bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden flex flex-col justify-between">
+                  <motion.div variants={itemVariants} className={`${isExport ? 'w-6/12' : 'w-full lg:w-6/12'} print:w-6/12 bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden flex flex-col justify-between`}>
                     <div className="grid grid-cols-12 bg-[#15284b] text-white p-3.5 font-bold text-[11px] uppercase tracking-wider">
                       <div className="col-span-4 pl-3">Frente de Atuação</div>
                       <div className="col-span-8">Descrição Técnica</div>
@@ -1159,7 +1115,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar">15/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="15/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -1276,7 +1232,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
               </motion.div>
 
               <div className="slide-footer-bar">
-                {slide.slideNumber} - Fábrica Publicidade
+                <RenderSlideFooterContent text={`${slide.slideNumber || '12/20'} - Fábrica Publicidade`} />
               </div>
             </div>
           )}
@@ -1375,7 +1331,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
               </motion.div>
 
               <div className="slide-footer-bar">
-                {slide.slideNumber} - Fábrica Publicidade
+                <RenderSlideFooterContent text={`${slide.slideNumber || '16/20'} - Fábrica Publicidade`} />
               </div>
             </div>
           )}
@@ -1392,7 +1348,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                   {slide.title}
                 </motion.h1>
 
-                <div className="flex flex-col md:flex-row gap-6 w-full">
+                <div className={`${isExport ? 'flex-row' : 'flex-col md:flex-row'} print:flex-row gap-6 print:gap-4 w-full`}>
                   {/* Left Column Table */}
                   <motion.div variants={itemVariants} className="flex-1 bg-white border border-gray-100 shadow-sm rounded-sm overflow-hidden h-fit">
                     <div className="grid grid-cols-12 bg-[#0a1c6a] text-white p-3.5 font-bold text-[11px] uppercase tracking-wider">
@@ -1438,7 +1394,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
               </motion.div>
 
               <div className="slide-footer-bar">
-                {slide.slideNumber} - Fábrica Publicidade
+                <RenderSlideFooterContent text={`${slide.slideNumber || '18/20'} - Fábrica Publicidade`} />
               </div>
             </div>
           )}
@@ -1502,7 +1458,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.p>
               </motion.div>
 
-              <div className="slide-footer-bar bg-slate-950 text-slate-400">19/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar bg-slate-950 text-slate-400"><RenderSlideFooterContent text="19/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 
@@ -1583,7 +1539,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar bg-black/90">20/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar bg-black/90"><RenderSlideFooterContent text="20/20 - Fábrica Publicidade" /></div>
             </div>
           )}
 

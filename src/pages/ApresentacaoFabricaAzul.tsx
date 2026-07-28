@@ -3,6 +3,7 @@ import { SLIDES_DATA } from '../data/slidesData';
 import { SlideRenderer } from '../components/SlideRenderer';
 import { EditSlideModal } from '../components/EditSlideModal';
 import { PrintView } from '../components/PrintView';
+import { FabricaAzulLandingPage } from '../components/FabricaAzulLandingPage';
 import { SlideData } from '../types';
 import { 
   ChevronLeft, 
@@ -10,7 +11,9 @@ import {
   Maximize2, 
   Minimize2, 
   Pencil,
-  FileDown
+  FileDown,
+  Layout,
+  Play
 } from 'lucide-react';
 
 export default function ApresentacaoFabricaAzul() {
@@ -26,6 +29,7 @@ export default function ApresentacaoFabricaAzul() {
     return SLIDES_DATA;
   });
 
+  const [viewMode, setViewMode] = useState<'landing' | 'presentation'>('landing');
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const [direction, setDirection] = useState<number>(1);
   const [isFullscreenActive, setIsFullscreenActive] = useState<boolean>(false);
@@ -100,8 +104,10 @@ export default function ApresentacaoFabricaAzul() {
     }
   }, [isFullscreenActive]);
 
-  // Keyboard Shortcuts (Arrow keys, Space, F, P)
+  // Keyboard Shortcuts (Arrow keys, Space, F, P) when in presentation mode
   useEffect(() => {
+    if (viewMode !== 'presentation') return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
       if (e.key === 'ArrowRight' || e.key === 'Space' || e.key === 'PageDown') {
@@ -118,13 +124,23 @@ export default function ApresentacaoFabricaAzul() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev, toggleFullscreen]);
+  }, [viewMode, handleNext, handlePrev, toggleFullscreen]);
 
   if (isPrintMode) {
     return (
       <PrintView 
         slides={slides} 
         onBack={() => setIsPrintMode(false)} 
+      />
+    );
+  }
+
+  if (viewMode === 'landing') {
+    return (
+      <FabricaAzulLandingPage 
+        slides={slides}
+        onOpenPresentation={() => setViewMode('presentation')}
+        onDownloadPDF={() => setIsPrintMode(true)}
       />
     );
   }
@@ -138,6 +154,20 @@ export default function ApresentacaoFabricaAzul() {
           style={{ width: `${((currentSlideIndex + 1) / totalSlides) * 100}%` }}
         />
       </div>
+
+      {/* Mode Switcher Top Bar in Presentation Mode */}
+      {!isFullscreenActive && (
+        <div className="fixed top-4 left-4 z-50 no-print flex items-center gap-2">
+          <button
+            onClick={() => setViewMode('landing')}
+            className="flex items-center gap-2 bg-[#0a1c6a]/90 hover:bg-blue-950 text-white border border-cyan-400/50 font-bold text-xs px-3.5 py-2 rounded-xl shadow-lg backdrop-blur-md transition-all duration-200"
+            title="Voltar para a Landing Page"
+          >
+            <Layout className="w-4 h-4 text-cyan-400" />
+            <span>Modo Landing Page</span>
+          </button>
+        </div>
+      )}
 
       {/* Main Fullscreen Stage */}
       <main className="w-full h-full relative overflow-hidden flex items-center justify-center">
@@ -216,4 +246,3 @@ export default function ApresentacaoFabricaAzul() {
     </div>
   );
 }
-
