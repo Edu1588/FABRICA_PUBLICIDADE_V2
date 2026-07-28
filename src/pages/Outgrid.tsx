@@ -33,20 +33,20 @@ import { saveAs } from 'file-saver';
 import { supabase } from '../lib/supabase';
 import { AppClient, CarouselSlide } from '../types';
 
-export default function Admin() {
+export default function Outgrid() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   
   useEffect(() => {
-    const savedTheme = localStorage.getItem('admin_theme');
+    const savedTheme = localStorage.getItem('outgrid_theme');
     if (savedTheme) setTheme(savedTheme as 'dark' | 'light');
   }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    localStorage.setItem('admin_theme', newTheme);
+    localStorage.setItem('outgrid_theme', newTheme);
   };
   const [errorMsg, setErrorMsg] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -58,9 +58,9 @@ export default function Admin() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === '1234') {
+    if (password === '654321') {
       setIsAuthenticated(true);
-      sessionStorage.setItem('aforja_admin_authenticated', 'true');
+      sessionStorage.setItem('outgrid_admin_authenticated', 'true');
       setErrorMsg('');
     } else {
       setErrorMsg('PIN INCOMPATÍVEL');
@@ -82,7 +82,7 @@ export default function Admin() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    sessionStorage.removeItem('aforja_admin_authenticated');
+    sessionStorage.removeItem('outgrid_admin_authenticated');
     setPassword('');
   };
 
@@ -359,7 +359,7 @@ export default function Admin() {
 
   // Load configuration and authentication
   useEffect(() => {
-    const auth = sessionStorage.getItem('aforja_admin_authenticated');
+    const auth = sessionStorage.getItem('outgrid_admin_authenticated');
     if (auth === 'true') {
       setIsAuthenticated(true);
     }

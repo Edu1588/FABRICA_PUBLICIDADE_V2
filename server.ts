@@ -3,7 +3,7 @@ import * as fs from "fs";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import * as cheerio from "cheerio";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 
 let aiInstance: GoogleGenAI | null = null;
 function getAI() {
@@ -130,14 +130,23 @@ ${cleanHtml}
 `;
 
       const response = await getAI().models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.6-flash',
         contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              montadora: { type: Type.STRING, description: "A marca ou fabricante do veículo (ex: JEEP, TOYOTA, VOLKSWAGEN)" },
+              modelo: { type: Type.STRING, description: "O modelo principal do veículo (ex: COMPASS, COROLLA, POLO)" },
+              descricao: { type: Type.STRING, description: "A versão completa ou descrição do modelo do veículo (ex: 2.0 TD350 TURBO DIESEL LIMITED AWD AUTOMÁTICO)" }
+            },
+            required: ["montadora", "modelo", "descricao"]
+          }
+        }
       });
 
       let jsonResponse = response.text || "{}";
-      // Clean up in case Gemini added markdown blocks
-      jsonResponse = jsonResponse.replace(/```json/g, "").replace(/```/g, "").trim();
-      
       const vehicleData = JSON.parse(jsonResponse);
       
       return res.json({ success: true, data: vehicleData });
