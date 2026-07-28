@@ -237,8 +237,17 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                   variants={itemVariants}
                   src="https://res.cloudinary.com/ifuatk2z/image/upload/v1785183130/logo_Azul_spqf9c.svg" 
                   alt="Azul Veículos" 
+                  onError={(e) => { 
+                    (e.currentTarget as HTMLElement).style.display = 'none'; 
+                    const fb = document.getElementById('slide1-logo-fallback');
+                    if (fb) fb.style.display = 'flex';
+                  }}
                   className="h-16 md:h-20 object-contain filter brightness-0 invert drop-shadow-xl self-start"
                 />
+                <div id="slide1-logo-fallback" className="hidden items-center gap-2 px-3 py-1 bg-white/10 border border-white/30 rounded-lg backdrop-blur-sm">
+                  <span className="text-white font-extrabold text-xl tracking-tighter italic">AZUL</span>
+                  <span className="text-cyan-400 text-xs uppercase font-mono tracking-widest font-bold">VEÍCULOS</span>
+                </div>
               </motion.div>
 
               {/* Main Title Area */}

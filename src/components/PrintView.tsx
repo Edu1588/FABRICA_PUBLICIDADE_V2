@@ -65,11 +65,11 @@ export const PrintView: React.FC<PrintViewProps> = ({ slides, onBack }) => {
       </div>
 
       {/* Render real presentation slides in 16:9 widescreen format */}
-      <div className="max-w-6xl mx-auto space-y-8 print:space-y-0">
+      <div className="max-w-6xl mx-auto space-y-8 print:space-y-0 print:max-w-none print:m-0 print:p-0">
         {slides.map((slide, idx) => (
           <div
             key={slide.id}
-            className="print-page-wrapper aspect-video w-full bg-[#060d20] border border-slate-800 rounded-2xl shadow-2xl relative overflow-hidden flex flex-col justify-between print:rounded-none print:border-none"
+            className="print-page-wrapper aspect-video w-full bg-[#060d20] border border-slate-800 rounded-2xl shadow-2xl relative overflow-hidden flex flex-col justify-between print:w-[297mm] print:h-[210mm] print:rounded-none print:border-none print:shadow-none print:m-0 print:p-0"
           >
             {/* Real Slide Visual Component */}
             <div className="w-full h-full relative overflow-hidden">
