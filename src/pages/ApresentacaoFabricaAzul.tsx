@@ -2,21 +2,39 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SLIDES_DATA } from '../data/slidesData';
 import { SlideRenderer } from '../components/SlideRenderer';
 import { EditSlideModal } from '../components/EditSlideModal';
+import { PrintView } from '../components/PrintView';
 import { SlideData } from '../types';
 import { 
   ChevronLeft, 
   ChevronRight, 
   Maximize2, 
   Minimize2, 
-  Pencil
+  Pencil,
+  FileDown
 } from 'lucide-react';
 
 export default function ApresentacaoFabricaAzul() {
-  const [slides, setSlides] = useState<SlideData[]>(SLIDES_DATA);
+  const [slides, setSlides] = useState<SlideData[]>(() => {
+    const saved = localStorage.getItem('azul_slides_data_v1');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Erro ao carregar slides salvos:', e);
+      }
+    }
+    return SLIDES_DATA;
+  });
+
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const [direction, setDirection] = useState<number>(1);
   const [isFullscreenActive, setIsFullscreenActive] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isPrintMode, setIsPrintMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    localStorage.setItem('azul_slides_data_v1', JSON.stringify(slides));
+  }, [slides]);
 
   const totalSlides = slides.length;
   const currentSlide = slides[currentSlideIndex] || slides[0];
@@ -26,6 +44,13 @@ export default function ApresentacaoFabricaAzul() {
     setSlides(prevSlides => 
       prevSlides.map(slide => slide.id === updatedSlide.id ? updatedSlide : slide)
     );
+  };
+
+  const handleResetSlide = () => {
+    const original = SLIDES_DATA.find(s => s.id === currentSlide.id);
+    if (original) {
+      handleSaveSlideData(original);
+    }
   };
 
   // Track native fullscreen changes
@@ -75,10 +100,10 @@ export default function ApresentacaoFabricaAzul() {
     }
   }, [isFullscreenActive]);
 
-  // Keyboard Shortcuts (Arrow keys, Space, F)
+  // Keyboard Shortcuts (Arrow keys, Space, F, P)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
       if (e.key === 'ArrowRight' || e.key === 'Space' || e.key === 'PageDown') {
         e.preventDefault();
         handleNext();
@@ -87,11 +112,22 @@ export default function ApresentacaoFabricaAzul() {
         handlePrev();
       } else if (e.key.toLowerCase() === 'f') {
         toggleFullscreen();
+      } else if (e.key.toLowerCase() === 'p') {
+        setIsPrintMode(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNext, handlePrev, toggleFullscreen]);
+
+  if (isPrintMode) {
+    return (
+      <PrintView 
+        slides={slides} 
+        onBack={() => setIsPrintMode(false)} 
+      />
+    );
+  }
 
   return (
     <div className={`w-screen h-screen overflow-hidden bg-[#060d20] select-none relative flex flex-col justify-between ${isDarkSlide ? 'dark-ui' : ''}`}>
@@ -123,13 +159,22 @@ export default function ApresentacaoFabricaAzul() {
       {/* Bottom Right Floating Nav Buttons */}
       <div className="nav-controls no-print">
         {!isFullscreenActive && (
-          <button
-            onClick={() => setIsEditModalOpen(true)}
-            className="nav-btn !bg-amber-400 !text-slate-950 hover:!bg-amber-300 font-bold !border-amber-300 shadow-md"
-            title="Editar Conteúdo do Slide"
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
+          <>
+            <button
+              onClick={() => setIsPrintMode(true)}
+              className="nav-btn !bg-blue-600 !text-white hover:!bg-blue-500 font-bold !border-blue-500 shadow-md"
+              title="Baixar Apresentação em PDF (P)"
+            >
+              <FileDown className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className="nav-btn !bg-amber-400 !text-slate-950 hover:!bg-amber-300 font-bold !border-amber-300 shadow-md"
+              title="Editar Conteúdo do Slide"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+          </>
         )}
         <button
           onClick={handlePrev}
@@ -166,6 +211,7 @@ export default function ApresentacaoFabricaAzul() {
         slide={currentSlide}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleSaveSlideData}
+        onResetSlide={handleResetSlide}
       />
     </div>
   );

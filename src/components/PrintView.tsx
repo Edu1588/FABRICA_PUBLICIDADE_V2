@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SlideData } from '../types';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { ArrowLeft, Printer, FileDown } from 'lucide-react';
 
 interface PrintViewProps {
   slides: SlideData[];
@@ -8,27 +8,36 @@ interface PrintViewProps {
 }
 
 export const PrintView: React.FC<PrintViewProps> = ({ slides, onBack }) => {
+  useEffect(() => {
+    // Automatically open print dialog after brief render delay
+    const timer = setTimeout(() => {
+      window.print();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="bg-slate-950 min-h-screen text-slate-100 p-6">
       {/* Top action bar */}
-      <div className="no-print max-w-5xl mx-auto mb-6 flex items-center justify-between bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl">
+      <div className="no-print max-w-5xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar à Apresentação
         </button>
         <div className="text-center">
-          <h1 className="font-heading font-extrabold text-sm uppercase tracking-wider text-white">
-            Modo de Impressão / Exportação PDF
+          <h1 className="font-extrabold text-sm uppercase tracking-wider text-white flex items-center justify-center gap-2">
+            <FileDown className="w-4 h-4 text-cyan-400" />
+            Exportação em PDF ({slides.length} Slides)
           </h1>
           <p className="text-[11px] text-slate-400">
-            {slides.length} slides prontos para exportar
+            Dica: No menu que se abre, escolha Destination: <strong>Salvar como PDF</strong> (Save as PDF)
           </p>
         </div>
         <button
           onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-colors shadow-lg shadow-blue-900/40"
+          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-colors shadow-lg shadow-blue-900/40"
         >
           <Printer className="w-4 h-4" /> Imprimir / Salvar PDF
         </button>
