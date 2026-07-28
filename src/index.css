@@ -281,8 +281,50 @@ body {
 }
 
 @media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  html, body, #root {
+    width: 100% !important;
+    height: auto !important;
+    background-color: #060d20 !important;
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
   .no-print {
     display: none !important;
+  }
+
+  .print-page-wrapper {
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    position: relative !important;
+    background-color: #060d20 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force all motion elements to be fully rendered and visible immediately for print */
+  .print-page-wrapper * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 

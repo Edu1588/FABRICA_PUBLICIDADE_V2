@@ -22,7 +22,14 @@ import {
   ShieldCheck,
   CheckCircle2,
   Target,
-  Workflow
+  Workflow,
+  Briefcase,
+  Calendar,
+  PenTool,
+  MessageSquare,
+  Wrench,
+  Sparkles,
+  Activity
 } from 'lucide-react';
 
 interface SlideRendererProps {
@@ -511,54 +518,109 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
           )}
 
 
-          {/* ==================== SLIDE 5: ORGANOGRAMA ==================== */}
+          {/* ==================== SLIDE 5: ORGANOGRAMA / ESTRUTURA DA OPERAÇÃO (NEON TREE ORGANOGRAM) ==================== */}
           {(slide.id === 5 || slide.layoutType === 'organogram') && (
-            <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-6 md:p-12 pb-20">
-              <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
-                05 / Organização
+            <div className="w-full h-full bg-[#060d20] text-white flex flex-col justify-between relative p-4 md:px-8 md:py-6 pb-12 overflow-hidden select-none">
+              {/* Background ambient glowing lights */}
+              <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-blue-600/10 rounded-full blur-[130px] pointer-events-none"></div>
+              <div className="absolute bottom-10 left-10 w-80 h-80 bg-cyan-500/10 rounded-full blur-[90px] pointer-events-none"></div>
+              <div className="absolute top-10 right-10 w-80 h-80 bg-amber-500/10 rounded-full blur-[90px] pointer-events-none"></div>
+
+              {/* Top Header */}
+              <div className="relative z-10 flex items-center justify-between border-b border-blue-900/50 pb-2 mb-1">
+                <div>
+                  <div className="text-[10px] font-bold tracking-widest uppercase text-cyan-400 font-mono mb-0.5 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#06b6d4]"></span>
+                    05 / Estrutura da Operação
+                  </div>
+                  <motion.h1 variants={itemVariants} className="title-display text-xl md:text-2xl font-extrabold text-white uppercase tracking-tight">
+                    ESTRUTURA DA OPERAÇÃO
+                  </motion.h1>
+                </div>
+                <div className="hidden sm:flex items-center gap-2 bg-[#0a1c6a]/80 border border-cyan-500/40 px-3 py-1 rounded-full shadow-lg">
+                  <Activity className="w-3 h-3 text-cyan-300 animate-pulse" />
+                  <span className="text-[10px] font-bold text-cyan-200 uppercase font-mono">
+                    Matriz Dedicada & Integrada 360°
+                  </span>
+                </div>
               </div>
 
-              <motion.div variants={containerVariants} initial="hidden" animate="animate" className="my-auto w-full max-w-6xl mx-auto flex flex-col items-center">
-                <motion.h1 variants={itemVariants} className="font-display font-black italic text-3xl md:text-4xl text-[#111111] uppercase mb-6 text-center">
-                  ESTRUTURA DA OPERAÇÃO
-                </motion.h1>
+              {/* Organogram Tree Container */}
+              <motion.div 
+                variants={containerVariants} 
+                initial="hidden" 
+                animate="animate" 
+                className="my-auto w-full max-w-6xl mx-auto flex flex-col items-center relative z-10 py-1"
+              >
+                {/* Central Top Root Badge */}
+                <motion.div variants={itemVariants} className="relative group z-20">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-blue-600 to-amber-500 rounded-xl blur opacity-50 group-hover:opacity-90 transition duration-500"></div>
+                  <div className="relative bg-[#0c1838] border border-cyan-400/60 px-6 py-2 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-300">
+                      <Sparkles className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="text-[9px] font-mono text-cyan-400 uppercase tracking-widest font-bold">Coordenação Central</div>
+                      <div className="text-xs md:text-sm font-extrabold text-white uppercase tracking-wide">FÁBRICA PUBLICIDADE & DIGITAL</div>
+                    </div>
+                  </div>
+                </motion.div>
 
-                {/* Tree Organogram Container */}
-                <div className="w-full flex flex-col items-center">
-                  {/* Top Node */}
-                  <motion.div variants={itemVariants} className="bg-[#0a1c6a] text-white font-bold py-3.5 px-8 rounded-sm text-xs md:text-sm uppercase tracking-wider shadow-md text-center">
-                    Fábrica Publicidade & Digital
-                  </motion.div>
+                {/* Vertical Stem Line from Root */}
+                <div className="w-0.5 h-4 bg-gradient-to-b from-cyan-400 to-blue-500 shadow-[0_0_8px_#06b6d4] z-10"></div>
 
-                  {/* Vertical stem line */}
-                  <div className="w-px h-6 bg-gray-300 my-0"></div>
+                {/* Horizontal Connector Bar across 6 columns */}
+                <div className="w-[88%] h-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-amber-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] relative z-10"></div>
 
-                  {/* Horizontal stem connector line */}
-                  <div className="w-[88%] h-px bg-gray-300 relative"></div>
+                {/* 6 Columns Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-3 w-full mt-0 pt-0 relative z-10">
+                  {slide.organogram?.map((dept, idx) => {
+                    const iconMap: Record<string, any> = {
+                      Briefcase: Briefcase,
+                      Calendar: Calendar,
+                      PenTool: PenTool,
+                      Cpu: Cpu,
+                      MessageSquare: MessageSquare,
+                      Wrench: Wrench
+                    };
+                    const IconComp = iconMap[dept.icon] || Briefcase;
 
-                  {/* 6 Columns Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-6 gap-3 w-full mt-0 pt-4">
-                    {slide.organogram?.map((dept, i) => (
-                      <motion.div key={i} variants={itemVariants} className="flex flex-col items-center relative pt-2">
-                        {/* Stem line going down into header */}
-                        <div className="absolute -top-4 left-1/2 w-px h-4 bg-gray-300 -translate-x-1/2"></div>
+                    return (
+                      <motion.div key={idx} variants={itemVariants} className="flex flex-col items-center relative pt-3 group">
+                        {/* Vertical Stem Line down to column header */}
+                        <div className="absolute top-0 left-1/2 w-0.5 h-3 bg-gradient-to-b from-blue-500 to-cyan-400 -translate-x-1/2 opacity-80 group-hover:opacity-100 transition-opacity"></div>
                         
-                        <div className="bg-[#eef4f9] border border-[#d6e4f0] w-full text-center py-2.5 px-2 font-bold text-[#0a1c6a] text-[10px] md:text-[11px] uppercase rounded-sm shadow-sm mb-3 min-h-[48px] flex items-center justify-center">
-                          {dept.title}
+                        {/* Column Header Card */}
+                        <div className="bg-[#0c183b]/90 border border-blue-700/50 group-hover:border-cyan-400/80 w-full text-center py-2 px-2 font-bold text-white text-[10px] md:text-[11px] uppercase rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.4)] mb-2 min-h-[48px] flex flex-col items-center justify-center gap-0.5 transition-all duration-300 relative overflow-hidden backdrop-blur-md">
+                          <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          
+                          <div className="flex items-center gap-1 text-cyan-300">
+                            <IconComp className="w-3 h-3" />
+                            <span className="font-mono text-[8px] text-cyan-400/80 font-bold">0{idx + 1}</span>
+                          </div>
+                          <span className="leading-tight text-slate-100 group-hover:text-cyan-200 transition-colors">
+                            {dept.title}
+                          </span>
                         </div>
 
-                        <ul className="text-left w-full px-1 text-[10px] md:text-[11px] text-gray-700 space-y-1.5 list-disc list-outside ml-3 font-medium">
-                          {dept.items.map((item, j) => (
-                            <li key={j}>{item}</li>
-                          ))}
-                        </ul>
+                        {/* List of sub-items */}
+                        <div className="w-full bg-[#081229]/60 border border-blue-900/30 group-hover:border-cyan-500/30 rounded-xl p-2 transition-colors">
+                          <ul className="text-left w-full text-[9px] md:text-[10px] text-slate-300 space-y-1.5 font-medium">
+                            {dept.items.map((item, j) => (
+                              <li key={j} className="flex items-start gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1 shrink-0 shadow-[0_0_6px_#06b6d4]"></span>
+                                <span className="leading-tight text-slate-200">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </motion.div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar">05/20 - Fábrica Publicidade</div>
+              <div className="slide-footer-bar bg-slate-950 text-slate-400 relative z-10">05/20 - Fábrica Publicidade</div>
             </div>
           )}
 
