@@ -282,20 +282,19 @@ body {
 
 @media print {
   @page {
-    size: landscape;
+    size: 297mm 210mm;
     margin: 0;
   }
 
   html, body, #root {
-    width: 100% !important;
-    height: auto !important;
+    width: 297mm !important;
+    height: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
     background-color: #060d20 !important;
-    color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    overflow: visible !important;
+    overflow: hidden !important;
   }
 
   .no-print {
@@ -327,16 +326,15 @@ body {
 
   .print-page-wrapper:last-child,
   .print-page-wrapper:last-of-type {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
+    page-break-after: auto !important;
+    break-after: auto !important;
   }
 
-  /* Force all motion elements to be fully rendered and visible immediately for print */
+  /* Force opacity 1 without stripping CSS layout transform rules */
   .print-page-wrapper * {
     opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
     animation: none !important;
+    transition: none !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

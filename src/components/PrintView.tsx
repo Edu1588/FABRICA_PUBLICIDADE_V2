@@ -77,6 +77,7 @@ export const PrintView: React.FC<PrintViewProps> = ({ slides, onBack }) => {
                 slide={slide} 
                 direction={0} 
                 isFullscreen={true} 
+                isExport={true}
               />
             </div>
 

@@ -36,6 +36,7 @@ interface SlideRendererProps {
   slide: SlideData;
   direction: number; // 1 for next, -1 for prev
   isFullscreen?: boolean;
+  isExport?: boolean;
 }
 
 // Official Brand Icon Components
@@ -134,9 +135,13 @@ const AnimatedStringValue: React.FC<{ value: string }> = ({ value }) => {
   );
 };
 
-export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }) => {
+export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, isExport = false }) => {
 
-  const slideVariants = {
+  const slideVariants = isExport ? {
+    initial: { opacity: 1, x: 0, scale: 1 },
+    animate: { opacity: 1, x: 0, scale: 1 },
+    exit: { opacity: 1, x: 0, scale: 1 }
+  } : {
     initial: (dir: number) => ({
       x: dir > 0 ? '50%' : '-50%',
       opacity: 0,
@@ -163,7 +168,10 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
     })
   };
 
-  const containerVariants = {
+  const containerVariants = isExport ? {
+    hidden: { opacity: 1 },
+    animate: { opacity: 1 }
+  } : {
     hidden: { opacity: 0 },
     animate: {
       opacity: 1,
@@ -174,7 +182,10 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
     }
   };
 
-  const itemVariants = {
+  const itemVariants = isExport ? {
+    hidden: { opacity: 1, x: 0, y: 0 },
+    animate: { opacity: 1, x: 0, y: 0 }
+  } : {
     hidden: { opacity: 0, x: direction >= 0 ? 25 : -25 },
     animate: { 
       opacity: 1, 
@@ -378,7 +389,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                 </div>
 
                 {/* 4 Pillar Image Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 print:grid-cols-4 gap-4 print:gap-3">
                   {slide.pillars?.map((pillar, idx) => {
                     const iconMap: Record<string, any> = {
                       Target: Target,
@@ -393,7 +404,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                         key={pillar.id || idx}
                         variants={itemVariants}
                         whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
-                        className="group relative bg-[#0b1739] border border-blue-900/50 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between h-[300px] md:h-[330px]"
+                        className="group relative bg-[#0b1739] border border-blue-900/50 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between h-[300px] md:h-[330px] print:h-[220px]"
                       >
                         {/* Background Photo Image */}
                         <div className="absolute inset-0 z-0">
@@ -471,7 +482,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
 
               <motion.div variants={containerVariants} initial="hidden" animate="animate" className="relative z-10 my-auto w-full space-y-6">
                 {/* 5 Pillars Grid with Resumo Executivo Card Styling (Blue cards, Neon Blue numbers, Yellow text) */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 print:grid-cols-5 gap-4 print:gap-2">
                   {slide.stepItems?.map((step, idx) => {
                     const icons = [Compass, Palette, Cpu, TrendingUp, Headphones];
                     const IconComponent = icons[idx] || Compass;
@@ -481,7 +492,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                         key={idx} 
                         variants={itemVariants}
                         whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                        className="bg-[#0a1c6a] p-5 border border-blue-500/30 shadow-xl rounded-xl flex flex-col justify-between transform transition duration-300 hover:shadow-cyan-500/20 hover:border-cyan-400/60 hover:-translate-y-1 group relative overflow-hidden"
+                        className="bg-[#0a1c6a] p-5 print:p-3 border border-blue-500/30 shadow-xl rounded-xl flex flex-col justify-between transform transition duration-300 hover:shadow-cyan-500/20 hover:border-cyan-400/60 hover:-translate-y-1 group relative overflow-hidden print:h-[200px]"
                       >
                         <div>
                           {/* Animated Pillar Icon Container */}
@@ -582,7 +593,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                 <div className="w-[88%] h-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-amber-500 shadow-[0_0_10px_rgba(6,182,212,0.6)] relative z-10"></div>
 
                 {/* 6 Columns Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-3 w-full mt-0 pt-0 relative z-10">
+                <div className="grid grid-cols-2 md:grid-cols-6 print:grid-cols-6 gap-2 md:gap-3 print:gap-2 w-full mt-0 pt-0 relative z-10">
                   {slide.organogram?.map((dept, idx) => {
                     const iconMap: Record<string, any> = {
                       Briefcase: Briefcase,
@@ -651,7 +662,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                   </motion.span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-6 print:gap-4 w-full">
                   {/* Left Column Table */}
                   <motion.div variants={itemVariants} className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden flex flex-col justify-between">
                     <div>
@@ -757,7 +768,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                 </motion.h1>
 
                 {/* 3 Corporate Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 print:grid-cols-3 gap-5 print:gap-3">
                   {slide.stakeholders?.map((sh, idx) => (
                     <motion.div key={idx} variants={itemVariants} className="bg-[#0a1c6a] text-white p-6 rounded-sm shadow-md">
                       <h3 className="font-bold text-base md:text-lg mb-2">{sh.title}</h3>
@@ -866,7 +877,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                 </motion.h1>
 
                 {/* Grid of Digital Channels with Official Logos */}
-                <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 print:grid-cols-4 gap-4 print:gap-3 w-full">
                   <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between mb-3">
                       <InstagramLogo />
@@ -1165,7 +1176,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                   {slide.title}
                 </motion.h1>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-3 print:grid-cols-3 gap-4 print:gap-3 w-full items-start">
                   {/* Table Column 1: Produção Redes Sociais */}
                   {slide.tableData && slide.tableData.length > 0 && (
                     <motion.div variants={itemVariants} className="bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden">
@@ -1320,7 +1331,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                 </motion.div>
 
                 {/* Tables Side by Side (2 columns) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-4 print:gap-3 w-full">
                   {/* Left Table */}
                   <motion.div variants={itemVariants} className="bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden h-fit">
                     <div className="grid grid-cols-12 bg-[#0a1c6a] text-white p-3 font-bold text-[11px] uppercase tracking-wider">
@@ -1457,7 +1468,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction }
                 </div>
 
                 {/* 8 Counter Metric Tiles - Blue cards, Neon Blue numbers, Yellow text */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 print:grid-cols-4 gap-4 print:gap-3">
                   {slide.metrics?.map((metric, idx) => (
                     <motion.div 
                       key={idx} 

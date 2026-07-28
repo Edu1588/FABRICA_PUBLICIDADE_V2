@@ -13,8 +13,13 @@ import { LanguageProvider } from './contexts/LanguageContext';
 
 function Construction() {
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center font-sans">
-      <h1 className="text-white text-2xl md:text-4xl font-light tracking-widest uppercase">Em construção</h1>
+    <div className="min-h-screen bg-[#0c0c0c] flex items-center justify-center p-6">
+      <h1 
+        className="text-[#F5F2EC] text-2xl md:text-4xl lg:text-5xl font-light tracking-[0.25em] uppercase transition-all duration-500" 
+        style={{ fontFamily: 'var(--font-heading)' }}
+      >
+        Em construção
+      </h1>
     </div>
   );
 }
