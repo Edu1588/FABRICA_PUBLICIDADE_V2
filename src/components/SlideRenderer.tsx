@@ -746,7 +746,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.h1>
 
                 {/* 4 Journey Steps equal width and height */}
-                <div className={`${isExport ? 'flex-row' : 'flex-col md:flex-row'} print:flex-row items-stretch justify-between w-full gap-4 print:gap-2`}>
+                <div className={`flex ${isExport ? 'flex-row' : 'flex-col md:flex-row'} print:flex-row items-stretch justify-between w-full gap-4 print:gap-2`}>
                   {slide.stepItems?.map((step, idx) => (
                     <React.Fragment key={idx}>
                       <motion.div variants={itemVariants} className="bg-white border border-gray-200 p-6 md:p-8 rounded-xl flex-1 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
@@ -1057,9 +1057,9 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                   TECNOLOGIA
                 </motion.h1>
 
-                <div className={`${isExport ? 'flex-row' : 'flex-col lg:flex-row'} print:flex-row gap-6 print:gap-4 w-full items-stretch`}>
+                <div className={`flex ${isExport ? 'flex-row' : 'flex-col lg:flex-row'} print:flex-row gap-6 print:gap-4 w-full items-stretch`}>
                   {/* Realistic Website Simulation Mockup */}
-                  <motion.div variants={itemVariants} className={`${isExport ? 'w-6/12' : 'w-full lg:w-6/12'} print:w-6/12 bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 flex flex-col`}>
+                  <motion.div variants={itemVariants} className={`${isExport ? 'flex-1 w-full' : 'w-full lg:flex-1 w-full'} print:flex-1 w-full bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 flex flex-col`}>
                     {/* Browser Address Bar */}
                     <div className="bg-[#0b1b3d] h-9 w-full flex items-center px-3 gap-2 shrink-0">
                       <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
@@ -1092,7 +1092,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                   </motion.div>
 
                   {/* Right Column Technical Table */}
-                  <motion.div variants={itemVariants} className={`${isExport ? 'w-6/12' : 'w-full lg:w-6/12'} print:w-6/12 bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden flex flex-col justify-between`}>
+                  <motion.div variants={itemVariants} className={`${isExport ? 'flex-1 w-full' : 'w-full lg:flex-1 w-full'} print:flex-1 w-full bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden flex flex-col justify-between`}>
                     <div className="grid grid-cols-12 bg-[#15284b] text-white p-3.5 font-bold text-[11px] uppercase tracking-wider">
                       <div className="col-span-4 pl-3">Frente de Atuação</div>
                       <div className="col-span-8">Descrição Técnica</div>
@@ -1348,7 +1348,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                   {slide.title}
                 </motion.h1>
 
-                <div className={`${isExport ? 'flex-row' : 'flex-col md:flex-row'} print:flex-row gap-6 print:gap-4 w-full`}>
+                <div className={`flex ${isExport ? 'flex-row' : 'flex-col md:flex-row'} print:flex-row gap-6 print:gap-4 w-full`}>
                   {/* Left Column Table */}
                   <motion.div variants={itemVariants} className="flex-1 bg-white border border-gray-100 shadow-sm rounded-sm overflow-hidden h-fit">
                     <div className="grid grid-cols-12 bg-[#0a1c6a] text-white p-3.5 font-bold text-[11px] uppercase tracking-wider">
