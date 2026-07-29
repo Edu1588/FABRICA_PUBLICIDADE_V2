@@ -1,17 +1,6 @@
 
 const InstagramLogo = () => (
-  <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="none">
-    <radialGradient id="igGrad" cx="30%" cy="107%" r="130%">
-      <stop offset="0%" stopColor="#fdf497" />
-      <stop offset="5%" stopColor="#fdf497" />
-      <stop offset="45%" stopColor="#fd5949" />
-      <stop offset="60%" stopColor="#d6249f" />
-      <stop offset="90%" stopColor="#285AEB" />
-    </radialGradient>
-    <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#igGrad)" />
-    <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" stroke="white" strokeWidth="1.8" fill="none" />
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-  </svg>
+  <img src="https://images.icon-icons.com/2992/PNG/512/instagram_logo_icon_187313.png" alt="Instagram" className="w-8 h-8 shrink-0 object-contain" />
 );
 const FacebookLogo = () => (
   <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="#1877F2">
@@ -27,16 +16,10 @@ const GoogleLogo = () => (
   </svg>
 );
 const MetaLogo = () => (
-  <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="#0081FB">
-    <path d="M12 7.002c-2.316 0-4.408 1.12-5.748 2.817C4.912 11.517 4 14 4 15.5c0 2.21 1.79 3.5 3.5 3.5 1.5 0 2.87-.82 4.5-2.76 1.63 1.94 3 2.76 4.5 2.76 1.71 0 3.5-1.29 3.5-3.5 0-1.5-.912-3.983-2.252-5.681C16.408 8.122 14.316 7.002 12 7.002zm-3.5 9.998c-.83 0-1.5-.67-1.5-1.5 0-.96.67-2.6 1.75-3.96 1.01-1.27 2.22-2.04 3.25-2.04.5 0 .93.18 1.25.5-1.42 1.67-3.25 4.35-4.75 7 z"/>
-  </svg>
+  <img src="https://pngimg.com/uploads/meta/meta_PNG5.png" alt="Meta Ads" className="w-8 h-8 shrink-0 object-contain" />
 );
 const GoogleAdsLogo = () => (
-  <svg className="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="none">
-    <path d="M3.5 18.5L10.5 3.5H16.5L9.5 18.5H3.5Z" fill="#FFBC00"/>
-    <path d="M20.5 18.5C22.1569 18.5 23.5 17.1569 23.5 15.5C23.5 13.8431 22.1569 12.5 20.5 12.5C18.8431 12.5 17.5 13.8431 17.5 15.5C17.5 17.1569 18.8431 18.5 20.5 18.5Z" fill="#4285F4"/>
-    <path d="M12.5 18.5L19.5 3.5H13.5L6.5 18.5H12.5Z" fill="#34A853"/>
-  </svg>
+  <img src="https://images.icon-icons.com/2699/PNG/512/google_ads_logo_icon_171064.png" alt="Google Ads" className="w-9 h-9 shrink-0 object-contain" />
 );
 const InboundMarketingLogo = () => (
   <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="#00D2B6">
@@ -407,50 +390,119 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
             ))}
           </div>
 
-          <div className="lg:col-span-6">
-            <div className="bg-[#0f172a]/50 backdrop-blur-sm border border-white/10 p-6 rounded-3xl shadow-2xl relative overflow-hidden">
-              <div className="text-xs font-extrabold text-cyan-400 uppercase tracking-wider mb-4 flex items-center justify-between">
-                <span>Key Visual em Ação — Campanha Aniversário</span>
-                <span className="bg-amber-400 text-black px-2.5 py-0.5 rounded text-[10px] font-black">Layout Oficial</span>
-              </div>
+          <div className="lg:col-span-6 flex items-center justify-center">
+            <div className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl">
+              <img 
+                src="https://res.cloudinary.com/ifuatk2z/image/upload/v1785278990/Carrossel_1_ayrdkg.jpg" 
+                alt="Key Visual" 
+                className="w-full h-auto object-cover block"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
-              <div className="w-full bg-white shadow-xl p-5 rounded-xl border border-white/10 mb-4">
-                <div className="text-[10px] font-bold text-[#0a1c6a] mb-3 uppercase tracking-wider">
-                  Exemplo de Estrutura — Key Visual
-                </div>
-                <div className="w-full h-48 bg-gray-100 relative mb-4 rounded-sm overflow-hidden flex items-center justify-center shadow-inner">
-                  <img 
-                    src="https://res.cloudinary.com/ifuatk2z/image/upload/v1785278990/Carrossel_1_ayrdkg.jpg" 
-                    alt="Key Visual" 
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="grid grid-cols-4 gap-2 mb-3">
-                  <div className="h-8 bg-[#060d20] rounded-xs" title="#060d20"></div>
-                  <div className="h-8 bg-[#0a1c6a] rounded-xs" title="#0a1c6a"></div>
-                  <div className="h-8 bg-[#3b82f6] rounded-xs" title="#3b82f6"></div>
-                  <div className="h-8 bg-gray-400 rounded-xs" title="Neutral"></div>
-                </div>
-                <div className="text-[10px] text-gray-500 text-center font-medium font-sans">
-                  Paleta e composição padronizadas por campanha
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                  <div className="text-slate-400 font-bold uppercase text-[11px] flex items-center gap-1">
-                    <Monitor className="w-3.5 h-3.5 text-cyan-400" /> Digital
-                  </div>
-                  <div className="text-slate-300 text-[11px] font-sans mt-1">Feed, Stories, LPs, WhatsApp</div>
+      {/* ================= SECTION: PERFORMANCE DO SITE ================= */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-white uppercase tracking-tight font-display mb-4">
+            A Importância da <span className="text-cyan-400">Velocidade</span> do Site
+          </h2>
+          <p className="text-base text-slate-300 font-sans">
+            Um site rápido converte mais. Compare a experiência de um site lento com a performance de um site otimizado (Nota A no PageSpeed).
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          {/* Site Lento */}
+          <div className="bg-[#0f172a]/80 backdrop-blur-md rounded-3xl p-8 border border-red-500/30 shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-orange-500"></div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                  <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
-                <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                  <div className="text-slate-400 font-bold uppercase text-[11px] flex items-center gap-1">
-                    <Megaphone className="w-3.5 h-3.5 text-cyan-400" /> Offline / PDV
-                  </div>
-                  <div className="text-slate-300 text-[11px] font-sans mt-1">Faixas, Banners, material offline e produção audiovisual</div>
-                </div>
+                <h3 className="text-xl font-bold text-white">Site Lento</h3>
               </div>
+              <div className="text-3xl font-black text-red-500 tracking-tighter">45<span className="text-sm font-normal text-red-400">/100</span></div>
+            </div>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Tempo de Carregamento</span>
+                <span className="text-red-400 font-bold">8.5s</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-2">
+                <div className="bg-red-500 h-2 rounded-full" style={{ width: '85%' }}></div>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Taxa de Rejeição</span>
+                <span className="text-red-400 font-bold">68%</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-2">
+                <div className="bg-red-500 h-2 rounded-full" style={{ width: '68%' }}></div>
+              </div>
+            </div>
+
+            <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-5">
+              <h4 className="text-red-400 font-bold text-sm mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                Impacto Negativo
+              </h4>
+              <ul className="text-slate-300 text-xs space-y-2 font-sans">
+                <li>• Perda de posições no Google (SEO)</li>
+                <li>• Alto custo por clique em campanhas</li>
+                <li>• Frustração do usuário e abandono</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Site Rápido (Nota A) */}
+          <div className="bg-[#0f172a]/80 backdrop-blur-md rounded-3xl p-8 border border-emerald-500/30 shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-cyan-500"></div>
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-500"></div>
+            
+            <div className="flex items-center justify-between mb-6 relative">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                </div>
+                <h3 className="text-xl font-bold text-white">Site Nota A</h3>
+              </div>
+              <div className="text-3xl font-black text-emerald-400 tracking-tighter">98<span className="text-sm font-normal text-emerald-500/70">/100</span></div>
+            </div>
+            
+            <div className="space-y-4 mb-8 relative">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Tempo de Carregamento</span>
+                <span className="text-emerald-400 font-bold">1.2s</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-2">
+                <div className="bg-emerald-400 h-2 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)]" style={{ width: '12%' }}></div>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Taxa de Rejeição</span>
+                <span className="text-emerald-400 font-bold">15%</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-2">
+                <div className="bg-emerald-400 h-2 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)]" style={{ width: '15%' }}></div>
+              </div>
+            </div>
+
+            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-5 relative">
+              <h4 className="text-emerald-400 font-bold text-sm mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                Impacto Positivo
+              </h4>
+              <ul className="text-slate-300 text-xs space-y-2 font-sans">
+                <li>• Melhor ranqueamento orgânico (SEO)</li>
+                <li>• Maior conversão de leads e vendas</li>
+                <li>• Experiência fluida e profissional</li>
+              </ul>
             </div>
           </div>
         </div>

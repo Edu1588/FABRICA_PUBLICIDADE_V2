@@ -4,7 +4,7 @@ export const SLIDES_DATA: SlideData[] = [
   // SLIDE 1: Capa (1/15)
   {
     id: 1,
-    slideNumber: "01 / 15",
+    slideNumber: "01 / 16",
     category: "capa",
     categoryLabel: "Relatório Técnico",
     title: "OPERAÇÃO INTEGRADA DE MARKETING",
@@ -18,7 +18,7 @@ export const SLIDES_DATA: SlideData[] = [
   // SLIDE 2: Introdução (2/15)
   {
     id: 2,
-    slideNumber: "02 / 15",
+    slideNumber: "02 / 16",
     category: "introducao",
     categoryLabel: "02 / Introdução",
     title: "APRESENTAÇÃO",
@@ -36,7 +36,7 @@ export const SLIDES_DATA: SlideData[] = [
   // SLIDE 3: Natureza da Operação (3/15)
   {
     id: 3,
-    slideNumber: "03 / 15",
+    slideNumber: "03 / 16",
     category: "natureza",
     categoryLabel: "03 / Natureza da Operação",
     title: "NATUREZA DA OPERAÇÃO",
@@ -87,7 +87,7 @@ export const SLIDES_DATA: SlideData[] = [
   // SLIDE 4: Modelo Operacional (4/15)
   {
     id: 4,
-    slideNumber: "04 / 15",
+    slideNumber: "04 / 16",
     category: "modelo",
     categoryLabel: "04 / Organização",
     title: "ESTRUTURA DA OPERAÇÃO",
@@ -105,7 +105,7 @@ export const SLIDES_DATA: SlideData[] = [
   // SLIDE 5: Planejamento Estratégico (5/15)
   {
     id: 5,
-    slideNumber: "05 / 15",
+    slideNumber: "05 / 16",
     category: "estrategia",
     categoryLabel: "05 / Estratégia",
     title: "PLANEJAMENTO ESTRATÉGICO",
@@ -129,7 +129,7 @@ export const SLIDES_DATA: SlideData[] = [
   // SLIDE 6: Rotina Operacional (6/15)
   {
     id: 6,
-    slideNumber: "06 / 15",
+    slideNumber: "06 / 16",
     category: "rotina",
     categoryLabel: "06 / Rotina Operacional",
     title: "ATENDIMENTO E GESTÃO",
@@ -144,10 +144,10 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Workflow diário."
   },
 
-  // SLIDE 7: Interface e Fluxo (7/15)
+  // SLIDE 7: Interface e Fluxo (8/16)
   {
     id: 7,
-    slideNumber: "07 / 15",
+    slideNumber: "07 / 16",
     category: "rotina",
     categoryLabel: "07 / Interface e Fluxo",
     title: "INTERFACE COM A OPERAÇÃO",
@@ -162,15 +162,15 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Interface com stakeholders."
   },
 
-  // SLIDE 8: Design Estratégico (8/15) - Adaptado para o estilo de cartões do Slide 7
+  // SLIDE 8: Design Estratégico (9/16) - Adaptado para o estilo de cartões do Slide 7
   {
     id: 8,
-    slideNumber: "08 / 15",
+    slideNumber: "08 / 16",
     category: "criacao",
     categoryLabel: "08 / Criação",
     title: "DESIGN ESTRATÉGICO",
     subtitle: "CONCEITOS E KEY VISUAL",
-    layoutType: "process_stakeholders",
+    layoutType: "design_keyvisual",
     stepItems: [
       { number: "1", title: "Conceitos Criativos", description: "Construção da ideia visual que sustenta a campanha." },
       { number: "2", title: "Identidade Visual", description: "Definição de cores, tipografia e composição para cada ação." },
@@ -180,10 +180,10 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Design estratégico e key visual."
   },
 
-  // SLIDE 9: Produção Criativa (9/15)
+  // SLIDE 9: Produção Criativa (10/16)
   {
     id: 9,
-    slideNumber: "09 / 15",
+    slideNumber: "09 / 16",
     category: "criacao",
     categoryLabel: "09 / Criação",
     title: "PRODUÇÃO CRIATIVA",
@@ -204,10 +204,10 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Produção criativa diária."
   },
 
-  // SLIDE 10: Produção Audiovisual (10/15) - Adaptado para o estilo de cartões do Slide 7
+  // SLIDE 10: Produção Audiovisual (11/16) - Adaptado para o estilo de cartões do Slide 7
   {
     id: 10,
-    slideNumber: "10 / 15",
+    slideNumber: "10 / 16",
     category: "criacao",
     categoryLabel: "10 / Criação",
     title: "PRODUÇÃO AUDIOVISUAL",
@@ -222,15 +222,15 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Produção audiovisual de alto impacto."
   },
 
-  // SLIDE 11: Marketing Digital (11/15) - Adaptado para o estilo de cartões do Slide 7
+  // SLIDE 11: Marketing Digital (12/16) - Adaptado para o estilo de cartões do Slide 7
   {
     id: 11,
-    slideNumber: "11 / 15",
+    slideNumber: "11 / 16",
     category: "digital",
     categoryLabel: "11 / Digital",
     title: "MARKETING DIGITAL E SOCIAL MEDIA",
     subtitle: "ESTRUTURA DE ATRAÇÃO E CONVERSÃO",
-    layoutType: "process_stakeholders",
+    layoutType: "marketing_digital",
     stepItems: [
       { number: "1", title: "Enxoval Digital", description: "Feed, Stories com email marketing, carrosséis e banners." },
       { number: "2", title: "Tráfego Patrocinado", description: "Gestão de anúncios direcionados para equipes de vendas." },
@@ -240,10 +240,10 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Estratégia digital integrada."
   },
 
-  // SLIDE 12: Tecnologia (12/15)
+  // SLIDE 12: Tecnologia (13/16)
   {
     id: 12,
-    slideNumber: "12 / 15",
+    slideNumber: "12 / 16",
     category: "tecnologia",
     categoryLabel: "12 / Tecnologia",
     title: "TECNOLOGIA E PLATAFORMA",
@@ -258,30 +258,26 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Infraestrutura tecnológica de ponta."
   },
 
-  // SLIDE 13: Recursos Prontos para Ativação (13/15) - Adaptado para o estilo de cartões do Slide 7 (Sintetizado do PDF p.8)
+
+
+  
+  // SLIDE 13: Performance do Site (13/16)
   {
     id: 13,
-    slideNumber: "13 / 15",
-    category: "fisica",
-    categoryLabel: "13 / Ativações Futuras",
-    title: "RECURSOS PRONTOS PARA ATIVAÇÃO",
-    subtitle: "RECURSOS PRONTOS QUE DEPENDEM APENAS DE DECISÃO",
-    layoutType: "process_stakeholders",
-    stepItems: [
-      { number: "1", title: "Selo Vistoriado", description: "Selo de laudo nos cards de veículo para reforçar segurança." },
-      { number: "2", title: "Rolagem Infinita", description: "Navegação contínua no showroom em vez de paginação." },
-      { number: "3", title: "Preço com Acréscimo", description: "Opção de valor diferenciado para vendedores logados." },
-      { number: "4", title: "Feed de Catálogo", description: "Anúncios dinâmicos de estoque para Meta e Instagram." }
-    ],
-    presenterNotes: "Recursos prontos na plataforma."
+    slideNumber: "13 / 16",
+    category: "tecnologia",
+    categoryLabel: "13 / Performance",
+    title: "A IMPORTÂNCIA DA VELOCIDADE",
+    subtitle: "SITE LENTO VS SITE NOTA A",
+    layoutType: "site_performance",
+    presenterNotes: "Um site rápido converte mais."
   },
-
-  // SLIDE 14: Flexibilidade Operacional (14/15)
+// SLIDE 15: Flexibilidade Operacional (15/16)
   {
-    id: 14,
-    slideNumber: "14 / 15",
+    id: 15,
+    slideNumber: "15 / 16",
     category: "continuidade",
-    categoryLabel: "14 / Continuidade",
+    categoryLabel: "15 / Continuidade",
     title: "FLEXIBILIDADE OPERACIONAL",
     subtitle: "COMO A OPERAÇÃO RESPONDE ÀS MUDANÇAS",
     layoutType: "dual_matrix",
@@ -297,12 +293,12 @@ export const SLIDES_DATA: SlideData[] = [
     presenterNotes: "Flexibilidade e agilidade."
   },
 
-  // SLIDE 15: Resumo Executivo / Métricas em Destaque (15/15)
+  // SLIDE 15: Resumo Executivo / Métricas em Destaque (16/16)
   {
-    id: 15,
-    slideNumber: "15 / 15",
+    id: 16,
+    slideNumber: "16 / 16",
     category: "indicadores",
-    categoryLabel: "15 / Síntese",
+    categoryLabel: "16 / Síntese",
     title: "RESUMO EXECUTIVO E MÉTRICAS",
     subtitle: "IMPACTO E VOLUMETRIA DA OPERAÇÃO",
     layoutType: "executive_summary",

@@ -41,18 +41,7 @@ interface SlideRendererProps {
 
 // Official Brand Icon Components
 const InstagramLogo = () => (
-  <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="none">
-    <radialGradient id="igGrad" cx="30%" cy="107%" r="130%">
-      <stop offset="0%" stopColor="#fdf497" />
-      <stop offset="5%" stopColor="#fdf497" />
-      <stop offset="45%" stopColor="#fd5949" />
-      <stop offset="60%" stopColor="#d6249f" />
-      <stop offset="90%" stopColor="#285AEB" />
-    </radialGradient>
-    <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#igGrad)" />
-    <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" stroke="white" strokeWidth="1.8" fill="none" />
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-  </svg>
+  <img src="https://images.icon-icons.com/2992/PNG/512/instagram_logo_icon_187313.png" alt="Instagram" className="w-8 h-8 shrink-0 object-contain" />
 );
 
 const FacebookLogo = () => (
@@ -83,11 +72,7 @@ const MetaLogo = () => (
 );
 
 const GoogleAdsLogo = () => (
-  <svg className="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="none">
-    <path d="M3.5 18.5L10.5 3.5H16.5L9.5 18.5H3.5Z" fill="#FFBC00"/>
-    <path d="M20.5 18.5C22.1569 18.5 23.5 17.1569 23.5 15.5C23.5 13.8431 22.1569 12.5 20.5 12.5C18.8431 12.5 17.5 13.8431 17.5 15.5C17.5 17.1569 18.8431 18.5 20.5 18.5Z" fill="#4285F4"/>
-    <path d="M12.5 18.5L19.5 3.5H13.5L6.5 18.5H12.5Z" fill="#34A853"/>
-  </svg>
+  <img src="https://images.icon-icons.com/2699/PNG/512/google_ads_logo_icon_171064.png" alt="Google Ads" className="w-9 h-9 shrink-0 object-contain" />
 );
 
 const InboundMarketingLogo = () => (
@@ -221,7 +206,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
         >
 
           {/* ==================== SLIDE 1: CAPA ==================== */}
-          {slide.id === 1 && (
+          {(slide.id === 1 || slide.layoutType === 'hero_title') && (
             <div className="w-full h-full bg-[#080808] text-white relative overflow-hidden flex flex-col justify-between p-8 md:p-16 pb-20">
               {/* Right Corporate Blue Bar with JULHO header and white squares on the seam border */}
               <div className="absolute right-0 top-0 w-[25%] lg:w-[22%] h-full bg-[#0a1c6a] z-10 shadow-2xl flex flex-col items-center">
@@ -247,7 +232,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                   alt="Cruze Azul" 
                   className="w-full h-full object-cover object-center scale-100 opacity-100"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/16 to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
               </div>
 
@@ -295,7 +280,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
 
 
           {/* ==================== SLIDE 2: INTRODUÇÃO / APRESENTAÇÃO ==================== */}
-          {slide.id === 2 && (
+          {(slide.id === 2 || slide.layoutType === 'split_text_image') && (
             <div className="w-full h-full bg-white text-slate-800 flex flex-col justify-between relative pb-16">
               <div className="flex h-full w-full flex-1">
                 {/* Left Content Area - Full Text Paragraphs */}
@@ -346,7 +331,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-transparent"></div>
 
                   {/* Floating Brand Badge */}
-                  <div className="absolute bottom-10 left-8 right-8 bg-[#0a1c6a]/90 backdrop-blur-md p-6 rounded-xl border border-white/20 text-white shadow-2xl">
+                  <div className="absolute bottom-10 left-8 right-8 bg-[#0a1c6a]/90 backdrop-blur-md p-6 rounded-xl border border-white/16 text-white shadow-2xl">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
                       <span className="text-[10px] font-bold tracking-widest uppercase text-cyan-300 font-mono">
@@ -363,13 +348,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="02/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="02/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
           {/* ==================== SLIDE 3: NATUREZA DA OPERAÇÃO (STANDALONE SLIDE WITH IMAGES) ==================== */}
-          {(slide.id === 3 || slide.layoutType === 'natureza_operacao') && (
+          {(slide.layoutType === 'natureza_operacao') && (
             <div className="w-full h-full bg-[#060d20] text-white flex flex-col justify-between relative p-6 md:p-12 pb-20 overflow-hidden">
               {/* Subtle Background Glows */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -468,13 +453,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="03/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="03/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
           {/* ==================== SLIDE 4: MODELO OPERACIONAL (VISÃO GERAL) ==================== */}
-          {(slide.id === 4 || (slide.layoutType === 'connected_flow' && slide.id !== 3)) && (
+          {(slide.layoutType === 'connected_flow') && (
             <div className="w-full h-full bg-gray-900 text-white flex flex-col justify-between relative p-8 md:p-14 pb-20 overflow-hidden">
               {/* Background Car */}
               <div className="absolute inset-0 z-0">
@@ -513,7 +498,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                         key={idx} 
                         variants={itemVariants}
                         whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                        className="bg-[#0a1c6a] p-5 print:p-3 border border-blue-500/30 shadow-xl rounded-xl flex flex-col justify-between transform transition duration-300 hover:shadow-cyan-500/20 hover:border-cyan-400/60 hover:-translate-y-1 group relative overflow-hidden print:h-[200px]"
+                        className="bg-[#0a1c6a] p-5 print:p-3 border border-blue-500/30 shadow-xl rounded-xl flex flex-col justify-between transform transition duration-300 hover:shadow-cyan-500/16 hover:border-cyan-400/60 hover:-translate-y-1 group relative overflow-hidden print:h-[200px]"
                       >
                         <div>
                           {/* Animated Pillar Icon Container */}
@@ -554,13 +539,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </motion.div>
 
-              <div className="slide-footer-bar bg-slate-950 text-slate-400"><RenderSlideFooterContent text="04/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar bg-slate-950 text-slate-400"><RenderSlideFooterContent text="04/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
           {/* ==================== SLIDE 5: ORGANOGRAMA / ESTRUTURA DA OPERAÇÃO (NEON TREE ORGANOGRAM) ==================== */}
-          {(slide.id === 5 || slide.layoutType === 'organogram') && (
+          {(slide.layoutType === 'organogram') && (
             <div className="w-full h-full bg-[#060d20] text-white flex flex-col justify-between relative p-4 md:px-8 md:py-6 pb-12 overflow-hidden select-none">
               {/* Background ambient glowing lights */}
               <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-blue-600/10 rounded-full blur-[130px] pointer-events-none"></div>
@@ -597,7 +582,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 <motion.div variants={itemVariants} className="relative group z-20">
                   <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-blue-600 to-amber-500 rounded-xl blur opacity-50 group-hover:opacity-90 transition duration-500"></div>
                   <div className="relative bg-[#0c1838] border border-cyan-400/60 px-6 py-2 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-300">
+                    <div className="w-7 h-7 rounded-lg bg-cyan-500/16 border border-cyan-400/50 flex items-center justify-center text-cyan-300">
                       <Sparkles className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -661,13 +646,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar bg-slate-950 text-slate-400 relative z-10"><RenderSlideFooterContent text="05/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar bg-slate-950 text-slate-400 relative z-10"><RenderSlideFooterContent text="05/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
           {/* ==================== SLIDE 6: PLANEJAMENTO ESTRATÉGICO ==================== */}
-          {(slide.id === 6 || (slide.category === 'estrategia' && slide.layoutType === 'dual_matrix')) && (
+          {(slide.layoutType === 'dual_matrix') && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-8 md:p-14 pb-20">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
                 06 / Estratégia
@@ -728,13 +713,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="06/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="06/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
           {/* ==================== SLIDE 7: ROTINA OPERACIONAL (PROCESS STEPS) ==================== */}
-          {(slide.id === 6 || slide.id === 7 || slide.id === 8 || slide.id === 10 || slide.id === 11 || slide.id === 13 || slide.layoutType === 'process_stakeholders') && (
+          {(slide.layoutType === 'process_stakeholders') && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-8 md:p-14 pb-20">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
                 {slide.categoryLabel}
@@ -771,13 +756,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="07/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="07/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
           {/* ==================== SLIDE 8: INTERFACE COM ==================== */}
-          {slide.id === 8 && (
+          {slide.layoutType === 'interface_flow' && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-8 md:p-14 pb-20">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
                 08 / Interface e Fluxo
@@ -816,13 +801,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </motion.div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="08/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="08/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
           {/* ==================== SLIDE 10: DESIGN ESTRATÉGICO (KEY VISUAL) ==================== */}
-          {(slide.id === 10 || slide.layoutType === 'design_keyvisual') && (
+          {(slide.layoutType === 'design_keyvisual') && (
             <div className="w-full h-full bg-white text-slate-900 flex flex-col justify-between relative pb-16">
               <div className="flex h-full w-full flex-1">
                 {/* Left Column (7/12) */}
@@ -858,41 +843,141 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
 
                 {/* Right Column (5/12) Mockup */}
                 <div className={`${isExport ? 'flex w-5/12' : 'hidden lg:flex w-5/12'} print:flex print:w-5/12 bg-gray-50 p-10 print:p-6 items-center justify-center border-l border-gray-100`}>
-                  <div className="w-full max-w-sm bg-white shadow-xl p-5 rounded-sm border border-gray-100">
-                    <div className="text-[10px] font-bold text-[#0a1c6a] mb-3 uppercase tracking-wider">
-                      Exemplo de Estrutura — Key Visual
-                    </div>
-                    <div className="w-full h-48 bg-gray-100 relative mb-4 rounded-sm overflow-hidden flex items-center justify-center shadow-inner">
-                      <img 
-                        src="https://res.cloudinary.com/ifuatk2z/image/upload/v1785278990/Carrossel_1_ayrdkg.jpg" 
-                        alt="Key Visual" 
-                        className="w-full h-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 gap-2 mb-3">
-                      <div className="h-8 bg-[#060d20] rounded-xs" title="#060d20"></div>
-                      <div className="h-8 bg-[#0a1c6a] rounded-xs" title="#0a1c6a"></div>
-                      <div className="h-8 bg-[#3b82f6] rounded-xs" title="#3b82f6"></div>
-                      <div className="h-8 bg-gray-400 rounded-xs" title="Neutral"></div>
-                    </div>
-                    <div className="text-[10px] text-gray-400 text-center font-medium font-sans">
-                      Paleta e composição padronizadas por campanha
-                    </div>
+                  <div className="w-full max-w-sm relative rounded-lg overflow-hidden shadow-2xl border-none">
+                    <img 
+                      src="https://res.cloudinary.com/ifuatk2z/image/upload/v1785278990/Carrossel_1_ayrdkg.jpg" 
+                      alt="Key Visual" 
+                      className="w-full h-auto object-cover block"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                 </div>
               </div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="10/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="10/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
-          {/* ==================== SLIDE 13: MARKETING DIGITAL ==================== */}
-          {slide.id === 13 && (
+          
+          {/* ==================== SLIDE 13: PERFORMANCE DO SITE ==================== */}
+          {(slide.layoutType === 'site_performance') && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-8 md:p-14 pb-20">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
-                13 / Marketing Digital
+                13 / Performance do Site
+              </div>
+
+              <motion.div variants={containerVariants} initial="hidden" animate="animate" className="my-auto w-full">
+                <div className="text-center max-w-4xl mx-auto mb-12">
+                  <motion.h1 variants={itemVariants} className="text-2xl sm:text-4xl font-extrabold text-[#0a1c6a] uppercase tracking-tight font-display mb-4">
+                    A Importância da <span className="text-cyan-600">Velocidade</span> do Site
+                  </motion.h1>
+                  <motion.p variants={itemVariants} className="text-sm md:text-base text-gray-600 font-sans">
+                    Um site rápido converte mais. Compare a experiência de um site lento com a performance de um site otimizado (Nota A no PageSpeed).
+                  </motion.p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 w-full max-w-5xl mx-auto">
+                  {/* Site Lento */}
+                  <motion.div variants={itemVariants} className="bg-white rounded-3xl p-8 border border-red-200 shadow-xl relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-orange-500"></div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center border border-red-100">
+                          <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800">Site Lento</h3>
+                      </div>
+                      <div className="text-3xl font-black text-red-500 tracking-tighter">45<span className="text-sm font-normal text-red-300">/100</span></div>
+                    </div>
+                    
+                    <div className="space-y-4 mb-8">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Tempo de Carregamento</span>
+                        <span className="text-red-500 font-bold">8.5s</span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-red-500 h-2 rounded-full" style={{ width: '85%' }}></div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Taxa de Rejeição</span>
+                        <span className="text-red-500 font-bold">68%</span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-red-500 h-2 rounded-full" style={{ width: '68%' }}></div>
+                      </div>
+                    </div>
+
+                    <div className="bg-red-50 border border-red-100 rounded-xl p-5">
+                      <h4 className="text-red-600 font-bold text-sm mb-2 flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        Impacto Negativo
+                      </h4>
+                      <ul className="text-gray-700 text-xs space-y-2 font-sans">
+                        <li>• Perda de posições no Google (SEO)</li>
+                        <li>• Alto custo por clique em campanhas</li>
+                        <li>• Frustração do usuário e abandono</li>
+                      </ul>
+                    </div>
+                  </motion.div>
+
+                  {/* Site Rápido (Nota A) */}
+                  <motion.div variants={itemVariants} className="bg-white rounded-3xl p-8 border border-emerald-200 shadow-xl relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-cyan-500"></div>
+                    
+                    <div className="flex items-center justify-between mb-6 relative">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
+                          <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800">Site Nota A</h3>
+                      </div>
+                      <div className="text-3xl font-black text-emerald-500 tracking-tighter">98<span className="text-sm font-normal text-emerald-300">/100</span></div>
+                    </div>
+                    
+                    <div className="space-y-4 mb-8 relative">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Tempo de Carregamento</span>
+                        <span className="text-emerald-500 font-bold">1.2s</span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-emerald-500 h-2 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)]" style={{ width: '12%' }}></div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Taxa de Rejeição</span>
+                        <span className="text-emerald-500 font-bold">15%</span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-emerald-500 h-2 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)]" style={{ width: '15%' }}></div>
+                      </div>
+                    </div>
+
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-5 relative">
+                      <h4 className="text-emerald-600 font-bold text-sm mb-2 flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Impacto Positivo
+                      </h4>
+                      <ul className="text-gray-700 text-xs space-y-2 font-sans">
+                        <li>• Melhor ranqueamento orgânico (SEO)</li>
+                        <li>• Maior conversão de leads e vendas</li>
+                        <li>• Experiência fluida e profissional</li>
+                      </ul>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="13/16 - Fábrica Publicidade" /></div>
+            </div>
+          )}
+
+          {/* ==================== MARKETING DIGITAL ==================== */}
+          {(slide.layoutType === 'marketing_digital') && (
+            <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-8 md:p-14 pb-20">
+              <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
+                14 / Ativações Futuras
               </div>
 
               <motion.div variants={containerVariants} initial="hidden" animate="animate" className="my-auto w-full space-y-5">
@@ -976,13 +1061,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </motion.div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="13/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="13/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
-          {/* ==================== SLIDE 14: GESTÃO DE TRÁFEGO ==================== */}
-          {slide.id === 14 && (
+          {/* ==================== GESTÃO DE TRÁFEGO ==================== */}
+          {(slide.layoutType === 'traffic_management') && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-8 md:p-14 pb-20">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
                 14 / Performance
@@ -1043,13 +1128,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.div>
               </motion.div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="14/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="14/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
-          {/* ==================== SLIDE 15: TECNOLOGIA ==================== */}
-          {slide.id === 15 && (
+          {/* ==================== TECNOLOGIA ==================== */}
+          {(slide.layoutType === 'tech_web') && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-8 md:p-14 pb-20">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
                 15 / Tecnologia
@@ -1118,13 +1203,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar"><RenderSlideFooterContent text="15/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar"><RenderSlideFooterContent text="15/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
           {/* ==================== OTHER SLIDES (STANDARD & INDICATORS TABLES) ==================== */}
-          {slide.layoutType === 'indicators_table' && slide.id !== 5 && (
+          {(slide.layoutType === 'indicators_table') && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-6 md:p-10 pb-16">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
                 {slide.categoryLabel}
@@ -1240,8 +1325,8 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
             </div>
           )}
 
-          {/* ==================== SLIDE 16: COMUNICAÇÃO OFFLINE ==================== */}
-          {(slide.id === 16 || slide.title === "COMUNICAÇÃO OFFLINE") && (
+          {/* ==================== COMUNICAÇÃO OFFLINE ==================== */}
+          {(slide.layoutType === 'offline_communication') && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-6 md:p-10 pb-16">
               <motion.div variants={containerVariants} initial="hidden" animate="animate" className="my-auto w-full space-y-4">
                 {/* Top Banner with Offline Media Image */}
@@ -1276,13 +1361,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
 
                     {/* Offline Media Category Badges */}
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[11px] font-bold text-white shadow-sm">
+                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/16 rounded-full text-[11px] font-bold text-white shadow-sm">
                         Material Impresso
                       </span>
-                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[11px] font-bold text-white shadow-sm">
+                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/16 rounded-full text-[11px] font-bold text-white shadow-sm">
                         Sinalização de PDV
                       </span>
-                      <span className="px-3 py-1 bg-amber-400/20 backdrop-blur-md border border-amber-400/40 rounded-full text-[11px] font-bold text-amber-300 shadow-sm">
+                      <span className="px-3 py-1 bg-amber-400/16 backdrop-blur-md border border-amber-400/40 rounded-full text-[11px] font-bold text-amber-300 shadow-sm">
                         Mídia Exterior
                       </span>
                     </div>
@@ -1340,7 +1425,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
           )}
 
           {/* ==================== OTHER DUAL MATRIX SLIDES ==================== */}
-          {slide.layoutType === 'dual_matrix' && slide.id !== 5 && slide.id !== 6 && slide.id !== 13 && slide.id !== 16 && (
+          {false && (
             <div className="w-full h-full bg-gray-50 text-slate-900 flex flex-col justify-between relative p-6 md:p-12 pb-16">
               <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
                 {slide.categoryLabel}
@@ -1403,8 +1488,8 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
           )}
 
 
-          {/* ==================== SLIDE 19: RESUMO EXECUTIVO (METRICS) ==================== */}
-          {slide.id === 19 && (
+          {/* ==================== RESUMO EXECUTIVO (METRICS) ==================== */}
+          {(slide.layoutType === 'executive_summary') && (
             <div className="w-full h-full bg-gray-900 text-white flex flex-col justify-between relative p-8 md:p-14 pb-20">
               <div className="text-[10px] font-bold tracking-widest uppercase text-cyan-400 font-mono">
                 19 / Síntese
@@ -1432,7 +1517,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                     <motion.div 
                       key={idx} 
                       variants={itemVariants}
-                      className="bg-[#0a1c6a] p-5 md:p-6 border border-blue-500/30 shadow-xl rounded-xl text-center flex flex-col justify-between transform transition duration-300 hover:shadow-cyan-500/20 hover:border-cyan-400/60 hover:-translate-y-1 group"
+                      className="bg-[#0a1c6a] p-5 md:p-6 border border-blue-500/30 shadow-xl rounded-xl text-center flex flex-col justify-between transform transition duration-300 hover:shadow-cyan-500/16 hover:border-cyan-400/60 hover:-translate-y-1 group"
                     >
                       {metric.category && (
                         <div className="text-[9px] font-extrabold text-amber-400/90 uppercase tracking-widest mb-1">
@@ -1461,13 +1546,13 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </motion.p>
               </motion.div>
 
-              <div className="slide-footer-bar bg-slate-950 text-slate-400"><RenderSlideFooterContent text="19/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar bg-slate-950 text-slate-400"><RenderSlideFooterContent text="19/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
 
-          {/* ==================== SLIDE 20: CONCLUSÃO ==================== */}
-          {slide.id === 20 && (
+          {/* ==================== CONCLUSÃO ==================== */}
+          {(slide.layoutType === 'conclusion') && (
             <div className="w-full h-full bg-[#0c1a35] text-white flex flex-col justify-between relative p-8 md:p-16 pb-20 overflow-hidden">
               {/* Decorative Animated Pulsating Target Circles (Círculos de Alvo Animados Pulsantes) */}
               <div className="absolute -bottom-40 -right-40 w-[700px] h-[700px] pointer-events-none flex items-center justify-center">
@@ -1542,7 +1627,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar bg-black/90"><RenderSlideFooterContent text="20/20 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar bg-black/90"><RenderSlideFooterContent text="20/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 
