@@ -20,7 +20,7 @@ export default function ApresentacaoFabricaAzul() {
   const [slides, setSlides] = useState<SlideData[]>(() => {
     let saved = null;
     try {
-      saved = localStorage.getItem('azul_slides_data_v2');
+      saved = localStorage.getItem('azul_slides_data_v4');
     } catch (err) {
       console.warn('localStorage is not accessible');
     }
@@ -48,7 +48,7 @@ export default function ApresentacaoFabricaAzul() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('azul_slides_data_v2', JSON.stringify(slides));
+      localStorage.setItem('azul_slides_data_v4', JSON.stringify(slides));
     } catch (err) {
       console.warn('localStorage is not accessible');
     }

@@ -312,7 +312,7 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
               title: "Atuação Criativa",
               sub: "Design & Audiovisual",
               desc: "Criação de identidades visuais, Key Visuals, redação, peças gráficas para redes, material offline e produção audiovisual e produção audiovisual.",
-              img: "https://images.unsplash.com/photo-1567177662154-dfeb4c93b6ae?w=500&auto=format&fit=crop&q=60",
+              img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1785278875/azulveic_jsromh.png",
               badge: "Criação",
               icon: Palette,
               bullets: ["Key Visuals de Feirões", "Enxoval On & Offline", "Reels & Vídeos em Loja"]
@@ -330,7 +330,7 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
               title: "Atuação Operacional",
               sub: "Atendimento & Workflow",
               desc: "Suporte diário às unidades, gestão de demandas urgentes, alterações rápidas de condições comerciais e fluxo contínuo de aprovações.",
-              img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop",
+              img: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGVtcHJlc2F8ZW58MHx8MHx8fDI%3D",
               badge: "Operação",
               icon: Headphones,
               bullets: ["SLA de Alterações 24h", "Atendimento às Lojas", "Atendimento Exclusivo"]
@@ -418,10 +418,13 @@ export const FabricaAzulLandingPage: React.FC<LandingPageProps> = ({
                 <div className="text-[10px] font-bold text-[#0a1c6a] mb-3 uppercase tracking-wider">
                   Exemplo de Estrutura — Key Visual
                 </div>
-                <div className="w-full h-48 bg-[#0a1c6a] relative mb-4 rounded-sm overflow-hidden flex flex-col justify-end p-4 shadow-inner">
-                  <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-blue-400/80 blur-sm"></div>
-                  <div className="w-3/4 h-4 bg-white rounded-xs mb-2"></div>
-                  <div className="w-1/2 h-2.5 bg-white/40 rounded-xs"></div>
+                <div className="w-full h-48 bg-gray-100 relative mb-4 rounded-sm overflow-hidden flex items-center justify-center shadow-inner">
+                  <img 
+                    src="https://res.cloudinary.com/ifuatk2z/image/upload/v1785278990/Carrossel_1_ayrdkg.jpg" 
+                    alt="Key Visual" 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
                 <div className="grid grid-cols-4 gap-2 mb-3">
                   <div className="h-8 bg-[#060d20] rounded-xs" title="#060d20"></div>
