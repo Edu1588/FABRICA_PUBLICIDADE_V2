@@ -3,166 +3,157 @@ import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function Section3V2() {
   const { t } = useLanguage();
-  const [activeCategory, setActiveCategory] = useState('ALL');
-
-  const categories = [
-    { id: 'ALL', labelPt: 'TODOS', labelEn: 'ALL' },
-    { id: 'TRAFFIC', labelPt: 'TRÁFEGO PAGO', labelEn: 'PAID TRAFFIC' },
-    { id: 'CREATIVE', labelPt: 'AUDIOVISUAL', labelEn: 'CREATIVE' },
-    { id: 'ECOSYSTEM', labelPt: 'ECOSSISTEMA', labelEn: 'ECOSYSTEM' },
-  ];
 
   const services = [
     {
-      category: 'TRAFFIC',
-      badge: 'PERFORMANCE',
-      num: '01',
-      titlePt: 'GESTÃO DE TRÁFEGO DE ALTA CONVERSÃO',
-      titleEn: 'HIGH-CONVERSION PAID TRAFFIC MANAGEMENT',
-      descPt: 'Campanhas hiper-segmentadas para captação de leads qualificados em Meta Ads, Google Ads e TikTok Ads com foco em ROAS real.',
-      descEn: 'Hyper-targeted campaigns for qualified lead acquisition across Meta, Google, and TikTok Ads focused on true ROAS.',
+      num: '01/05',
+      badge: 'BRANDING',
+      title: 'Branding',
+      desc: 'Marcas incríveis atreladas à essência e pilares profundos da sua identidade visual para atrair o público ideal.',
       visualType: 'vortex',
     },
     {
-      category: 'CREATIVE',
-      badge: 'AUDIOVISUAL',
-      num: '02',
-      titlePt: 'PRODUÇÃO AUDIOVISUAL CINEMATOGRÁFICA',
-      titleEn: 'CINEMATIC AUDIOVISUAL PRODUCTION',
-      descPt: 'Vídeos de alto impacto visual para Reels, lançamentos de veículos, cobertura 4K e filmes institucionais de alto padrão.',
-      descEn: 'High visual impact videos for Reels, vehicle launches, 4K coverage, and premium brand films.',
+      num: '02/05',
+      badge: 'COMUNICAÇÃO',
+      title: 'Comunicação',
+      desc: 'Estratégias de discurso e canais consistentes. Tão importante quanto o que comunicar é como e onde comunicar.',
       visualType: 'tower',
     },
     {
-      category: 'ECOSYSTEM',
-      badge: 'PLATAFAORMAS',
-      num: '03',
-      titlePt: 'PLATAFORMAS & LANDING PAGES DE ALTA PERFORMANCE',
-      titleEn: 'HIGH PERFORMANCE LANDING PAGES & PLATFORMS',
-      descPt: 'Desenvolvimento de ecossistemas de conversão integrados aos principais CRMs e sistemas do mercado automotivo.',
-      descEn: 'Development of conversion ecosystems seamlessly integrated with automotive CRMs and inventory management systems.',
+      num: '03/05',
+      badge: 'DESIGN',
+      title: 'Design',
+      desc: 'Ideias, conceitos e informações traduzidas em propaganda de alto nível com tipografias e diagramações obsessivas.',
+      visualType: 'sphere',
+    },
+    {
+      num: '04/05',
+      badge: 'DIGITAL',
+      title: 'Digital',
+      desc: 'Lançamos e consolidamos a presença criativa da sua marca no mundo digital com foco em engajamento e métrica.',
       visualType: 'matrix',
     },
     {
-      category: 'CREATIVE',
-      badge: 'ESTRATÉGIA',
-      num: '04',
-      titlePt: 'BRANDING & POSICIONAMENTO DE ALTO PADRÃO',
-      titleEn: 'PREMIUM BRANDING & STRATEGIC POSITIONING',
-      descPt: 'Posicionamento de marca, design para showroom/PDV e manuais de marca completos para redes de concessionárias.',
-      descEn: 'Brand positioning, showroom/POS design, and comprehensive brand identity systems for dealership networks.',
-      visualType: 'sphere',
+      num: '05/05',
+      badge: 'TECH HOUSE',
+      title: 'Tech House',
+      desc: 'Aplicações escaláveis, inteligência artificial, interfaces de alta imersão e gamificação moldadas através da programação.',
+      visualType: 'tech',
     },
   ];
-
-  const filteredServices =
-    activeCategory === 'ALL'
-      ? services
-      : services.filter((s) => s.category === activeCategory);
 
   return (
     <section
       id="services"
       className="relative py-20 z-10 bg-black min-h-screen border-t border-white/15 w-full overflow-hidden"
     >
-      {/* Header matching Dragonfly 02 Section */}
-      <div className="flex flex-col items-center justify-center text-center mb-10 px-4">
+      {/* Header matching Dragonfly 04 Section */}
+      <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
         <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
-          02
+          04
         </span>
         <h2 className="text-white font-mono text-2xl md:text-4xl font-bold tracking-[0.25em] uppercase">
-          SOLUÇÕES
+          O QUE FORJAMOS
         </h2>
       </div>
 
-      {/* SEC-02 Bar & Category Filters - Full Width 100% */}
-      <div className="w-full border-y border-white/15 py-3 px-4 sm:px-8 flex flex-wrap justify-between items-center gap-4 font-mono text-xs text-white/40 tracking-widest">
-        <span>SEC-02</span>
-
-        {/* Category Filter Buttons */}
-        <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`px-3 py-1 transition-all uppercase tracking-wider text-[11px] ${
-                activeCategory === cat.id
-                  ? 'bg-white/20 text-white font-bold border border-white/40'
-                  : 'bg-black/80 text-white/50 border border-white/10 hover:border-white/30 hover:text-white'
-              }`}
-            >
-              {t(cat.labelPt, cat.labelEn)}
-            </button>
-          ))}
-        </div>
+      {/* SEC Bar */}
+      <div className="w-full border-y border-white/15 py-3 px-4 sm:px-8 mb-12 flex justify-between items-center font-mono text-xs text-white/40 tracking-widest">
+        <span>SEC-04</span>
+        <span>— O QUE FORJAMOS</span>
+        <span>[ CINCO FRENTES, UMA FORJA ]</span>
       </div>
 
-      {/* 2-Column Edge-to-Edge Grid with 0 Gap and 1px Border Dividers */}
-      <div className="grid grid-cols-1 md:grid-cols-2 w-full border-b border-white/15">
-        {filteredServices.map((service, idx) => (
+      {/* Main Title & Description */}
+      <div className="px-6 md:px-16 max-w-5xl mx-auto mb-16 text-center">
+        <h3 className="text-3xl sm:text-5xl font-mono text-white font-bold mb-4 tracking-tight uppercase">
+          Cinco frentes, uma forja.
+        </h3>
+        <p className="font-sans text-sm sm:text-base text-white/70 font-light leading-relaxed max-w-2xl mx-auto">
+          Do rascunho em papel vegetal ao software encapsulado. Combinamos multidisciplinaridade técnica sob uma única visão agressiva de conversão. Cada serviço alimenta a chama da sua marca.
+        </p>
+      </div>
+
+      {/* 2 & 3 Grid Matrix Edge-to-Edge with Hairline Borders */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full border-y border-white/15">
+        {services.map((s, idx) => (
           <div
             key={idx}
-            className={`group relative flex flex-col justify-between border-b md:border-b-0 border-white/15 ${
-              idx % 2 === 0 ? 'md:border-r border-white/15' : ''
-            } ${idx >= 2 ? 'md:border-t border-white/15' : ''} p-6 sm:p-10 hover:bg-white/[0.02] transition-colors`}
+            className={`group relative flex flex-col justify-between p-8 sm:p-10 border-b border-white/15 ${
+              (idx + 1) % 3 !== 0 ? 'lg:border-r border-white/15' : ''
+            } hover:bg-white/[0.02] transition-colors`}
           >
-            {/* Top-Left Category Badge */}
-            <div className="absolute top-6 left-6 z-10 bg-black/90 border border-white/20 px-3 py-1 font-mono text-[10px] font-bold text-white tracking-widest uppercase">
-              {service.badge}
+            {/* Top Badge & Number */}
+            <div className="flex justify-between items-center mb-6 font-mono text-xs">
+              <span className="text-[#ff4f00] font-bold tracking-widest bg-[#ff4f00]/10 border border-[#ff4f00]/30 px-3 py-1 rounded-full uppercase">
+                {s.num} // {s.badge}
+              </span>
+              <span className="text-white/30">[ FÁBRICA ]</span>
             </div>
 
-            {/* Visual Media Canvas (Dot Matrix / ASCII Artwork) */}
-            <div className="relative w-full aspect-[16/10] bg-black overflow-hidden my-4 flex items-center justify-center">
+            {/* Visual Dot Matrix Artwork */}
+            <div className="relative w-full aspect-[16/9] bg-black border border-white/10 rounded-lg overflow-hidden my-4 flex items-center justify-center">
               <div className="w-full h-full flex items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 via-black to-black opacity-80 group-hover:opacity-100 transition-opacity">
-                <div className="font-mono text-[10px] sm:text-[12px] text-white/40 leading-none select-none overflow-hidden text-center p-4 filter blur-[0.2px] group-hover:text-[#ff4f00]/80 transition-colors whitespace-pre">
-                  {service.visualType === 'vortex' && `
+                <div className="font-mono text-[10px] sm:text-[11px] text-white/40 leading-none select-none overflow-hidden text-center p-2 group-hover:text-[#ff4f00] transition-colors whitespace-pre">
+                  {s.visualType === 'vortex' && `
     . : + * # % @ % # * + : .
   : + * # % @ @ @ @ @ % # * + :
 + * # % @ @ @ @ @ @ @ @ @ % # * +
-* # % @ @ @ @ @ @ @ @ @ @ @ % # *
-+ * # % @ @ @ @ @ @ @ @ @ % # * +
-  : + * # % @ @ @ @ @ % # * + :
-    . : + * # % @ % # * + : .
                   `}
-                  {service.visualType === 'tower' && `
+                  {s.visualType === 'tower' && `
     [ 0 1 0 1 1 0 1 0 ]
   [ 1 1 1 1 1 1 1 1 1 1 ]
 [ 0 0 0 0 1 1 1 1 0 0 0 0 ]
-  [ 1 1 1 1 1 1 1 1 1 1 ]
-    [ 0 1 0 1 1 0 1 0 ]
                   `}
-                  {service.visualType === 'matrix' && `
-:: :: :: :: :: :: :: :: :: :: ::
-+. +. +. +. +. +. +. +. +. +. +.
-*# *# *# *# *# *# *# *# *# *# *#
-+. +. +. +. +. +. +. +. +. +. +.
-:: :: :: :: :: :: :: :: :: :: ::
-                  `}
-                  {service.visualType === 'sphere' && `
+                  {s.visualType === 'sphere' && `
       . - = + # + = - .
     - = + # % % % # + = -
   + # % % @ @ @ @ % % # +
-    - = + # % % % # + = -
-      . - = + # + = - .
+                  `}
+                  {s.visualType === 'matrix' && `
+:: :: :: :: :: :: :: :: :: :: ::
++. +. +. +. +. +. +. +. +. +. +.
+*# *# *# *# *# *# *# *# *# *# *#
+                  `}
+                  {s.visualType === 'tech' && `
+< / >  A I  G A M E  I N T E R F A C E
+[ 1 0 1 0 1 1 0 1 ]  -  T E C H  H O U S E
                   `}
                 </div>
               </div>
             </div>
 
-            {/* Bottom Content with Hairline Separator */}
-            <div className="pt-6 border-t border-white/10 mt-auto">
-              {/* Title */}
-              <h3 className="font-mono font-bold text-base sm:text-lg md:text-xl text-white tracking-wide uppercase mb-3 group-hover:text-[#ff4f00] transition-colors">
-                {t(service.titlePt, service.titleEn)}
-              </h3>
-
-              {/* Description */}
-              <p className="font-serif text-xs sm:text-sm text-white/50 leading-relaxed font-light">
-                {t(service.descPt, service.descEn)}
+            {/* Title & Description */}
+            <div className="pt-4 border-t border-white/10 mt-auto">
+              <h4 className="font-mono font-bold text-xl text-white tracking-wide uppercase mb-3 group-hover:text-[#ff4f00] transition-colors">
+                {s.title}
+              </h4>
+              <p className="font-sans text-xs sm:text-sm text-white/70 leading-relaxed font-light">
+                {s.desc}
               </p>
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Bottom CTA Banner */}
+      <div className="w-full border-b border-white/15 bg-black/90 py-12 px-6 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-7xl mx-auto">
+        <div>
+          <span className="text-[#ff4f00] font-mono text-xs font-bold tracking-widest uppercase block mb-1">
+            ESTÁ PRONTO?
+          </span>
+          <h3 className="text-2xl sm:text-3xl font-mono text-white font-bold uppercase tracking-tight">
+            PRONTO PARA FORJAR?
+          </h3>
+        </div>
+
+        <a
+          href="#contact"
+          className="bg-[#ff4f00] hover:bg-[#ff4f00]/90 text-black font-mono font-bold text-sm uppercase tracking-widest px-8 py-4 rounded-full transition-all shadow-xl shadow-[#ff4f00]/20 flex items-center gap-3 shrink-0"
+        >
+          <span>Vamos conversar</span>
+          <span className="text-lg">→</span>
+        </a>
       </div>
     </section>
   );

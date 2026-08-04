@@ -1,81 +1,83 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function Section5V2() {
   const { t } = useLanguage();
 
-  const cases = [
-    {
-      num: '01',
-      brand: 'AZUL VEÍCULOS',
-      category: 'CAMPANHA INSTITUCIONAL & TRÁFEGO PAGO',
-      year: '2026',
-      link: '/apresentacao-azul',
-      highlight: true
-    },
-    {
-      num: '02',
-      brand: 'AUTOAVALIAR',
-      category: 'ECOSSISTEMA B2B & PLATAFORMAS',
-      year: '2025',
-      link: '#',
-      highlight: false
-    },
-    {
-      num: '03',
-      brand: 'SEMINOVOS PREMIUM',
-      category: 'BRANDING & MÍDIA DE ALTA CONVERSÃO',
-      year: '2025',
-      link: '#',
-      highlight: false
-    },
+  const clients = [
+    'PAIOÇA DO CABOCLO',
+    'AZUL VEÍCULOS',
+    'TELIC TECHNOLOGIES',
+    'AUTOSIM',
+    'UNION NETWORK',
+    'FOGÃO MINEIRO',
+    'PROCIVIL CONSTRUTORA',
+    'SR. BRASERO CHURRASCO',
+    'UNIMAIS VEÍCULOS',
+    'GORRE',
+    'NETCONFIG',
+    'BRASIL VISA',
+    'HIDROCAMP',
+    'TGLOBAL NETWORKS',
+    'COLÉGIO PITÁGORAS',
+    'ESTOQUE & OFFICE',
+    'RENATA FREITAS STUDIO',
   ];
 
   return (
-    <section id="cases" className="relative py-32 px-6 md:px-16 border-t border-white/10 z-10 bg-black/90 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto w-full">
-        {/* Dragonfly Header Badge */}
-        <div className="flex items-center gap-4 mb-16">
-          <span className="text-[#ff4f00] font-mono text-sm font-bold tracking-widest bg-[#ff4f00]/10 border border-[#ff4f00]/30 px-3 py-1 rounded-full">
-            04 CASES
-          </span>
-          <span className="text-white/30 font-mono text-xs tracking-widest uppercase">
-            [ PORTFÓLIO & PARCERIAS DE IMPACTO ]
-          </span>
-        </div>
+    <section id="clients" className="relative py-24 z-10 bg-black border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
+      {/* Dragonfly Header */}
+      <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
+        <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
+          06
+        </span>
+        <h2 className="text-white font-mono text-2xl md:text-4xl font-bold tracking-[0.25em] uppercase">
+          CLIENTES
+        </h2>
+      </div>
 
-        {/* List Rows */}
-        <div className="flex flex-col border-b border-white/10">
-          {cases.map((c, idx) => (
-            <Link
-              key={idx}
-              to={c.link}
-              className={`group py-8 md:py-12 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 ${
-                c.highlight ? 'hover:bg-[#ff4f00]/10 px-4 -mx-4 rounded-xl' : 'hover:bg-white/5 px-4 -mx-4 rounded-xl'
-              }`}
-            >
-              <div className="flex items-baseline gap-6 md:gap-12">
-                <span className="font-mono text-sm text-[#ff4f00] font-bold">
-                  {c.num}
-                </span>
-                <h3 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-mono text-white group-hover:text-[#ff4f00] transition-colors tracking-tight">
-                  {c.brand}
-                </h3>
-              </div>
+      {/* SEC Bar */}
+      <div className="w-full border-y border-white/15 py-3 px-4 sm:px-8 mb-12 flex justify-between items-center font-mono text-xs text-white/40 tracking-widest">
+        <span>SEC-06</span>
+        <span>— MERCADOS EM QUE FORJAMOS</span>
+        <span>[ MARCAS QUE CONFIAM ]</span>
+      </div>
 
-              <div className="flex items-center gap-8 font-mono text-xs text-white/50 group-hover:text-white/90">
-                <span className="hidden sm:inline-block tracking-widest uppercase">
-                  {c.category}
-                </span>
-                <span className="text-[#ff4f00] font-bold">{c.year}</span>
-                <span className="text-lg group-hover:translate-x-2 transition-transform text-[#ff4f00]">→</span>
-              </div>
-            </Link>
+      {/* Headline */}
+      <div className="px-6 md:px-16 max-w-4xl mx-auto mb-12 text-center">
+        <h3 className="text-3xl sm:text-5xl font-mono text-white font-bold mb-4 tracking-tight uppercase">
+          Marcas que confiam na nossa bigorna.
+        </h3>
+      </div>
+
+      {/* Edge-to-Edge Grid Matrix of Clients */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 w-full border-y border-white/15">
+        {clients.map((client, idx) => (
+          <div
+            key={idx}
+            className="p-6 sm:p-8 border-b border-white/15 border-r border-white/15 hover:bg-white/[0.03] transition-colors flex items-center justify-center text-center group min-h-[100px]"
+          >
+            <span className="font-mono text-xs sm:text-sm text-white/70 group-hover:text-[#ff4f00] group-hover:font-bold transition-colors uppercase tracking-wider">
+              {client}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Sub-ticker Faixa */}
+      <div className="w-full border-b border-white/15 py-4 bg-[#ff4f00]/10 overflow-hidden relative mt-8">
+        <div className="flex whitespace-nowrap animate-marquee">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex gap-8 font-mono text-xs text-[#ff4f00] font-bold tracking-[0.2em] uppercase mx-4">
+              <span>✦ DESIGN ASSINADO</span>
+              <span>✦ ESTRUTURAS ROBUSTAS DE MARKETING</span>
+              <span>✦ ENGENHARIA DE CÓDIGO RESISTENTE À ALTAS CORES DE TRÁFEGO</span>
+            </div>
           ))}
         </div>
       </div>
     </section>
   );
 }
+
 

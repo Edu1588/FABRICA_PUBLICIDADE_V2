@@ -76,6 +76,37 @@ export default function StatementV2() {
           <span>{t('IMPACTO & ESCALA AUTOMOTIVA', 'AUTOMOTIVE EXCELLENCE & SCALE')}</span>
           <span className="w-8 h-[1px] bg-[#ff4f00]" />
         </div>
+
+        {/* Industrial Seal / Badge Box */}
+        <div className="mt-16 w-full max-w-2xl bg-black/80 backdrop-blur-md border border-white/15 p-6 sm:p-8 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-6 font-mono text-left">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full border border-[#ff4f00]/50 flex items-center justify-center text-[#ff4f00] text-xl font-bold bg-[#ff4f00]/10 shrink-0">
+              ⚡
+            </div>
+            <div>
+              <span className="text-[#ff4f00] text-[10px] font-bold tracking-[0.25em] uppercase block">
+                FORJA INDUSTRIAL
+              </span>
+              <h4 className="text-white text-base font-bold tracking-wider uppercase">
+                A BIGORNA DA CRIAÇÃO
+              </h4>
+              <p className="text-white/40 text-xs tracking-widest mt-0.5">
+                FUNDADA EM SANTO ANTÔNIO / SP
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5 text-xs text-white/70 border-t sm:border-t-0 sm:border-l border-white/15 pt-4 sm:pt-0 sm:pl-6 w-full sm:w-auto">
+            <div className="flex items-center gap-2">
+              <span className="text-[#ff4f00]">✓</span>
+              <span><strong>Alta Precisão:</strong> Artesanal e cirúrgico</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#ff4f00]">✓</span>
+              <span><strong>Resistência:</strong> Estratégia que dura</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -35,11 +35,12 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
 
   const navLinks = [
     { pt: '00 INÍCIO', en: '00 HOME', path: '/home', isRouter: true },
-    { pt: '01 SOBRE', en: '01 ABOUT', path: '#philosophy', isRouter: false },
-    { pt: '02 SERVIÇOS', en: '02 SERVICES', path: '#services', isRouter: false },
-    { pt: '03 CASES & PORTFÓLIO', en: '03 CASES & PORTFOLIO', path: '#cases', isRouter: false },
-    { pt: '04 APRESENTAÇÃO AZUL', en: '04 AZUL PRESENTATION', path: '/apresentacao-azul', isRouter: true, highlighted: true },
-    { pt: '05 CONTATO', en: '05 CONTACT', path: '#contact', isRouter: false },
+    { pt: '01 QUEM SOMOS', en: '01 ABOUT', path: '#philosophy', isRouter: false },
+    { pt: '02 JORNADA DA FORJA', en: '02 JOURNEY', path: '#journey', isRouter: false },
+    { pt: '03 O QUE FORJAMOS', en: '03 WHAT WE FORGE', path: '#services', isRouter: false },
+    { pt: '04 CLIENTES', en: '04 CLIENTS', path: '#clients', isRouter: false },
+    { pt: '05 APRESENTAÇÃO AZUL', en: '05 AZUL PRESENTATION', path: '/apresentacao-azul', isRouter: true, highlighted: true },
+    { pt: '06 CONTATO', en: '06 CONTACT', path: '#contact', isRouter: false },
   ];
 
   return (

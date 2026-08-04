@@ -5,9 +5,12 @@ import Background3D from '../components/V2/Background3D';
 import HeroV2 from '../components/V2/HeroV2';
 import Section2V2 from '../components/V2/Section2V2';
 import StatementV2 from '../components/V2/StatementV2';
-import Section3V2 from '../components/V2/Section3V2';
 import Section4V2 from '../components/V2/Section4V2';
+import JourneyV2 from '../components/V2/JourneyV2';
+import Section3V2 from '../components/V2/Section3V2';
+import BreakBarriersV2 from '../components/V2/BreakBarriersV2';
 import Section5V2 from '../components/V2/Section5V2';
+import TestimonialsV2 from '../components/V2/TestimonialsV2';
 import Section6V2 from '../components/V2/Section6V2';
 import FixedOverlayV2 from '../components/V2/FixedOverlayV2';
 
@@ -26,7 +29,7 @@ export default function HomeV2() {
 
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -48,13 +51,17 @@ export default function HomeV2() {
           <HeroV2 />
           <Section2V2 />
           <StatementV2 />
-          <Section3V2 />
           <Section4V2 />
+          <JourneyV2 />
+          <Section3V2 />
+          <BreakBarriersV2 />
           <Section5V2 />
+          <TestimonialsV2 />
           <Section6V2 />
         </main>
       </div>
     </SmoothScroller>
   );
 }
+
 
