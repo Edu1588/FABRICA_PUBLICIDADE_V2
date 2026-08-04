@@ -4,6 +4,9 @@ import LoaderV2 from '../components/V2/LoaderV2';
 import HeroV2 from '../components/V2/HeroV2';
 import Section2V2 from '../components/V2/Section2V2';
 import Section3V2 from '../components/V2/Section3V2';
+import Section4V2 from '../components/V2/Section4V2';
+import Section5V2 from '../components/V2/Section5V2';
+import Section6V2 from '../components/V2/Section6V2';
 import FixedOverlayV2 from '../components/V2/FixedOverlayV2';
 
 export default function HomeV2() {
@@ -44,6 +47,9 @@ export default function HomeV2() {
           <HeroV2 />
           <Section2V2 />
           <Section3V2 />
+          <Section4V2 />
+          <Section5V2 />
+          <Section6V2 />
         </main>
       </div>
     </SmoothScroller>
