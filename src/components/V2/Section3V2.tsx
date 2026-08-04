@@ -1,155 +1,171 @@
-import React, { useRef, useEffect } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import LiquidImage from './LiquidImage';
+import React, { useState } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-gsap.registerPlugin(ScrollTrigger);
-
 export default function Section3V2() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const textRefs = useRef<(HTMLHeadingElement | null)[]>([]);
-  const displacementRef = useRef<SVGFEDisplacementMapElement>(null);
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
+  const [activeCategory, setActiveCategory] = useState('ALL');
 
-  useEffect(() => {
-    // Liquid entrance effect for text
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 60%", // Triggers slightly later than Section 2
-        toggleActions: "play none none reverse"
-      }
-    });
+  const categories = [
+    { id: 'ALL', labelPt: 'TODOS', labelEn: 'ALL' },
+    { id: 'TRAFFIC', labelPt: 'TRÁFEGO PAGO', labelEn: 'PAID TRAFFIC' },
+    { id: 'CREATIVE', labelPt: 'AUDIOVISUAL', labelEn: 'CREATIVE' },
+    { id: 'ECOSYSTEM', labelPt: 'ECOSSISTEMA', labelEn: 'ECOSYSTEM' },
+  ];
 
-    if (displacementRef.current) {
-      tl.to(displacementRef.current, {
-        attr: { scale: 100 },
-        duration: 0
-      })
-      .to(displacementRef.current, {
-        attr: { scale: 0 },
-        duration: 2.5,
-        ease: 'power3.out'
-      }, 0);
-    }
+  const services = [
+    {
+      category: 'TRAFFIC',
+      badge: 'PERFORMANCE',
+      num: '01',
+      titlePt: 'GESTÃO DE TRÁFEGO DE ALTA CONVERSÃO',
+      titleEn: 'HIGH-CONVERSION PAID TRAFFIC MANAGEMENT',
+      descPt: 'Campanhas hiper-segmentadas para captação de leads qualificados em Meta Ads, Google Ads e TikTok Ads com foco em ROAS real.',
+      descEn: 'Hyper-targeted campaigns for qualified lead acquisition across Meta, Google, and TikTok Ads focused on true ROAS.',
+      visualType: 'vortex',
+    },
+    {
+      category: 'CREATIVE',
+      badge: 'AUDIOVISUAL',
+      num: '02',
+      titlePt: 'PRODUÇÃO AUDIOVISUAL CINEMATOGRÁFICA',
+      titleEn: 'CINEMATIC AUDIOVISUAL PRODUCTION',
+      descPt: 'Vídeos de alto impacto visual para Reels, lançamentos de veículos, cobertura 4K e filmes institucionais de alto padrão.',
+      descEn: 'High visual impact videos for Reels, vehicle launches, 4K coverage, and premium brand films.',
+      visualType: 'tower',
+    },
+    {
+      category: 'ECOSYSTEM',
+      badge: 'PLATAFAORMAS',
+      num: '03',
+      titlePt: 'PLATAFORMAS & LANDING PAGES DE ALTA PERFORMANCE',
+      titleEn: 'HIGH PERFORMANCE LANDING PAGES & PLATFORMS',
+      descPt: 'Desenvolvimento de ecossistemas de conversão integrados aos principais CRMs e sistemas do mercado automotivo.',
+      descEn: 'Development of conversion ecosystems seamlessly integrated with automotive CRMs and inventory management systems.',
+      visualType: 'matrix',
+    },
+    {
+      category: 'CREATIVE',
+      badge: 'ESTRATÉGIA',
+      num: '04',
+      titlePt: 'BRANDING & POSICIONAMENTO DE ALTO PADRÃO',
+      titleEn: 'PREMIUM BRANDING & STRATEGIC POSITIONING',
+      descPt: 'Posicionamento de marca, design para showroom/PDV e manuais de marca completos para redes de concessionárias.',
+      descEn: 'Brand positioning, showroom/POS design, and comprehensive brand identity systems for dealership networks.',
+      visualType: 'sphere',
+    },
+  ];
 
-    if (textRefs.current.length > 0) {
-      tl.fromTo(textRefs.current, 
-        { y: 100, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.5, stagger: 0.2, ease: 'power3.out' },
-        0.5
-      );
-    }
-
-    // Simple fade up for body text
-    const fadeElements = gsap.utils.toArray('.fade-up-text-s3');
-    fadeElements.forEach((el: any) => {
-      gsap.fromTo(el, 
-        { y: 50, opacity: 0 },
-        { 
-          y: 0, 
-          opacity: 1, 
-          duration: 1.5, 
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: el,
-            start: "top 85%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-    });
-  }, [language]);
+  const filteredServices =
+    activeCategory === 'ALL'
+      ? services
+      : services.filter((s) => s.category === activeCategory);
 
   return (
-    <section id="projects" ref={sectionRef} className="relative min-h-screen bg-[#020205] px-6 md:px-10 flex items-stretch z-10 overflow-hidden">
-      <svg className="fixed pointer-events-none w-0 h-0">
-        <defs>
-          <filter id="section3-liquid" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="1" result="warp" />
-            <feDisplacementMap 
-              ref={displacementRef}
-              xChannelSelector="R" 
-              yChannelSelector="G" 
-              scale="0" 
-              in="SourceGraphic" 
-              in2="warp" 
-            />
-          </filter>
-        </defs>
-      </svg>
-      
-      {/* Background ambient light */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#C46A1A]/5 rounded-full blur-[150px] pointer-events-none"></div>
+    <section
+      id="services"
+      className="relative py-20 z-10 bg-black min-h-screen border-t border-white/15 w-full overflow-hidden"
+    >
+      {/* Header matching Dragonfly 02 Section */}
+      <div className="flex flex-col items-center justify-center text-center mb-10 px-4">
+        <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
+          02
+        </span>
+        <h2 className="text-white font-mono text-2xl md:text-4xl font-bold tracking-[0.25em] uppercase">
+          SOLUÇÕES
+        </h2>
+      </div>
 
-      {/* Left Rotated Text - Sticky */}
-      <div className="hidden lg:block w-24 relative shrink-0 z-20">
-        <div className="sticky top-[50vh] -translate-y-1/2 flex items-center justify-center">
-          <div 
-            className="transform -rotate-90 origin-center text-[#F5F2EC] tracking-[0.2em] text-lg uppercase whitespace-nowrap"
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            {t('Projetos', 'Projects')}
-          </div>
+      {/* SEC-02 Bar & Category Filters - Full Width 100% */}
+      <div className="w-full border-y border-white/15 py-3 px-4 sm:px-8 flex flex-wrap justify-between items-center gap-4 font-mono text-xs text-white/40 tracking-widest">
+        <span>SEC-02</span>
+
+        {/* Category Filter Buttons */}
+        <div className="flex flex-wrap gap-2">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`px-3 py-1 transition-all uppercase tracking-wider text-[11px] ${
+                activeCategory === cat.id
+                  ? 'bg-white/20 text-white font-bold border border-white/40'
+                  : 'bg-black/80 text-white/50 border border-white/10 hover:border-white/30 hover:text-white'
+              }`}
+            >
+              {t(cat.labelPt, cat.labelEn)}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto w-full flex flex-col lg:flex-row relative z-10">
-        
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col justify-center py-32 mt-20 lg:mt-0 lg:pl-16">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            
-            {/* Text Side */}
-            <div>
-              <div key={language} className="mb-12" style={{ fontFamily: 'var(--font-heading)', filter: 'url(#section3-liquid)' }}>
-                <div className="overflow-hidden mb-2">
-                  <h2 ref={el => { textRefs.current[0] = el; }} className="text-4xl md:text-5xl lg:text-6xl font-light text-[#F5F2EC] leading-[1.1] transform-gpu">
-                    {t('O Nosso Legado', 'Our Legacy')}
-                  </h2>
-                </div>
-                <div className="overflow-hidden mb-2">
-                  <h2 ref={el => { textRefs.current[1] = el; }} className="text-4xl md:text-5xl lg:text-6xl font-light text-[#F5F2EC] leading-[1.1] transform-gpu">
-                    {t('Em Construção', 'Under Construction')}
-                  </h2>
-                </div>
-              </div>
+      {/* 2-Column Edge-to-Edge Grid with 0 Gap and 1px Border Dividers */}
+      <div className="grid grid-cols-1 md:grid-cols-2 w-full border-b border-white/15">
+        {filteredServices.map((service, idx) => (
+          <div
+            key={idx}
+            className={`group relative flex flex-col justify-between border-b md:border-b-0 border-white/15 ${
+              idx % 2 === 0 ? 'md:border-r border-white/15' : ''
+            } ${idx >= 2 ? 'md:border-t border-white/15' : ''} p-6 sm:p-10 hover:bg-white/[0.02] transition-colors`}
+          >
+            {/* Top-Left Category Badge */}
+            <div className="absolute top-6 left-6 z-10 bg-black/90 border border-white/20 px-3 py-1 font-mono text-[10px] font-bold text-white tracking-widest uppercase">
+              {service.badge}
+            </div>
 
-              <div key={`${language}-text`} className="max-w-md text-sm md:text-base text-[#F5F2EC]/70 font-light leading-loose fade-up-text-s3">
-                <p className="mb-6">
-                  {t('Cada projeto é uma prova da nossa dedicação à excelência e à visão. Nós não apenas construímos; nós forjamos experiências digitais que ressoam com propósito e precisão.', 'Each project is a testament to our dedication to excellence and vision. We do not simply build; we forge digital experiences that resonate with purpose and precision.')}
-                </p>
-                <div className="mt-12 flex items-center gap-4 cursor-pointer group w-fit">
-                   <div className="w-12 h-[1px] bg-white group-hover:w-16 transition-all duration-300"></div>
-                   <span className="text-xs uppercase tracking-widest font-sans group-hover:opacity-70 transition-opacity">
-                     {t('Explorar Tudo', 'Explore All')}
-                   </span>
+            {/* Visual Media Canvas (Dot Matrix / ASCII Artwork) */}
+            <div className="relative w-full aspect-[16/10] bg-black overflow-hidden my-4 flex items-center justify-center">
+              <div className="w-full h-full flex items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 via-black to-black opacity-80 group-hover:opacity-100 transition-opacity">
+                <div className="font-mono text-[10px] sm:text-[12px] text-white/40 leading-none select-none overflow-hidden text-center p-4 filter blur-[0.2px] group-hover:text-[#ff4f00]/80 transition-colors whitespace-pre">
+                  {service.visualType === 'vortex' && `
+    . : + * # % @ % # * + : .
+  : + * # % @ @ @ @ @ % # * + :
++ * # % @ @ @ @ @ @ @ @ @ % # * +
+* # % @ @ @ @ @ @ @ @ @ @ @ % # *
++ * # % @ @ @ @ @ @ @ @ @ % # * +
+  : + * # % @ @ @ @ @ % # * + :
+    . : + * # % @ % # * + : .
+                  `}
+                  {service.visualType === 'tower' && `
+    [ 0 1 0 1 1 0 1 0 ]
+  [ 1 1 1 1 1 1 1 1 1 1 ]
+[ 0 0 0 0 1 1 1 1 0 0 0 0 ]
+  [ 1 1 1 1 1 1 1 1 1 1 ]
+    [ 0 1 0 1 1 0 1 0 ]
+                  `}
+                  {service.visualType === 'matrix' && `
+:: :: :: :: :: :: :: :: :: :: ::
++. +. +. +. +. +. +. +. +. +. +.
+*# *# *# *# *# *# *# *# *# *# *#
++. +. +. +. +. +. +. +. +. +. +.
+:: :: :: :: :: :: :: :: :: :: ::
+                  `}
+                  {service.visualType === 'sphere' && `
+      . - = + # + = - .
+    - = + # % % % # + = -
+  + # % % @ @ @ @ % % # +
+    - = + # % % % # + = -
+      . - = + # + = - .
+                  `}
                 </div>
               </div>
             </div>
 
-            {/* Images Side */}
-            <div className="relative h-[500px] lg:h-[700px] w-full flex items-center justify-center">
-              {/* Project 1 */}
-              <div className="absolute w-[70%] h-[60%] top-[10%] right-0 z-10 shadow-2xl overflow-hidden group">
-                 <div className="w-full h-full transform transition-transform duration-1000 group-hover:scale-105">
-                   <LiquidImage src="https://images.unsplash.com/photo-1624382497193-de32b368de64?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover" />
-                 </div>
-              </div>
-              
-              {/* Project 2 */}
-              <div className="absolute w-[60%] h-[50%] bottom-[10%] left-0 z-20 shadow-2xl overflow-hidden group">
-                 <div className="w-full h-full transform transition-transform duration-1000 group-hover:scale-105">
-                   <LiquidImage src="https://images.unsplash.com/photo-1624382497193-de32b368de64?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover" />
-                 </div>
-              </div>
-            </div>
+            {/* Bottom Content with Hairline Separator */}
+            <div className="pt-6 border-t border-white/10 mt-auto">
+              {/* Title */}
+              <h3 className="font-mono font-bold text-base sm:text-lg md:text-xl text-white tracking-wide uppercase mb-3 group-hover:text-[#ff4f00] transition-colors">
+                {t(service.titlePt, service.titleEn)}
+              </h3>
 
+              {/* Description */}
+              <p className="font-serif text-xs sm:text-sm text-white/50 leading-relaxed font-light">
+                {t(service.descPt, service.descEn)}
+              </p>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   );
 }
+
+

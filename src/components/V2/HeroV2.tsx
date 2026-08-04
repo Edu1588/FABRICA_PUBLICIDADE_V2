@@ -3,79 +3,74 @@ import gsap from 'gsap';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function HeroV2() {
-  const displacementRef = useRef<SVGFEDisplacementMapElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
+  const tagRef = useRef<HTMLDivElement>(null);
   const { language, t } = useLanguage();
   
-  const headlinePt = localStorage.getItem('aforja_headline_pt') || "Grandes marcas não nascem prontas.";
-  const headlineEn = localStorage.getItem('aforja_headline_en') || "Great brands are not born ready.";
-  const text = t(headlinePt, headlineEn);
+  const text = "FABRICA";
   const chars = text.split("");
   
   useEffect(() => {
-    // Delay matches the previous Loader timing
     if (textRef.current) {
-      gsap.to(textRef.current.children, {
-        opacity: 1,
-        duration: 1.5,
-        stagger: 0.05,
-        ease: 'power2.inOut',
-        delay: 0.5
-      });
-    }
-    
-    if (displacementRef.current) {
-      gsap.fromTo(displacementRef.current,
-        { attr: { scale: 100 } },
-        { attr: { scale: 0 }, duration: 2.5, ease: 'power3.out', delay: 0.5 }
+      gsap.fromTo(textRef.current.children, 
+        { 
+          opacity: 0, 
+          filter: "blur(20px)",
+          scale: 1.15,
+          y: 40
+        },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          scale: 1,
+          y: 0,
+          duration: 1.8,
+          stagger: 0.08,
+          ease: 'power3.out',
+          delay: 0.2
+        }
       );
     }
-  }, [language, text]); // Re-run animation when language or text changes
+
+    if (tagRef.current) {
+      gsap.fromTo(tagRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1.2, delay: 1.0, ease: 'power2.out' }
+      );
+    }
+  }, [language, text]);
 
   return (
-    <section className="relative h-screen w-full flex flex-col justify-center bg-[#0c0c0c] overflow-hidden">
-      <svg className="fixed pointer-events-none w-0 h-0">
-        <defs>
-          <filter id="hero-liquid" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="1" result="warp" />
-            <feDisplacementMap 
-              ref={displacementRef}
-              xChannelSelector="R" 
-              yChannelSelector="G" 
-              scale="0" 
-              in="SourceGraphic" 
-              in2="warp" 
-            />
-          </filter>
-        </defs>
-      </svg>
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 z-0 opacity-60 scale-105"
-        style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1624382497193-de32b368de64?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent"></div>
-      </div>
+    <section className="relative h-screen w-full flex flex-col justify-center items-center overflow-hidden">
+      {/* Corner crosshairs like Dragonfly */}
+      <div className="absolute top-8 left-8 text-white/30 text-xs font-mono">+</div>
+      <div className="absolute top-8 right-8 text-white/30 text-xs font-mono">+</div>
+      <div className="absolute bottom-8 left-8 text-white/30 text-xs font-mono">+</div>
+      <div className="absolute bottom-8 right-8 text-white/30 text-xs font-mono">+</div>
 
-      <div className="relative z-[101] px-6 md:px-24 lg:px-40 max-w-7xl mx-auto w-full">
+      <div className="relative z-20 px-4 max-w-7xl mx-auto w-full flex flex-col items-center justify-center text-center">
         <h1 
-          key={language}
           ref={textRef}
-          className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide text-[#F5F2EC]"
-          style={{ fontFamily: 'var(--font-heading)', filter: 'url(#hero-liquid)' }}
+          className="text-6xl sm:text-8xl md:text-[11rem] lg:text-[15rem] font-bold tracking-tighter text-[#ff4f00] leading-none select-none uppercase mix-blend-difference"
+          style={{ fontFamily: 'var(--font-heading)', textShadow: '0 0 80px rgba(255,79,0,0.25)', mixBlendMode: 'difference' }}
         >
           {chars.map((char, index) => (
-            <span key={index} className="opacity-0">
-              {char === ' ' ? '\u00A0' : char}
+            <span key={index} className="inline-block opacity-0 mix-blend-difference" style={{ mixBlendMode: 'difference' }}>
+              {char}
             </span>
           ))}
         </h1>
+
+        <div ref={tagRef} className="mt-8 flex flex-col items-center gap-2 opacity-0">
+          <div className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.3em] text-white/70 bg-black/60 border border-white/10 px-4 py-1.5 backdrop-blur-md rounded-full">
+            {t('Estratégia, Design & Inteligência de Dados', 'Strategy, Design & Data Intelligence')}
+          </div>
+          <p className="text-xs text-white/40 font-mono tracking-widest mt-1">
+            [ ECOSSISTEMA PUBLICITÁRIO AUTOMOTIVO ]
+          </p>
+        </div>
       </div>
     </section>
   );
 }
+

@@ -1,134 +1,113 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import LiquidImage from './LiquidImage';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Section2V2() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const textRefs = useRef<(HTMLHeadingElement | null)[]>([]);
-  const displacementRef = useRef<SVGFEDisplacementMapElement>(null);
-  const { language, t } = useLanguage();
+  const textRef = useRef<HTMLHeadingElement>(null);
+  const ethosRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
-    // Liquid entrance effect for text
-    textRefs.current.forEach((text, index) => {
-      if (!text) return;
-      
-      gsap.fromTo(text, 
-        { 
-          y: 100, 
-          opacity: 0, 
-          skewY: 10,
-          rotateZ: 5
-        },
+    if (textRef.current) {
+      gsap.fromTo(
+        textRef.current,
+        { opacity: 0, y: 40 },
         {
-          y: 0,
           opacity: 1,
-          skewY: 0,
-          rotateZ: 0,
-          duration: 1.5,
-          ease: "elastic.out(1, 0.75)",
+          y: 0,
+          duration: 1.2,
+          ease: 'power3.out',
           scrollTrigger: {
-            trigger: text,
-            start: "top 85%",
-            toggleActions: "play none none reverse"
+            trigger: textRef.current,
+            start: 'top 85%',
           },
-          delay: index * 0.1
         }
       );
-    });
+    }
 
-    // Animate the small paragraph
-      gsap.fromTo(".fade-up-text",
+    if (ethosRef.current) {
+      gsap.fromTo(
+        ethosRef.current,
         { opacity: 0, y: 30 },
-        { 
-          opacity: 1, y: 0, duration: 1, ease: "power3.out",
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          delay: 0.2,
+          ease: 'power3.out',
           scrollTrigger: {
-            trigger: ".fade-up-text",
-            start: "top 85%",
-          }
+            trigger: ethosRef.current,
+            start: 'top 85%',
+          },
         }
       );
-
-      if (textRefs.current[0] && displacementRef.current) {
-        gsap.fromTo(displacementRef.current,
-          { attr: { scale: 100 } },
-          { 
-            attr: { scale: 0 },
-            duration: 2.5,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: textRefs.current[0],
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      }
-  }, [language]); // React to language change
+    }
+  }, []);
 
   return (
-    <section id="philosophy" ref={sectionRef} className="relative min-h-screen bg-[#060606] px-6 md:px-10 flex items-stretch z-10">
-      <svg className="fixed pointer-events-none w-0 h-0">
-        <defs>
-          <filter id="section2-liquid" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="1" result="warp" />
-            <feDisplacementMap 
-              ref={displacementRef}
-              xChannelSelector="R" 
-              yChannelSelector="G" 
-              scale="0" 
-              in="SourceGraphic" 
-              in2="warp" 
-            />
-          </filter>
-        </defs>
-      </svg>
-      {/* Top Left Image */}
-      <div className="absolute top-0 left-0 w-64 h-48 md:w-80 md:h-56 hidden md:block opacity-60 mix-blend-lighten pointer-events-none">
-        <LiquidImage src="https://images.unsplash.com/photo-1624382497193-de32b368de64?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full" />
-      </div>
+    <section
+      id="philosophy"
+      ref={sectionRef}
+      className="relative py-36 px-6 md:px-16 z-10 bg-transparent min-h-screen flex flex-col justify-center"
+    >
+      <div className="max-w-7xl mx-auto w-full">
+        {/* Header Indicator matching Dragonfly 01 ABOUT */}
+        <div className="flex flex-col items-center justify-center text-center mb-10">
+          <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
+            01
+          </span>
+          <h2 className="text-white font-mono text-2xl md:text-4xl font-bold tracking-[0.25em] uppercase">
+            ABOUT
+          </h2>
+        </div>
 
-      {/* Left Rotated Text - Sticky Removed per user request */}
+        {/* Hairline Separator with SEC-01 label */}
+        <div className="relative w-full border-t border-white/15 mb-16 pt-3 flex justify-between items-center font-mono text-xs text-white/40 tracking-widest">
+          <span>SEC-01</span>
+          <span>[ FÁBRICA PUBLICIDADE ]</span>
+        </div>
 
-      <div className="max-w-6xl mx-auto w-full flex flex-col lg:flex-row relative z-10">
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col justify-center py-32 mt-20 lg:mt-0 lg:pl-16">
-          
-          {/* Headline with liquid entrance */}
-          <div key={language} className="mb-12" style={{ fontFamily: 'var(--font-heading)', filter: 'url(#section2-liquid)' }}>
-            <div className="overflow-hidden mb-2">
-              <h2 ref={el => { textRefs.current[0] = el; }} className="text-4xl md:text-5xl lg:text-7xl font-light text-[#F5F2EC] leading-[1.1] transform-gpu">
-                {t('São Forjadas', 'They are Forged')}
-              </h2>
+        {/* Content Layout */}
+        <div className="space-y-16">
+          {/* Top Main Statement */}
+          <div className="max-w-4xl">
+            <h3
+              ref={textRef}
+              className="text-2xl sm:text-4xl md:text-5xl font-light text-white leading-[1.25] tracking-tight font-serif"
+            >
+              {t(
+                'Mais de 8 anos no mercado automotivo, a Fábrica traz estratégia, alcance e inteligência para marcas de alto padrão encontrarem seu melhor desempenho.',
+                'Over eight years in automotive marketing, Fábrica brings strategy, reach, and intelligence for premium brands to unlock their full potential.'
+              )}
+            </h3>
+          </div>
+
+          {/* Bottom Offset Paragraph (Ethos) */}
+          <div className="flex justify-end w-full">
+            <div
+              ref={ethosRef}
+              className="max-w-2xl md:ml-auto space-y-4 font-mono text-sm sm:text-base text-white/80 leading-relaxed bg-black/40 backdrop-blur-md p-6 sm:p-8 rounded-xl border border-white/10"
+            >
+              <div className="flex items-center gap-2 text-[#ff4f00] text-xs font-bold tracking-widest uppercase mb-2">
+                <span>ETHOS</span>
+                <span className="w-8 h-[1px] bg-[#ff4f00]"></span>
+              </div>
+              <p>
+                {t(
+                  'Somos uma equipe de estrategistas, criativos e especialistas em mídias de alta conversão. Lideramos a transformação de concessionárias e empresas automotivas de alto padrão através de ecossistemas digitais, inteligência de tráfego e criação audiovisual cinematográfica.',
+                  'We are a team of deeply technical strategists, creatives, and performance experts. We elevate premium automotive brands and dealerships through integrated digital ecosystems, precision traffic intelligence, and cinematic visual creation.'
+                )}
+              </p>
             </div>
           </div>
-
-          {/* Body Text */}
-          <div key={`${language}-text`} className="max-w-md lg:ml-24 text-sm md:text-base text-[#F5F2EC]/70 font-light leading-loose fade-up-text">
-            <p className="mb-6">
-              {t('Sua empresa já possui o ingrediente mais importante: a vontade de crescer. Nós entramos no processo para moldar sua marca, fortalecer sua presença e transformar potencial em resultados concretos.', 'Your company already has the most important ingredient: the will to grow. We enter the process to mold your brand, strengthen your presence, and transform potential into concrete results.')}
-            </p>
-          </div>
         </div>
-
-        {/* Right Images */}
-        <div className="lg:w-[400px] mt-16 lg:mt-0 relative h-[600px] flex items-center justify-center">
-          {/* Main big image */}
-          <div className="w-[85%] h-[85%] absolute z-0 shadow-2xl">
-            <LiquidImage src="https://images.unsplash.com/photo-1624382497193-de32b368de64?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover" />
-          </div>
-          
-          {/* Overlapping small image */}
-          <div className="w-1/2 h-1/3 absolute bottom-0 right-0 z-10 shadow-2xl translate-y-12 translate-x-8">
-            <LiquidImage src="https://images.unsplash.com/photo-1624382497193-de32b368de64?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover" />
-          </div>
-        </div>
-
       </div>
     </section>
   );
 }
+
+

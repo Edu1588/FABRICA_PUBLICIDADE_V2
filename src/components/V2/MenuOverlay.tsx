@@ -17,69 +17,87 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
     if (isOpen) {
       gsap.to(overlayRef.current, {
         autoAlpha: 1,
-        duration: 0.5,
+        duration: 0.4,
         ease: 'power3.out'
       });
       gsap.fromTo(linksRef.current, 
-        { y: 50, opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.1, duration: 0.8, ease: 'power3.out', delay: 0.2 }
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.08, duration: 0.6, ease: 'power3.out', delay: 0.1 }
       );
     } else {
       gsap.to(overlayRef.current, {
         autoAlpha: 0,
-        duration: 0.5,
+        duration: 0.3,
         ease: 'power3.in'
       });
     }
   }, [isOpen]);
 
   const navLinks = [
-    { pt: 'Início', en: 'Home', path: '/v2' },
-    { pt: 'Filosofia', en: 'Philosophy', path: '#philosophy' },
-    { pt: 'Serviços', en: 'Services', path: '#services' },
-    { pt: 'Contato', en: 'Contact', path: '#contact' },
+    { pt: '00 INÍCIO', en: '00 HOME', path: '/home', isRouter: true },
+    { pt: '01 SOBRE', en: '01 ABOUT', path: '#philosophy', isRouter: false },
+    { pt: '02 SERVIÇOS', en: '02 SERVICES', path: '#services', isRouter: false },
+    { pt: '03 CASES & PORTFÓLIO', en: '03 CASES & PORTFOLIO', path: '#cases', isRouter: false },
+    { pt: '04 APRESENTAÇÃO AZUL', en: '04 AZUL PRESENTATION', path: '/apresentacao-azul', isRouter: true, highlighted: true },
+    { pt: '05 CONTATO', en: '05 CONTACT', path: '#contact', isRouter: false },
   ];
 
   return (
     <div 
       ref={overlayRef} 
-      className="fixed inset-0 z-50 bg-[#0c0c0c] flex flex-col justify-center items-center text-[#F5F2EC] invisible opacity-0"
+      className="fixed inset-0 z-50 bg-[#050505]/95 backdrop-blur-2xl flex flex-col justify-center items-center text-[#F5F2EC] invisible opacity-0 border border-white/10"
     >
       <button 
         onClick={onClose}
-        className="absolute top-10 right-10 text-xs tracking-widest uppercase hover:opacity-70 transition-opacity"
-        style={{ fontFamily: 'var(--font-heading)' }}
+        className="absolute top-10 right-10 text-xs font-mono tracking-[0.2em] uppercase hover:text-[#ff4f00] transition-colors border border-white/20 px-4 py-2 rounded-full bg-black/50"
       >
-        {t('FECHAR', 'CLOSE')}
+        [ {t('FECHAR', 'CLOSE')} ]
       </button>
 
-      <nav className="flex flex-col items-center gap-12">
+      <nav className="flex flex-col items-center gap-6 my-auto">
         {navLinks.map((link, i) => (
-          <a
-            key={i}
-            href={link.path}
-            ref={el => { linksRef.current[i] = el; }}
-            onClick={(e) => {
-              if (link.path.startsWith('#')) {
-                e.preventDefault();
-                // We'd add smooth scroll logic here later if needed
+          link.isRouter ? (
+            <Link
+              key={i}
+              to={link.path}
+              ref={el => { linksRef.current[i] = el; }}
+              onClick={onClose}
+              className={`text-2xl md:text-5xl font-mono tracking-tight transition-all duration-300 ${
+                link.highlighted 
+                  ? 'text-[#ff4f00] font-bold hover:scale-105' 
+                  : 'text-white/80 hover:text-[#ff4f00] hover:translate-x-2'
+              }`}
+            >
+              {t(link.pt, link.en)}
+            </Link>
+          ) : (
+            <a
+              key={i}
+              href={link.path}
+              ref={el => { linksRef.current[i] = el; }}
+              onClick={(e) => {
+                if (link.path.startsWith('#')) {
+                  const targetEl = document.querySelector(link.path);
+                  if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }
                 onClose();
-              } else {
-                onClose();
-              }
-            }}
-            className="text-4xl md:text-6xl font-light hover:text-[#C46A1A] transition-colors"
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            {t(link.pt, link.en)}
-          </a>
+              }}
+              className="text-2xl md:text-5xl font-mono tracking-tight text-white/80 hover:text-[#ff4f00] transition-all duration-300 hover:translate-x-2"
+            >
+              {t(link.pt, link.en)}
+            </a>
+          )
         ))}
       </nav>
       
-      <div className="absolute bottom-10 flex gap-10 text-xs tracking-widest opacity-60 uppercase font-sans">
-        <span>Fábrica &copy; 2026</span>
-        <Link to="/admin" className="hover:text-[#FF7A00] transition-colors">{t('Admin', 'Admin')}</Link>
+      <div className="absolute bottom-10 flex gap-8 text-xs font-mono tracking-widest opacity-60 uppercase">
+        <span>FÁBRICA PUBLICIDADE &copy; 2026</span>
+        <span className="text-white/20">|</span>
+        <Link to="/admin" className="hover:text-[#ff4f00] transition-colors">{t('ADMIN PAINEL', 'ADMIN PANEL')}</Link>
       </div>
     </div>
   );
 }
+

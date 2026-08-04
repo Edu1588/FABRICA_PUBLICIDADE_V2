@@ -83,7 +83,7 @@ export interface MetricItem {
   value: string;
   numericValue?: number;
   label: string;
-  category: 'Redes Sociais' | 'Criativa' | 'Mídia & Tech' | 'Audiovisual';
+  category: 'Redes Sociais' | 'Criativa' | 'Mídia & Tech' | 'Audiovisual' | 'Tecnologia' | 'Operação';
   subtext?: string;
 }
 
@@ -118,7 +118,12 @@ export interface SlideData {
     | 'tech_web'
     | 'executive_summary'
     | 'indicators_table'
-    | 'conclusion';
+    | 'conclusion'
+    | 'marketing_digital'
+    | 'site_performance'
+    | 'traffic_management'
+    | 'offline_communication'
+    | 'interface_flow';
 
   descriptionText?: string | string[];
 
