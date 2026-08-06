@@ -47,10 +47,10 @@ export default function Section3V2() {
       id="services"
       className="relative py-20 z-10 bg-black min-h-screen border-t border-white/15 w-full overflow-hidden"
     >
-      {/* Header matching Dragonfly 04 Section */}
+      {/* Header matching Dragonfly 02 Section */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
         <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
-          04
+          02
         </span>
         <h2 className="text-white font-mono text-2xl md:text-4xl font-bold tracking-[0.25em] uppercase">
           O QUE FORJAMOS
@@ -59,7 +59,7 @@ export default function Section3V2() {
 
       {/* SEC Bar */}
       <div className="w-full border-y border-white/15 py-3 px-4 sm:px-8 mb-12 flex justify-between items-center font-mono text-xs text-white/40 tracking-widest">
-        <span>SEC-04</span>
+        <span>SEC-02</span>
         <span>— O QUE FORJAMOS</span>
         <span>[ CINCO FRENTES, UMA FORJA ]</span>
       </div>

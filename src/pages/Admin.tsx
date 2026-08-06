@@ -1600,23 +1600,24 @@ export default function Admin() {
                                 
                               {/* Header Texts (Transparent background) */}
                               <div className="absolute top-[25px] left-0 w-full px-[20px] z-20 pointer-events-none uppercase italic" style={{ fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '"Saira Extra Condensed", sans-serif' }}>
-                                <div className={`leading-none tracking-widest italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white' : 'text-[#0377f9] font-light'}`} style={{ fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '13px' : '24px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#0377f9', marginBottom: '-4px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Oswald", sans-serif' : undefined }}>
+                                <div className={`leading-none tracking-widest italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white' : 'text-[#0377f9] font-light'}`} style={{ fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '13px' : '24px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#0377f9', marginBottom: '-4px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
                                   {activeSlide.fabricante || 'FABRICANTE'}
                                 </div>
                                 <div className={`leading-none tracking-tighter italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? '' : 'text-[#1b3265] font-black'}`} style={{ 
                                   fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '32px' : '48px', 
                                   marginBottom: '2px', 
                                   marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '4px' : '-8px',
-                                  fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Anton", sans-serif' : undefined,
                                   color: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '#1b3265',
                                   background: selectedClientData?.name?.toLowerCase().includes('meta') ? 'linear-gradient(180deg, #FF6B00 20%, #FF8C00 50%, #FF6B00 80%)' : undefined,
                                   WebkitBackgroundClip: selectedClientData?.name?.toLowerCase().includes('meta') ? 'text' : undefined,
                                   WebkitTextFillColor: selectedClientData?.name?.toLowerCase().includes('meta') ? 'transparent' : undefined,
                                   filter: selectedClientData?.name?.toLowerCase().includes('meta') ? 'drop-shadow(3px 3px 2px rgba(0,0,0,0.6))' : undefined,
+                                  fontWeight: selectedClientData?.name?.toLowerCase().includes('meta') ? 400 : undefined,
+                                  fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Anton", sans-serif' : undefined,
                                 }}>
                                   {activeSlide.modelo || 'MODELO'}
                                 </div>
-                                <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Oswald", sans-serif' : undefined }}>
+                                <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
                                   {activeSlide.descricao || 'DESCRIÇÃO COMPLETA'}
                                 </div>
                               </div>

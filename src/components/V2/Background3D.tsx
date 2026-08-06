@@ -23,12 +23,54 @@ export default function Background3D() {
     camera.position.set(0, 0, 8);
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(1); // Force 1:1 pixel ratio for crisp low-res pixelation
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.3;
     container.appendChild(renderer.domElement);
+
+    // Pixelation Setup (Dragonfly style - refined fine grain)
+    const pixelSize = 3; // Refined fine-grain pixel size (3px blocks)
+    let lowResWidth = Math.max(1, Math.floor(width / pixelSize));
+    let lowResHeight = Math.max(1, Math.floor(height / pixelSize));
+
+    const renderTarget = new THREE.WebGLRenderTarget(lowResWidth, lowResHeight, {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+    });
+
+    // Fullscreen Orthographic Quad Scene for Post-Pass
+    const postScene = new THREE.Scene();
+    const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+    const postMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        tDiffuse: { value: renderTarget.texture },
+        uTime: { value: 0 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float uTime;
+        varying vec2 vUv;
+
+        void main() {
+          vec4 color = texture2D(tDiffuse, vUv);
+          gl_FragColor = color;
+        }
+      `,
+    });
+
+    const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial);
+    postScene.add(postQuad);
 
     // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
@@ -121,15 +163,22 @@ export default function Background3D() {
       const newHeight = window.innerHeight;
       camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
+
       renderer.setSize(newWidth, newHeight);
+
+      const newLowWidth = Math.max(1, Math.floor(newWidth / pixelSize));
+      const newLowHeight = Math.max(1, Math.floor(newHeight / pixelSize));
+      renderTarget.setSize(newLowWidth, newLowHeight);
     };
     window.addEventListener('resize', handleResize);
 
     // Animation Loop
     let animationFrameId: number;
 
-    const animate = () => {
+    const animate = (time: number) => {
       animationFrameId = requestAnimationFrame(animate);
+
+      postMaterial.uniforms.uTime.value = time * 0.001;
 
       // Smooth Mouse Interaction
       targetX += (mouseX * 0.5 - targetX) * 0.05;
@@ -162,16 +211,25 @@ export default function Background3D() {
         modelGroup.position.z = sec2ZoomFactor * 3.8 + Math.sin(scrollProgress * Math.PI) * 1.2;
       }
 
+      // 1. Render 3D Scene into Low-Res RenderTarget with Nearest Filtering
+      renderer.setRenderTarget(renderTarget);
+      renderer.clear();
       renderer.render(scene, camera);
+
+      // 2. Render Fullscreen Pixelated Quad to Canvas
+      renderer.setRenderTarget(null);
+      renderer.render(postScene, postCamera);
     };
 
-    animate();
+    animate(0);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
+      renderTarget.dispose();
+      postMaterial.dispose();
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);
       }
