@@ -378,6 +378,7 @@ export default function HomeV2() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<typeof TEAM[0] | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -385,6 +386,7 @@ export default function HomeV2() {
       if (max > 0) {
         setScrollProgress(window.scrollY / max);
       }
+      setScrollY(window.scrollY);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -412,13 +414,14 @@ export default function HomeV2() {
       smearIntensity,
       roughness,
       metalness,
-      scrollProgress
+      scrollProgress,
+      scrollY
     }),
-    [pixelFactor, cameraZ, autoRotate, brightness, smearIntensity, roughness, metalness, scrollProgress]
+    [pixelFactor, cameraZ, autoRotate, brightness, smearIntensity, roughness, metalness, scrollProgress, scrollY]
   );
 
   return (
-    <div className="relative min-h-screen bg-black text-[#f5f5f7] font-mono selection:bg-[#ff4d16] selection:text-white">
+    <div className="relative min-h-screen bg-[#050505] text-[#f5f5f7] font-mono selection:bg-[#ff4d16] selection:text-white">
       {/* 3D Canvas Background */}
       <ThreeCanvas {...threeProps} />
 
@@ -456,7 +459,7 @@ export default function HomeV2() {
         </nav>
 
         {/* Dropdown Menu */}
-        <div className={`absolute top-full mt-2 overflow-hidden transition-all duration-300 origin-top bg-black/90 backdrop-blur-xl border border-white/15 w-56 shadow-2xl pointer-events-auto ${isMenuOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}>
+        <div className={`absolute top-full mt-2 overflow-hidden transition-all duration-300 origin-top bg-[#050505]/90 backdrop-blur-xl border border-white/15 w-56 shadow-2xl pointer-events-auto ${isMenuOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}>
           <ul className="flex flex-col py-2 font-mono">
             {NAV.map((item) => (
               <li key={item}>
@@ -487,7 +490,7 @@ export default function HomeV2() {
       {/* Control Panel (Floating) */}
       {showControls && (
         <div 
-          className="fixed bottom-6 left-6 z-[60] w-72 bg-black/90 backdrop-blur border border-white/10 p-5 rounded-lg shadow-2xl"
+          className="fixed bottom-6 left-6 z-[60] w-72 bg-[#050505]/90 backdrop-blur border border-white/10 p-5 rounded-lg shadow-2xl"
           style={{ animation: "fadeIn 0.3s ease-out" }}
         >
           <div className="flex items-center justify-between mb-5">
@@ -599,7 +602,7 @@ export default function HomeV2() {
                   </div>
 
                   {/* Pixelated ASCII / Dot-Matrix Graphic Canvas */}
-                  <div className="relative aspect-[16/10] bg-black overflow-hidden mb-5 border border-white/5 group-hover:border-white/20 transition-colors">
+                  <div className="relative aspect-[16/10] bg-[#050505] overflow-hidden mb-5 border border-white/5 group-hover:border-white/20 transition-colors">
                     <PixelArtCanvas type={w.type} />
                   </div>
 
@@ -622,7 +625,7 @@ export default function HomeV2() {
           </div>
         </section>
 
-        <div className="bg-black relative z-20 pointer-events-auto w-full">
+        <div className="bg-[#050505] relative z-20 pointer-events-auto w-full">
         {/* Section 03: O que forjamos */}
         <section className="rule-top mx-auto max-w-[1400px] px-6">
           <SectionLabel n="03">O que forjamos</SectionLabel>
@@ -709,7 +712,7 @@ export default function HomeV2() {
 
             {/* Column 2: Sticky 3D Clean Metal Hefesto Image */}
             <div className="lg:sticky lg:top-28 h-[520px] sm:h-[620px] lg:h-[700px] w-full overflow-hidden relative bg-[#050505]">
-              <ThreeCanvas isEmbedded renderClean />
+              <ThreeCanvas isEmbedded renderClean modelPath="/models/HEFESTO_v3-v2.glb" />
             </div>
           </div>
         </section>
@@ -723,7 +726,7 @@ export default function HomeV2() {
               <div
                 key={m.name}
                 onClick={() => setSelectedMember(m)}
-                className="group relative cursor-pointer bg-black border border-white/10 hover:border-[#ff4d16] transition-all overflow-hidden h-[460px] flex flex-col justify-between"
+                className="group relative cursor-pointer bg-[#050505] border border-white/10 hover:border-[#ff4d16] transition-all overflow-hidden h-[460px] flex flex-col justify-between"
               >
                 {/* Photo with dark contrast styling */}
                 <img
@@ -744,7 +747,7 @@ export default function HomeV2() {
                 </div>
 
                 {/* Card Bottom Labels */}
-                <div className="relative z-10 p-5 border-t border-white/10 bg-black/80 backdrop-blur-sm group-hover:bg-[#ff4d16]/10 transition-colors">
+                <div className="relative z-10 p-5 border-t border-white/10 bg-[#050505]/80 backdrop-blur-sm group-hover:bg-[#ff4d16]/10 transition-colors">
                   <h4 className="text-base font-bold text-white tracking-wider font-mono uppercase group-hover:text-[#ff4d16] transition-colors">
                     {m.name}
                   </h4>
@@ -892,14 +895,14 @@ export default function HomeV2() {
       {selectedMember && (
         <div 
           onClick={() => setSelectedMember(null)}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-fadeIn"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#050505]/90 backdrop-blur-md p-4 animate-fadeIn"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md bg-black border border-white/20 shadow-2xl text-white font-mono overflow-hidden"
+            className="relative w-full max-w-md bg-[#050505] border border-white/20 shadow-2xl text-white font-mono overflow-hidden"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#050505]">
               <span className="text-xs text-stone-400 font-mono tracking-widest uppercase">DETAIL</span>
               
               {/* Center icon: 4 orange dots */}
@@ -933,7 +936,7 @@ export default function HomeV2() {
             </div>
 
             {/* Modal Details Section */}
-            <div className="p-6 space-y-4 bg-black">
+            <div className="p-6 space-y-4 bg-[#050505]">
               <div>
                 <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase block mb-1">NOME</span>
                 <h3 className="text-xl font-bold tracking-wider text-white font-mono uppercase border-b border-white/10 pb-2">

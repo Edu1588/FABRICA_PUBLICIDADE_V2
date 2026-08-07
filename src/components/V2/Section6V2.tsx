@@ -39,7 +39,7 @@ export default function Section6V2() {
   };
 
   return (
-    <section id="contact" className="relative py-24 z-10 bg-black border-t border-white/15 w-full overflow-hidden">
+    <section id="contact" className="relative py-24 z-10 bg-[#050505] border-t border-white/15 w-full overflow-hidden">
       {/* Dragonfly Header */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
         <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
@@ -59,7 +59,7 @@ export default function Section6V2() {
 
       <div className="max-w-7xl mx-auto px-6 md:px-16 w-full grid grid-cols-1 lg:grid-cols-12 gap-16">
         {/* Left Side: Briefing Form */}
-        <div className="lg:col-span-7 bg-black/80 backdrop-blur-md border border-white/15 p-8 sm:p-12 rounded-2xl">
+        <div className="lg:col-span-7 bg-[#050505]/80 backdrop-blur-md border border-white/15 p-8 sm:p-12 rounded-2xl">
           <div className="mb-8">
             <span className="text-[#ff4f00] font-mono text-xs font-bold tracking-[0.25em] uppercase block mb-2">
               AQUECER A SUA MARCA
@@ -92,7 +92,7 @@ export default function Section6V2() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Nome completo"
-                    className="w-full bg-black/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors"
+                    className="w-full bg-[#050505]/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors"
                   />
                 </div>
 
@@ -106,7 +106,7 @@ export default function Section6V2() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="email@empresa.com"
-                    className="w-full bg-black/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors"
+                    className="w-full bg-[#050505]/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -122,7 +122,7 @@ export default function Section6V2() {
                     value={formData.whatsapp}
                     onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                     placeholder="(00) 0 0000-0000"
-                    className="w-full bg-black/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors"
+                    className="w-full bg-[#050505]/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors"
                   />
                 </div>
 
@@ -135,7 +135,7 @@ export default function Section6V2() {
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                     placeholder="Sua marca / empresa"
-                    className="w-full bg-black/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors"
+                    className="w-full bg-[#050505]/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -153,7 +153,7 @@ export default function Section6V2() {
                       className={`px-3 py-2 rounded-md transition-all text-[10px] tracking-wider uppercase border ${
                         formData.segment === seg
                           ? 'bg-[#ff4f00] text-black font-bold border-[#ff4f00]'
-                          : 'bg-black/60 text-white/60 border-white/10 hover:border-white/30'
+                          : 'bg-[#050505]/60 text-white/60 border-white/10 hover:border-white/30'
                       }`}
                     >
                       {seg}
@@ -171,7 +171,7 @@ export default function Section6V2() {
                   value={formData.needs}
                   onChange={(e) => setFormData({ ...formData, needs: e.target.value })}
                   placeholder="Conte-nos brevemente sobre seus desafios e objetivos..."
-                  className="w-full bg-black/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors resize-none"
+                  className="w-full bg-[#050505]/60 border border-white/20 focus:border-[#ff4f00] text-white p-3.5 rounded-lg outline-none transition-colors resize-none"
                 />
               </div>
 
@@ -188,7 +188,7 @@ export default function Section6V2() {
 
         {/* Right Side: Direct Contact */}
         <div className="lg:col-span-5 flex flex-col justify-between font-mono space-y-8">
-          <div className="bg-black/80 backdrop-blur-md border border-white/15 p-8 rounded-2xl space-y-6">
+          <div className="bg-[#050505]/80 backdrop-blur-md border border-white/15 p-8 rounded-2xl space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff4f00]/10 border border-[#ff4f00]/30 text-[#ff4f00] text-xs font-bold uppercase tracking-widest">
               <span>★ A FORJA ESTÁ ACESA</span>
             </div>

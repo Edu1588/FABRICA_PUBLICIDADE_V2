@@ -162,7 +162,7 @@ export default function ApresentacaoFabricaAzul() {
   return (
     <div className={`w-screen h-screen overflow-hidden bg-[#060d20] select-none relative flex flex-col justify-between ${isDarkSlide ? 'dark-ui' : ''}`}>
       {/* Top Slide Progress Line */}
-      <div className="fixed top-0 left-0 right-0 h-1 bg-black/10 z-50 no-print">
+      <div className="fixed top-0 left-0 right-0 h-1 bg-[#050505]/10 z-50 no-print">
         <div 
           className="h-full bg-gradient-to-r from-[#0a1c6a] via-blue-500 to-cyan-400 transition-all duration-300"
           style={{ width: `${((currentSlideIndex + 1) / totalSlides) * 100}%` }}

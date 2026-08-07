@@ -82,7 +82,7 @@ export const PrintView: React.FC<PrintViewProps> = ({ slides, onBack }) => {
             </div>
 
             {/* Slide Index Badge in corner for print clarity */}
-            <div className="no-print absolute top-3 right-3 bg-black/70 border border-slate-700 text-cyan-300 font-mono text-[10px] font-bold px-2.5 py-1 rounded-full z-40 backdrop-blur-sm">
+            <div className="no-print absolute top-3 right-3 bg-[#050505]/70 border border-slate-700 text-cyan-300 font-mono text-[10px] font-bold px-2.5 py-1 rounded-full z-40 backdrop-blur-sm">
               Slide {idx + 1} de {slides.length}
             </div>
           </div>

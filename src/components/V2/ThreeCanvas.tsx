@@ -4,6 +4,7 @@ import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 useGLTF.preload('/models/HEFESTO_FABRICA.glb');
+useGLTF.preload('/models/HEFESTO_v3-v2.glb');
 
 // Global mouse tracker ref so canvas reacts even when pointer-events-none is on container
 const globalMouse = { x: 0, y: 0 };
@@ -14,11 +15,11 @@ if (typeof window !== 'undefined') {
   });
 }
 
-function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgress, isClean }: any) {
+function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgress, isClean, modelPath = '/models/HEFESTO_FABRICA.glb' }: any) {
   const modelRef = useRef<THREE.Group>(null);
   
   // Hook call at top level
-  const gltf = useGLTF('/models/HEFESTO_FABRICA.glb');
+  const gltf = useGLTF(modelPath);
 
   // Clone scene so multiple canvas instances render separate copies without stealing Object3D
   const clonedScene = useMemo(() => {
@@ -115,7 +116,7 @@ function SceneContent(props: any) {
   );
 }
 
-function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 0, isEmbedded = false }: any) {
+function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 0, scrollY = 0, isEmbedded = false }: any) {
   const { gl, scene, camera, size } = useThree();
   
   const target = useMemo(() => {
@@ -160,7 +161,13 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
       );
       
       // Calculate scroll fade opacity for statue dots
-      const opacityVal = isEmbedded ? 1.0 : Math.max(0.75, 1.0 - scrollProgress * 0.35);
+      const fadeStart = typeof window !== 'undefined' ? window.innerHeight * 0.2 : 500;
+      const fadeEnd = typeof window !== 'undefined' ? window.innerHeight * 1.0 : 1000;
+      let fadeProgress = 0;
+      if (scrollY > fadeStart) {
+        fadeProgress = Math.min(1.0, (scrollY - fadeStart) / (fadeEnd - fadeStart));
+      }
+      const opacityVal = isEmbedded ? 1.0 : Math.max(0.1, 1.0 - fadeProgress);
       materialRef.current.uniforms.uOpacity.value = opacityVal;
     }
 
@@ -247,20 +254,23 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
       
       // Calculate aspect-corrected distance to mouse for circular hover effect
       vec2 aspect = vec2(uResolution.x / uResolution.y, 1.0);
-      float dist = distance(uv * aspect, uMouse * aspect);
       
       // Base color for dots: cleaner grays
       vec3 baseCol = vec3(clamp(luma * 1.3, 0.1, 0.75));
       
-      // Hover effect: blend in bright orange glow when near mouse
-      float hoverRadius = 0.12;
+      // Hover effect: sparse pixels around the mouse
+      float hoverRadius = 0.20;
+      float dist = distance(pixelUv * aspect, uMouse * aspect);
       if (dist < hoverRadius) {
-        float hoverIntensity = smoothstep(hoverRadius, 0.0, dist);
-        baseCol = mix(baseCol, vec3(1.0, 0.35, 0.08), hoverIntensity * 0.9);
+        float scatter = rand(pixelUv * 100.0);
+        if (scatter > 0.95) { // Only 5% of dots
+          float hoverIntensity = smoothstep(hoverRadius, 0.0, dist);
+          baseCol = mix(baseCol, vec3(1.0, 0.35, 0.08), hoverIntensity * 2.0);
+        }
       }
       
       // The background color of the canvas
-      vec3 bgCol = vec3(0.0, 0.0, 0.0); 
+      vec3 bgCol = vec3(0.0196, 0.0196, 0.0196); 
       
       // Final color: mix background with dot color based on the shape and opacity
       vec3 finalCol = mix(bgCol, baseCol, shape * uOpacity);

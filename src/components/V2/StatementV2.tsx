@@ -39,7 +39,7 @@ export default function StatementV2() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex flex-col items-center justify-center py-20 px-4 z-10 bg-black/90 select-none overflow-hidden border-t border-white/15"
+      className="relative min-h-screen flex flex-col items-center justify-center py-20 px-4 z-10 bg-[#050505]/90 select-none overflow-hidden border-t border-white/15"
     >
       <div className="w-full flex flex-col items-center justify-center text-center">
         {/* Giant Dragonfly-Style Serif Display Typography (Screenshot 3 style) */}

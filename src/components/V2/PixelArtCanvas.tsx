@@ -23,7 +23,7 @@ export default function PixelArtCanvas({ type, className = '' }: PixelArtCanvasP
       const width = canvas.width;
       const height = canvas.height;
 
-      ctx.fillStyle = '#000000';
+      ctx.fillStyle = '#050505';
       ctx.fillRect(0, 0, width, height);
 
       const cols = 120;

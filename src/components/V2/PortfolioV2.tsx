@@ -33,7 +33,7 @@ export default function PortfolioV2() {
   ];
 
   return (
-    <section id="portfolio" className="relative py-24 z-10 bg-black border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
+    <section id="portfolio" className="relative py-24 z-10 bg-[#050505] border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
       {/* ASCII Dragon/Anvil Pixel Emblem matching Dragonfly screenshot 6 */}
       <div className="flex justify-center mb-6">
         <pre className="font-mono text-[9px] sm:text-[10px] text-[#ff4f00] leading-tight select-none opacity-80">
@@ -94,7 +94,7 @@ export default function PortfolioV2() {
                 alt={p.title}
                 className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 opacity-80 group-hover:opacity-100"
               />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors" />
+              <div className="absolute inset-0 bg-[#050505]/40 group-hover:bg-transparent transition-colors" />
             </div>
 
             {/* Title & Desc */}

@@ -52,7 +52,7 @@ export default function BreakBarriersV2() {
   };
 
   return (
-    <section className="relative py-24 z-10 bg-black border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
+    <section className="relative py-24 z-10 bg-[#050505] border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
       {/* Header */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
         <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
@@ -95,7 +95,7 @@ export default function BreakBarriersV2() {
             } transition-all duration-500 min-h-[300px] flex flex-col justify-between ${
               card.isBroken
                 ? 'bg-[#ff4f00]/10 border-[#ff4f00]/50'
-                : 'hover:bg-white/[0.03] bg-black'
+                : 'hover:bg-white/[0.03] bg-[#050505]'
             }`}
           >
             {/* Status indicator badge */}
@@ -104,7 +104,7 @@ export default function BreakBarriersV2() {
                 className={`font-bold tracking-widest px-3 py-1 rounded-full uppercase border transition-colors ${
                   card.isBroken
                     ? 'bg-[#ff4f00] text-black border-[#ff4f00]'
-                    : 'bg-black text-white/60 border-white/20'
+                    : 'bg-[#050505] text-white/60 border-white/20'
                 }`}
               >
                 {card.isBroken ? 'RECONSTRUINDO...' : `${card.pillarId} INTACT`}

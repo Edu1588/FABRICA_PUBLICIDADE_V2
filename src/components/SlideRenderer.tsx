@@ -1627,7 +1627,7 @@ export const SlideRenderer: React.FC<SlideRendererProps> = ({ slide, direction, 
                 </div>
               </motion.div>
 
-              <div className="slide-footer-bar bg-black/90"><RenderSlideFooterContent text="20/16 - Fábrica Publicidade" /></div>
+              <div className="slide-footer-bar bg-[#050505]/90"><RenderSlideFooterContent text="20/16 - Fábrica Publicidade" /></div>
             </div>
           )}
 

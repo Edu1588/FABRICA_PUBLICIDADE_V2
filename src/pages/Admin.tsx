@@ -1446,7 +1446,7 @@ export default function Admin() {
                             }`}
                           >
                             <div className="flex justify-between items-start">
-                              <span className="text-[9px] font-outfit uppercase bg-black/40 px-1.5 py-0.5 rounded text-white/70">
+                              <span className="text-[9px] font-outfit uppercase bg-[#050505]/40 px-1.5 py-0.5 rounded text-white/70">
                                 #{idx + 1}
                               </span>
                               
@@ -1520,7 +1520,7 @@ export default function Admin() {
                           <div 
                             id="slide-preview-container"
                             ref={previewRef}
-                            className="w-[360px] h-[450px] relative overflow-hidden bg-black flex flex-col justify-between shadow-2xl select-none"
+                            className="w-[360px] h-[450px] relative overflow-hidden bg-[#050505] flex flex-col justify-between shadow-2xl select-none"
                             style={{ minWidth: '360px', minHeight: '450px' }}
                           >
                           
@@ -1528,7 +1528,7 @@ export default function Admin() {
                           {activeSlide.type === 'capa' ? (
                             
                             // A. COVER LAYOUT (FIXED IMAGE)
-                            <div className="flex-1 w-full h-full relative overflow-hidden bg-black">
+                            <div className="flex-1 w-full h-full relative overflow-hidden bg-[#050505]">
                               {/* If Meta, show the uploaded image as background and fixed frame on top. Otherwise, just show the uploaded image. */}
                               {selectedClientData?.name?.toLowerCase().includes('meta') ? (
                                 <>
@@ -1572,7 +1572,7 @@ export default function Admin() {
                           ) : activeSlide.type === 'veiculo' ? (
                             
                             // B. VEHICLE AD TEMPLATE (PNG OVERLAY STYLE)
-                            <div className="flex-1 flex flex-col justify-between relative overflow-hidden bg-black">
+                            <div className="flex-1 flex flex-col justify-between relative overflow-hidden bg-[#050505]">
                               
                               {/* Background Car Photo */}
                               {activeSlide.imageUrl && (

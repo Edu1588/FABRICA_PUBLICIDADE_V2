@@ -50,7 +50,7 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
     >
       <button 
         onClick={onClose}
-        className="absolute top-10 right-10 text-xs font-mono tracking-[0.2em] uppercase hover:text-[#ff4f00] transition-colors border border-white/20 px-4 py-2 rounded-full bg-black/50"
+        className="absolute top-10 right-10 text-xs font-mono tracking-[0.2em] uppercase hover:text-[#ff4f00] transition-colors border border-white/20 px-4 py-2 rounded-full bg-[#050505]/50"
       >
         [ {t('FECHAR', 'CLOSE')} ]
       </button>

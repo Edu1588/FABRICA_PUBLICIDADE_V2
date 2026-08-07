@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function FooterV2() {
   return (
-    <footer className="relative z-10 bg-black border-t border-white/15 w-full text-white font-mono text-xs overflow-hidden">
+    <footer className="relative z-10 bg-[#050505] border-t border-white/15 w-full text-white font-mono text-xs overflow-hidden">
       {/* Top 3 Columns: SECTIONS, CONNECT, LEGAL matching Dragonfly screenshot 10 */}
       <div className="grid grid-cols-1 md:grid-cols-3 w-full border-b border-white/15">
         {/* Col 1: SECTIONS */}
@@ -107,7 +107,7 @@ export default function FooterV2() {
       </div>
 
       {/* Centered ASCII Logo Emblem >| |< matching Dragonfly screenshot 10 */}
-      <div className="py-8 flex justify-center items-center border-b border-white/15 bg-black">
+      <div className="py-8 flex justify-center items-center border-b border-white/15 bg-[#050505]">
         <pre className="font-mono text-lg text-[#ff4f00] font-bold tracking-widest select-none">
           &gt;| FÁBRICA |&lt;
         </pre>

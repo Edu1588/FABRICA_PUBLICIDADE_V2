@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function CareersV2() {
   return (
-    <section id="careers" className="relative py-24 z-10 bg-black border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
+    <section id="careers" className="relative py-24 z-10 bg-[#050505] border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
       {/* Top ASCII Dragon/Anvil Pixel Emblem matching Dragonfly screenshot 8 */}
       <div className="flex justify-center mb-6">
         <pre className="font-mono text-[9px] sm:text-[10px] text-[#ff4f00] leading-tight select-none opacity-80">

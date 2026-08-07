@@ -45,7 +45,7 @@ export default function Section3V2() {
   return (
     <section
       id="services"
-      className="relative py-20 z-10 bg-black min-h-screen border-t border-white/15 w-full overflow-hidden"
+      className="relative py-20 z-10 bg-[#050505] min-h-screen border-t border-white/15 w-full overflow-hidden"
     >
       {/* Header matching Dragonfly 02 Section */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
@@ -92,7 +92,7 @@ export default function Section3V2() {
             </div>
 
             {/* Visual Dot Matrix Artwork */}
-            <div className="relative w-full aspect-[16/9] bg-black border border-white/10 rounded-lg overflow-hidden my-4 flex items-center justify-center">
+            <div className="relative w-full aspect-[16/9] bg-[#050505] border border-white/10 rounded-lg overflow-hidden my-4 flex items-center justify-center">
               <div className="w-full h-full flex items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 via-black to-black opacity-80 group-hover:opacity-100 transition-opacity">
                 <div className="font-mono text-[10px] sm:text-[11px] text-white/40 leading-none select-none overflow-hidden text-center p-2 group-hover:text-[#ff4f00] transition-colors whitespace-pre">
                   {s.visualType === 'vortex' && `
@@ -137,7 +137,7 @@ export default function Section3V2() {
       </div>
 
       {/* Bottom CTA Banner */}
-      <div className="w-full border-b border-white/15 bg-black/90 py-12 px-6 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-7xl mx-auto">
+      <div className="w-full border-b border-white/15 bg-[#050505]/90 py-12 px-6 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-7xl mx-auto">
         <div>
           <span className="text-[#ff4f00] font-mono text-xs font-bold tracking-widest uppercase block mb-1">
             ESTÁ PRONTO?

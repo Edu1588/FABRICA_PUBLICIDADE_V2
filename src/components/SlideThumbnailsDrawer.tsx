@@ -37,7 +37,7 @@ export const SlideThumbnailsDrawer: React.FC<SlideThumbnailsDrawerProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex justify-end animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-[#050505]/80 backdrop-blur-md flex justify-end animate-in fade-in duration-200">
       <div className="w-full max-w-xl bg-[#0D1017] border-l border-slate-800 h-full flex flex-col shadow-2xl">
         {/* Drawer Header */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">

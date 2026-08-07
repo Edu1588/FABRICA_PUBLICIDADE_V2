@@ -52,7 +52,7 @@ export default function Section2V2() {
     <section
       id="philosophy"
       ref={sectionRef}
-      className="relative py-24 z-10 bg-black min-h-screen flex flex-col justify-center border-t border-white/15 w-full overflow-hidden"
+      className="relative py-24 z-10 bg-[#050505] min-h-screen flex flex-col justify-center border-t border-white/15 w-full overflow-hidden"
     >
       {/* Header Indicator matching Dragonfly 01 ABOUT */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
@@ -89,7 +89,7 @@ export default function Section2V2() {
         </div>
 
         {/* Quem Somos Main Narrative & Quote */}
-        <div className="border-t border-white/15 w-full bg-black">
+        <div className="border-t border-white/15 w-full bg-[#050505]">
           <div className="grid grid-cols-1 lg:grid-cols-12 w-full border-b border-white/15">
             {/* Left Narrative Box */}
             <div className="lg:col-span-7 p-6 sm:p-12 lg:p-16 border-b lg:border-b-0 lg:border-r border-white/15">

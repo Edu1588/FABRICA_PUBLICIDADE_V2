@@ -64,7 +64,7 @@ export default function TestimonialsV2() {
   ];
 
   return (
-    <section id="testimonials" className="relative py-24 z-10 bg-black border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
+    <section id="testimonials" className="relative py-24 z-10 bg-[#050505] border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
       {/* Dragonfly Header */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
         <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
@@ -129,7 +129,7 @@ export default function TestimonialsV2() {
       </div>
 
       {/* Banner at bottom */}
-      <div className="w-full border-b border-white/15 bg-black/80 py-8 px-6 text-center">
+      <div className="w-full border-b border-white/15 bg-[#050505]/80 py-8 px-6 text-center">
         <span className="font-mono text-xs sm:text-sm text-[#ff4f00] font-bold tracking-[0.25em] uppercase">
           ★ 100% dos parceiros com canais digitais forjados sob medida
         </span>

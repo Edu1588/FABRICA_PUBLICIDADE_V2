@@ -106,7 +106,7 @@ export const DesignBrandbook = ({ client }: { client: AppClient }) => {
               placeholder="Cole o link do Pinterest aqui..." 
               value={moodboard[0] || ""}
               onChange={(e) => setMoodboard([e.target.value])}
-              className="flex-1 bg-black/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FF7A00]/50 transition-colors"
+              className="flex-1 bg-[#050505]/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FF7A00]/50 transition-colors"
             />
             <a 
               href={moodboard[0] || "#"} 

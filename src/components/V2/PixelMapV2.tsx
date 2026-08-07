@@ -123,7 +123,7 @@ export default function PixelMapV2() {
   }, []);
 
   return (
-    <section id="map" className="relative py-24 z-10 bg-black border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
+    <section id="map" className="relative py-24 z-10 bg-[#050505] border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
       {/* Header matching Dragonfly screenshot 9 */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
         <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
@@ -142,7 +142,7 @@ export default function PixelMapV2() {
       </div>
 
       {/* Canvas Container */}
-      <div className="w-full relative border-b border-white/15 bg-black">
+      <div className="w-full relative border-b border-white/15 bg-[#050505]">
         <canvas ref={canvasRef} className="w-full block" />
         
         {/* Corner coordinates overlay */}

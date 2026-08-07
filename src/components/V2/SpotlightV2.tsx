@@ -11,7 +11,7 @@ export default function SpotlightV2() {
   ];
 
   return (
-    <section id="spotlight" className="relative py-20 z-10 bg-black border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
+    <section id="spotlight" className="relative py-20 z-10 bg-[#050505] border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
       {/* Header */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
         <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
@@ -37,7 +37,7 @@ export default function SpotlightV2() {
             className={`w-full py-8 sm:py-12 px-6 sm:px-12 border-t border-white/15 transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group cursor-pointer ${
               item.highlight
                 ? 'bg-[#ff4f00] text-black hover:bg-white hover:text-black'
-                : 'bg-black text-white hover:bg-[#ff4f00] hover:text-black'
+                : 'bg-[#050505] text-white hover:bg-[#ff4f00] hover:text-black'
             }`}
           >
             <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-mono tracking-tighter uppercase leading-none transition-transform group-hover:translate-x-3 duration-300">

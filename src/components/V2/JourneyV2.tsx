@@ -50,7 +50,7 @@ export default function JourneyV2() {
   ];
 
   return (
-    <section id="journey" className="relative py-24 z-10 bg-black min-h-screen border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
+    <section id="journey" className="relative py-24 z-10 bg-[#050505] min-h-screen border-t border-white/15 w-full overflow-hidden flex flex-col justify-center">
       {/* Dragonfly Header */}
       <div className="flex flex-col items-center justify-center text-center mb-8 px-4">
         <span className="text-[#ff4f00] font-mono text-3xl md:text-4xl font-bold tracking-widest mb-1">
