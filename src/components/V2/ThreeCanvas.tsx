@@ -15,7 +15,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgress, isClean, modelPath = '/models/HEFESTO_FABRICA.glb' }: any) {
+function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgress, scrollY, isClean, modelPath = '/models/HEFESTO_FABRICA.glb' }: any) {
   const modelRef = useRef<THREE.Group>(null);
   
   // Hook call at top level
@@ -28,11 +28,11 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
     clone.traverse((child: any) => {
       if (child.isMesh) {
         if (isClean) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: '#080808', // very dark tone for rim light
-            roughness: 0.3,
-            metalness: 0.8,
-          });
+          const mat = child.material.clone();
+          mat.color.set('#808080'); 
+          mat.roughness = 0.7; // more opaque/less shiny
+          mat.metalness = 0.4; 
+          child.material = mat;
         } else {
           child.material = new THREE.MeshStandardMaterial({
             color: modelColor || '#d8d8d8',
@@ -53,8 +53,40 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
     const px = globalMouse.x || state.pointer.x;
     const py = globalMouse.y || state.pointer.y;
 
-    let targetScale = (isClean ? 2.5 : 2.8) + (scrollProgress || 0) * 8.0;
-    let targetY = (isClean ? -0.4 : -0.5) - (scrollProgress || 0) * 1.5;
+    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const scroll = scrollY || 0;
+
+    let targetScale = isClean ? 3.6 : 3.5;
+    let targetY = isClean ? -1.4 : -0.8;
+    let targetRotX = 0.25;
+    let targetRotY = -0.8;
+    
+    if (!isClean) {
+      if (scroll <= vh) {
+        // Section 1: Zoom into the top of the head
+        let p = scroll / vh;
+        targetScale = 3.5 + p * 4.0; // zoom in up to 7.5
+        targetY = -0.8 - p * 1.5; 
+        targetRotX = 0.25 + p * 0.65; // Tilt forward from 0.25 to 0.9 (top of head)
+        targetRotY = -0.8 - p * 0.5;
+      } else if (scroll <= vh * 2.5) {
+        // Section 2: Tilt to show chin
+        let p = (scroll - vh) / (vh * 1.5);
+        p = Math.min(p, 1.0);
+        targetScale = 7.0 + p * 1.5; // up to 8.5
+        targetY = -2.3 + p * 3.5; // Move up to keep chin in view
+        targetRotX = 0.9 - p * 1.5; // Tilt back from 0.9 to -0.6
+        targetRotY = -1.3 + p * 0.5;
+      } else {
+        targetScale = 8.5;
+        targetY = 1.2;
+        targetRotX = -1.5;
+        targetRotY = -0.8;
+      }
+    } else {
+      targetScale = 3.6 + (scrollProgress || 0) * 8.0;
+      targetY = -1.4 - (scrollProgress || 0) * 1.5;
+    }
     
     if (modelRef.current) {
       modelRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05);
@@ -65,12 +97,12 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
       } else {
         if (isClean) {
           // Repulsive mouse effect
-          modelRef.current.rotation.y = THREE.MathUtils.lerp(modelRef.current.rotation.y, -0.8 - (px * Math.PI) / 4, 0.05);
+          modelRef.current.rotation.y = THREE.MathUtils.lerp(modelRef.current.rotation.y, -0.6 - (px * Math.PI) / 4, 0.05);
           modelRef.current.rotation.x = THREE.MathUtils.lerp(modelRef.current.rotation.x, (py * Math.PI) / 6, 0.05);
         } else {
-          // Attractive mouse effect
-          modelRef.current.rotation.y = THREE.MathUtils.lerp(modelRef.current.rotation.y, -0.8 + (px * Math.PI) / 4, 0.05);
-          modelRef.current.rotation.x = THREE.MathUtils.lerp(modelRef.current.rotation.x, -(py * Math.PI) / 6 - ((scrollProgress || 0) * 0.3), 0.05);
+          // Attractive mouse effect + Scroll tilt
+          modelRef.current.rotation.y = THREE.MathUtils.lerp(modelRef.current.rotation.y, targetRotY + (px * Math.PI) / 4, 0.05);
+          modelRef.current.rotation.x = THREE.MathUtils.lerp(modelRef.current.rotation.x, targetRotX - (py * Math.PI) / 6, 0.05);
         }
       }
     }
@@ -78,7 +110,7 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
 
   if (clonedScene) {
     return (
-      <group ref={modelRef} position={[0, -0.4, 0]} rotation={[0, -0.8, 0]} scale={isClean ? 2.5 : 2.8}>
+      <group ref={modelRef} position={[0, isClean ? -1.4 : -0.8, 0]} rotation={[0, isClean ? -0.6 : -0.8, 0]} scale={isClean ? 3.6 : 3.5}>
         <primitive object={clonedScene} />
       </group>
     );
@@ -93,13 +125,14 @@ function SceneContent(props: any) {
     <>
       {isClean ? (
         <>
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={1.5} />
           {/* Main front light (dimmed) */}
-          <directionalLight position={[0, 4, 5]} intensity={2} color="#ffffff" />
+          <directionalLight position={[2, 4, 5]} intensity={4} color="#ffffff" />
+          <directionalLight position={[-2, -2, 5]} intensity={2} color="#ffffff" />
           
           {/* Rim Light: Left side, slightly behind, pointing towards the face/shoulder */}
-          <directionalLight position={[-8, 3, -4]} intensity={35} color="#ff5500" />
-          <pointLight position={[-6, 2, -3]} intensity={50} distance={15} color="#ff6600" />
+          <directionalLight position={[-8, 3, -4]} intensity={6} color="#ff5500" />
+          <pointLight position={[-6, 2, -3]} intensity={12} distance={15} color="#ff6600" />
         </>
       ) : (
         <>
@@ -216,7 +249,8 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
       // Calculate dot grid
       vec2 d = uPixelFactor / uResolution;
       
-      vec2 pixelUv = floor(uv / d) * d + (d * 0.5);
+      vec2 basePixelUv = floor(uv / d) * d + (d * 0.5);
+      vec2 pixelUv = basePixelUv;
       vec2 fractUv = fract(uv / d);
       
       // Add slow continuous horizontal drift instead of blinking noise
@@ -258,14 +292,17 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
       // Base color for dots: cleaner grays
       vec3 baseCol = vec3(clamp(luma * 1.3, 0.1, 0.75));
       
-      // Hover effect: sparse pixels around the mouse
-      float hoverRadius = 0.20;
-      float dist = distance(pixelUv * aspect, uMouse * aspect);
+      // Hover effect: sparse scattered pixels around the mouse
+      float hoverRadius = 0.18; // Larger radius
+      float dist = distance(basePixelUv * aspect, uMouse * aspect);
+      vec2 cell = floor(uv / d);
+      
       if (dist < hoverRadius) {
-        float scatter = rand(pixelUv * 100.0);
-        if (scatter > 0.95) { // Only 5% of dots
-          float hoverIntensity = smoothstep(hoverRadius, 0.0, dist);
-          baseCol = mix(baseCol, vec3(1.0, 0.35, 0.08), hoverIntensity * 2.0);
+        float noise = rand(cell * 15.0);
+        // Probability of being orange drops off with distance
+        float prob = mix(0.92, 0.995, dist / hoverRadius);
+        if (noise > prob) { 
+          baseCol = vec3(1.0, 0.35, 0.08); // pure orange
         }
       }
       

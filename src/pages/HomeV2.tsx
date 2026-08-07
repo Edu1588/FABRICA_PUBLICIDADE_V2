@@ -212,58 +212,54 @@ function BlurSplitText({
 
 function BlurLineReveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [opacity, setOpacity] = useState(0);
-  const [blurAmount, setBlurAmount] = useState(16);
-  const [offsetY, setOffsetY] = useState(32);
+  const [animated, setAnimated] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      
-      const top = rect.top;
-      
-      // Calculate fade points
-      // Fades in from bottom
-      const bottomFadeStart = windowHeight - 200;
-      const bottomFadeEnd = windowHeight - 50;
-      
-      let newOpacity = 1;
-      let newBlur = 0;
-      let newOffsetY = 0;
-      
-      if (top > bottomFadeEnd) {
-        newOpacity = 0;
-        newBlur = 12;
-        newOffsetY = 32;
-      } else if (top > bottomFadeStart) {
-        const progress = (bottomFadeEnd - top) / (bottomFadeEnd - bottomFadeStart);
-        newOpacity = progress;
-        newBlur = 12 - progress * 12;
-        newOffsetY = 32 - progress * 32;
-      }
-      
-      setOpacity(newOpacity);
-      setBlurAmount(newBlur);
-      setOffsetY(newOffsetY);
-    };
+    const el = ref.current;
+    if (!el || animated) return;
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setAnimated(true);
+            observer.disconnect();
+
+            const split = new SplitType(el, { types: 'lines' });
+            
+            if (split.lines) {
+              gsap.fromTo(
+                split.lines,
+                {
+                  opacity: 0,
+                  filter: 'blur(12px)',
+                  y: 32,
+                },
+                {
+                  opacity: 1,
+                  filter: 'blur(0px)',
+                  y: 0,
+                  duration: 1.2,
+                  delay: delay,
+                  stagger: 0.15,
+                  ease: 'power3.out',
+                }
+              );
+            }
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, [animated, delay]);
 
   return (
-    <div
-      ref={ref}
-      className={`will-change-transform will-change-opacity will-change-filter ${className}`}
-      style={{
-        opacity,
-        filter: `blur(${blurAmount}px)`,
-        transform: `translateY(${offsetY}px)`,
-      }}
-    >
+    <div ref={ref} className={className}>
       {children}
     </div>
   );
@@ -679,7 +675,7 @@ export default function HomeV2() {
               {/* Scrolling paragraphs with blur-reveal effect */}
               <div className="space-y-12 text-base sm:text-lg leading-relaxed text-stone-300 font-sans pt-4 pb-12 lg:-mt-[140px]">
                 <BlurLineReveal delay={0.1}>
-                  <p className="border-l-2 border-[#ff4d16] pl-6 text-stone-100 text-xl sm:text-2xl font-light leading-snug">
+                  <p className="border-l-2 border-[#ff4d16] pl-6 text-stone-300 text-base sm:text-lg">
                     A palavra <strong className="text-white font-semibold">Forja</strong> nasce da própria essência da <strong className="text-white font-semibold">Fábrica</strong>. Forjar é o ato milenar de submeter a matéria-prima bruta às mais altas temperaturas e ao impacto contínuo do martelo sobre a bigorna, até transformar o metal amorfo em uma ferramenta de precisão inquebrável.
                   </p>
                 </BlurLineReveal>
@@ -711,7 +707,7 @@ export default function HomeV2() {
             </div>
 
             {/* Column 2: Sticky 3D Clean Metal Hefesto Image */}
-            <div className="lg:sticky lg:top-28 h-[520px] sm:h-[620px] lg:h-[700px] w-full overflow-hidden relative bg-[#050505]">
+            <div className="lg:sticky lg:top-28 h-[520px] sm:h-[620px] lg:h-[700px] w-full relative bg-[#050505] z-40">
               <ThreeCanvas isEmbedded renderClean modelPath="/models/HEFESTO_v3-v2.glb" />
             </div>
           </div>
