@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import ThreeCanvas from '../components/V2/ThreeCanvas';
 import ControlSlider from '../components/V2/ControlSlider';
 import PixelArtCanvas from '../components/V2/PixelArtCanvas';
+import PaperBurnCard from '../components/V2/PaperBurnCard';
+import BlurText from '../components/V2/BlurText';
 import gsap from 'gsap';
 import SplitType from 'split-type';
 
@@ -279,44 +281,17 @@ function SectionLabel({ n, children }: { n: string; children: string }) {
 }
 
 const HeroText = React.memo(() => {
-  const heroTextRef = useRef<HTMLHeadingElement>(null);
-
-  useEffect(() => {
-    if (heroTextRef.current) {
-      const text = new SplitType(heroTextRef.current, { types: 'chars' });
-      
-      gsap.fromTo(
-        text.chars,
-        {
-          opacity: 0,
-          filter: 'blur(20px)',
-          y: 25,
-          color: 'transparent',
-          WebkitTextStroke: '1px rgba(255, 77, 22, 0.2)',
-        },
-        {
-          opacity: 1,
-          filter: 'blur(0px)',
-          y: 0,
-          color: '#ff4d16',
-          WebkitTextStroke: '1px #ff4d16',
-          duration: 1.8,
-          stagger: 0.08,
-          ease: 'power3.out',
-          delay: 0.2,
-        }
-      );
-    }
-  }, []);
-
   return (
-    <h1 
-      ref={heroTextRef}
+    <BlurText
+      text="FÁBRICA"
+      as="h1"
+      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", justifyContent: 'center' }}
       className="relative z-10 text-center font-display text-[16vw] leading-[0.85] font-light tracking-tight text-[#ff4d16] md:text-[13vw] select-none uppercase drop-shadow-[0_0_25px_rgba(255,77,22,0.4)]"
-      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-    >
-      FÁBRICA
-    </h1>
+      animateBy="letters"
+      direction="bottom"
+      delay={80}
+      stepDuration={1.8}
+    />
   );
 });
 
@@ -373,6 +348,7 @@ export default function HomeV2() {
   const [showControls, setShowControls] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<typeof TEAM[0] | null>(null);
+  const [hoveredMember, setHoveredMember] = useState<string | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollY, setScrollY] = useState(0);
 
@@ -561,18 +537,21 @@ export default function HomeV2() {
             <BlurSplitText 
               text="POSICIONE-SE"
               as="h2"
+              animateBy="letters"
               stagger={0.035}
               className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-light"
             />
             <BlurSplitText 
               text="CONECTE-SE"
               as="h2"
+              animateBy="letters"
               stagger={0.035}
               className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-light"
             />
             <BlurSplitText 
               text="E VENDA"
               as="h2"
+              animateBy="letters"
               stagger={0.035}
               className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-light"
             />
@@ -719,39 +698,13 @@ export default function HomeV2() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {TEAM.map((m) => (
-              <div
+              <PaperBurnCard
                 key={m.name}
+                name={m.name}
+                role={m.role}
+                img={m.img}
                 onClick={() => setSelectedMember(m)}
-                className="group relative cursor-pointer bg-[#050505] border border-white/10 hover:border-[#ff4d16] transition-all overflow-hidden h-[460px] flex flex-col justify-between"
-              >
-                {/* Photo with dark contrast styling */}
-                <img
-                  src={m.img}
-                  alt={m.name}
-                  className="absolute inset-0 w-full h-full object-cover object-top filter grayscale contrast-125 brightness-75 group-hover:grayscale-0 group-hover:brightness-90 transition-all duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-90 group-hover:opacity-75 transition-opacity" />
-
-                {/* Top right corner icon: 4 orange dot squares */}
-                <div className="relative z-10 p-3 flex justify-end">
-                  <div className="grid grid-cols-2 gap-0.5 w-2.5 h-2.5">
-                    <div className="bg-[#ff4d16] w-1 h-1" />
-                    <div className="bg-[#ff4d16] w-1 h-1" />
-                    <div className="bg-[#ff4d16] w-1 h-1" />
-                    <div className="bg-[#ff4d16] w-1 h-1" />
-                  </div>
-                </div>
-
-                {/* Card Bottom Labels */}
-                <div className="relative z-10 p-5 border-t border-white/10 bg-[#050505]/80 backdrop-blur-sm group-hover:bg-[#ff4d16]/10 transition-colors">
-                  <h4 className="text-base font-bold text-white tracking-wider font-mono uppercase group-hover:text-[#ff4d16] transition-colors">
-                    {m.name}
-                  </h4>
-                  <p className="text-xs text-stone-300 font-serif tracking-widest uppercase mt-1">
-                    {m.role}
-                  </p>
-                </div>
-              </div>
+              />
             ))}
           </div>
 

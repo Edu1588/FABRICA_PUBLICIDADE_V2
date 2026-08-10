@@ -67,15 +67,15 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
         let p = scroll / vh;
         targetScale = 3.5 + p * 4.0; // zoom in up to 7.5
         targetY = -0.8 - p * 1.5; 
-        targetRotX = 0.25 + p * 0.65; // Tilt forward from 0.25 to 0.9 (top of head)
-        targetRotY = -0.8 - p * 0.5;
+        targetRotX = 0.1 + p * 0.35; // Tilt forward to see top of head, but not too much
+        targetRotY = -0.8 - p * 0.3;
       } else if (scroll <= vh * 2.5) {
         // Section 2: Tilt to show chin
         let p = (scroll - vh) / (vh * 1.5);
         p = Math.min(p, 1.0);
         targetScale = 7.0 + p * 1.5; // up to 8.5
         targetY = -2.3 + p * 3.5; // Move up to keep chin in view
-        targetRotX = 0.9 - p * 1.5; // Tilt back from 0.9 to -0.6
+        targetRotX = 0.45 - p * 1.0; // Tilt back to show chin
         targetRotY = -1.3 + p * 0.5;
       } else {
         targetScale = 8.5;
@@ -292,16 +292,17 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
       // Base color for dots: cleaner grays
       vec3 baseCol = vec3(clamp(luma * 1.3, 0.1, 0.75));
       
-      // Hover effect: sparse scattered pixels around the mouse
-      float hoverRadius = 0.18; // Larger radius
+      // Hover effect: tight cluster of twinkling pixels
+      float hoverRadius = 0.08; 
       float dist = distance(basePixelUv * aspect, uMouse * aspect);
       vec2 cell = floor(uv / d);
       
       if (dist < hoverRadius) {
-        float noise = rand(cell * 15.0);
-        // Probability of being orange drops off with distance
-        float prob = mix(0.92, 0.995, dist / hoverRadius);
-        if (noise > prob) { 
+        float spatialNoise = rand(cell * 20.0);
+        float temporalNoise = sin(uTime * 8.0 + spatialNoise * 100.0);
+        float prob = mix(0.7, 0.98, dist / hoverRadius);
+        
+        if (spatialNoise > prob && temporalNoise > 0.0) { 
           baseCol = vec3(1.0, 0.35, 0.08); // pure orange
         }
       }
