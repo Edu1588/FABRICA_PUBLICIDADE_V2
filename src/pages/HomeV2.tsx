@@ -137,7 +137,7 @@ const INDEX = [
 const JOBS: [string, string, string][] = [
   ["WhatsApp Oficial", "(19) 9 8264-6492", "Contato direto"],
   ["Instagram Oficial", "@fabricapublicidadedigital", "Portfólio"],
-  ["E-mail Corporativo", "hello@fabricapublicidade.com.br", "Briefing"],
+  ["E-mail Corporativo", "lucas@fabricapublicidade.com.br", "Briefing"],
 ];
 
 function BlurSplitText({
@@ -512,49 +512,58 @@ export default function HomeV2() {
 
           <div className="mx-auto max-w-7xl space-y-8 md:space-y-10 pb-28">
             {/* Paragraph 1: Aligned to the left - Large scale */}
-            <div className="relative w-full md:w-[88%] lg:w-[85%]">
+            <div className="relative w-full md:w-[75%] lg:w-[60%] mr-auto">
               <span className="absolute -top-7 left-0 text-[10px] text-stone-500 font-mono tracking-widest uppercase">
                 SEC—01
               </span>
               <BlurSplitText 
                 text="Forjamos estratégias criativas e resultados sólidos para destacar sua marca, unindo posicionamento de impacto e desempenho digital sob medida. O seu negócio modelado com força e consistência de ferro."
-                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed text-stone-300 font-serif font-light tracking-wide"
+                className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-[1.4] text-stone-300 font-serif font-light tracking-wide text-left"
               />
             </div>
 
             {/* Paragraph 2: Offset to the right - Large scale */}
-            <div className="relative w-full md:w-[88%] lg:w-[85%] md:ml-auto flex flex-col md:flex-row gap-3 md:gap-8 items-start">
-              <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase shrink-0 pt-3">
-                ETHOS
-              </span>
+            <div className="relative w-full md:w-[75%] lg:w-[60%] md:ml-auto flex flex-col md:flex-row gap-3 md:gap-8 items-start md:items-start justify-end text-left md:text-right">
               <BlurSplitText 
                 text="Fortalecer marcas, potencializar resultados e ser parceiro estratégico em cada etapa da jornada. Somos a Fábrica: retiramos as marcas do estado bruto e as lapidamos até se tornarem ferramentas afiadas de conversão."
-                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed text-stone-300 font-serif font-light tracking-wide"
+                className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-[1.4] text-stone-300 font-serif font-light tracking-wide md:text-right"
               />
+              <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase shrink-0 pt-3 text-right">
+                ETHOS
+              </span>
             </div>
           </div>
 
-          <div className="pb-28 text-center select-none space-y-2">
-            <BlurSplitText 
+          <div className="pb-28 text-center select-none flex flex-col gap-2">
+            <BlurText 
               text="POSICIONE-SE"
               as="h2"
               animateBy="letters"
-              stagger={0.035}
-              className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-light"
+              delay={40}
+              stepDuration={1.2}
+              style={{ justifyContent: 'center' }}
+              hoverBlur={true}
+              className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-serif font-light cursor-default"
             />
-            <BlurSplitText 
+            <BlurText 
               text="CONECTE-SE"
               as="h2"
               animateBy="letters"
-              stagger={0.035}
-              className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-light"
+              delay={40}
+              stepDuration={1.2}
+              style={{ justifyContent: 'center' }}
+              hoverBlur={true}
+              className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-serif font-light cursor-default"
             />
-            <BlurSplitText 
+            <BlurText 
               text="E VENDA"
               as="h2"
               animateBy="letters"
-              stagger={0.035}
-              className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-light"
+              delay={40}
+              stepDuration={1.2}
+              style={{ justifyContent: 'center' }}
+              hoverBlur={true}
+              className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-serif font-light cursor-default"
             />
           </div>
         </section>
@@ -784,10 +793,10 @@ export default function HomeV2() {
                 key={title}
                 href={
                   title.includes("WhatsApp")
-                    ? "https://wa.me/5519982646492"
+                    ? "https://api.whatsapp.com/send?1=pt_BR&phone=5519982646492&text=Ol%C3%A1%20vim%20atrav%C3%A9s%20do%20site"
                     : title.includes("Instagram")
                     ? "https://instagram.com/fabricapublicidadedigital"
-                    : "mailto:hello@fabricapublicidade.com.br"
+                    : "mailto:lucas@fabricapublicidade.com.br"
                 }
                 target="_blank"
                 rel="noreferrer"
