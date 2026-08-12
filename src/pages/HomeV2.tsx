@@ -327,8 +327,7 @@ function InteractiveImage({ src, alt }: { src: string, alt: string }) {
       className="w-full h-full flex items-center justify-center cursor-default bg-[#050505]"
       style={{ perspective: '1000px' }}
     >
-      <img 
-        ref={imgRef}
+      <img loading="lazy" ref={imgRef}
         src={src} 
         alt={alt}
         className="w-[85%] h-[85%] md:w-[95%] md:h-[95%] object-contain pointer-events-none opacity-90"
@@ -887,8 +886,7 @@ export default function HomeV2() {
               <span className="absolute bottom-3 left-3 text-stone-500 text-xs font-mono select-none">+</span>
               <span className="absolute bottom-3 right-3 text-stone-500 text-xs font-mono select-none">+</span>
 
-              <img
-                src={selectedMember.img}
+              <img loading="lazy" src={selectedMember.img}
                 alt={selectedMember.name}
                 className="w-full h-full object-cover object-top filter grayscale contrast-110 brightness-90"
               />

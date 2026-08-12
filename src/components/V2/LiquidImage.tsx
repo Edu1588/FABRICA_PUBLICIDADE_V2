@@ -9,7 +9,7 @@ interface LiquidImageProps {
 export default function LiquidImage({ src, className = "", alt = "" }: LiquidImageProps) {
   return (
     <div className={`relative overflow-hidden group ${className}`}>
-      <img 
+      <img loading="lazy" 
         src={src}
         alt={alt}
         crossOrigin="anonymous"
