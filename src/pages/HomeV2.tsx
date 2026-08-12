@@ -351,6 +351,20 @@ export default function HomeV2() {
   const [hoveredMember, setHoveredMember] = useState<string | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollY, setScrollY] = useState(0);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -406,7 +420,7 @@ export default function HomeV2() {
       </a>
 
       {/* Navigation Header Bar (Matching Reference) */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center">
+      <div ref={menuRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center">
         <nav className="bg-[#111111]/90 backdrop-blur-xl border border-white/15 px-6 py-3 flex items-center justify-between gap-8 shadow-2xl pointer-events-auto min-w-[280px] sm:min-w-[340px]">
           {/* Left Icon */}
           <span className="font-mono text-base font-bold text-white tracking-widest select-none">
@@ -444,17 +458,7 @@ export default function HomeV2() {
                 </a>
               </li>
             ))}
-            <li className="border-t border-white/10 mt-2 pt-2">
-               <button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setShowControls(!showControls);
-                  }}
-                  className="w-full block px-6 py-3 text-[11px] text-stone-500 hover:text-[#ff4d16] hover:bg-white/5 transition-colors tracking-widest text-left uppercase cursor-pointer"
-                >
-                  {showControls ? "Ocultar Controles" : "Ajustes Shader 3D"}
-                </button>
-            </li>
+            
           </ul>
         </div>
       </div>
