@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "IBM Plex Mono", "Inter", ui-monospace, monospace;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-mono-ui: "IBM Plex Mono", ui-monospace, monospace;
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-heading: "Cormorant Garamond", ui-serif, Georgia, serif;

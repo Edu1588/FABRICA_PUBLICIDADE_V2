@@ -25,7 +25,8 @@ const BlurText = ({
   onAnimationComplete,
   stepDuration = 0.35,
   as: Component = 'p',
-  style = {}
+  style = {},
+  hoverBlur = false
 }: any) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('');
   const [inView, setInView] = useState(false);
@@ -92,8 +93,17 @@ const BlurText = ({
             transition={spanTransition}
             onAnimationComplete={index === elements.length - 1 ? onAnimationComplete : undefined}
           >
-            {segment === ' ' ? '\u00A0' : segment}
-            {animateBy === 'words' && index < elements.length - 1 && '\u00A0'}
+            {hoverBlur ? (
+              <span className="inline-block hover:blur-sm hover:opacity-75 transition-all duration-300">
+                {segment === ' ' ? '\u00A0' : segment}
+                {animateBy === 'words' && index < elements.length - 1 && '\u00A0'}
+              </span>
+            ) : (
+              <>
+                {segment === ' ' ? '\u00A0' : segment}
+                {animateBy === 'words' && index < elements.length - 1 && '\u00A0'}
+              </>
+            )}
           </motion.span>
         );
       })}

@@ -285,12 +285,13 @@ const HeroText = React.memo(() => {
     <BlurText
       text="FÁBRICA"
       as="h1"
-      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", justifyContent: 'center' }}
-      className="relative z-10 text-center font-display text-[16vw] leading-[0.85] font-light tracking-tight text-[#ff4d16] md:text-[13vw] select-none uppercase drop-shadow-[0_0_25px_rgba(255,77,22,0.4)]"
+      style={{ fontFamily: "'Outfit', sans-serif", justifyContent: 'center' }}
+      className="relative z-10 text-center text-[16vw] leading-[0.85] font-light tracking-tight text-[#ff4d16] md:text-[13vw] select-none uppercase drop-shadow-[0_0_25px_rgba(255,77,22,0.4)] cursor-default"
       animateBy="letters"
       direction="bottom"
       delay={80}
       stepDuration={1.8}
+      hoverBlur={true}
     />
   );
 });
@@ -509,7 +510,7 @@ export default function HomeV2() {
         <section id="jornada" className="mx-auto max-w-[1400px] px-6 pointer-events-auto">
           <SectionLabel n="01">Nosso propósito</SectionLabel>
 
-          <div className="mx-auto max-w-7xl space-y-16 md:space-y-24 pb-28">
+          <div className="mx-auto max-w-7xl space-y-8 md:space-y-10 pb-28">
             {/* Paragraph 1: Aligned to the left - Large scale */}
             <div className="relative w-full md:w-[88%] lg:w-[85%]">
               <span className="absolute -top-7 left-0 text-[10px] text-stone-500 font-mono tracking-widest uppercase">
@@ -517,18 +518,18 @@ export default function HomeV2() {
               </span>
               <BlurSplitText 
                 text="Forjamos estratégias criativas e resultados sólidos para destacar sua marca, unindo posicionamento de impacto e desempenho digital sob medida. O seu negócio modelado com força e consistência de ferro."
-                className="text-3xl sm:text-5xl md:text-6xl lg:text-[4vw] xl:text-[4.5vw] leading-[1.08] text-stone-100 font-serif font-light tracking-tight"
+                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed text-stone-300 font-serif font-light tracking-wide"
               />
             </div>
 
             {/* Paragraph 2: Offset to the right - Large scale */}
-            <div className="relative w-full md:w-[88%] lg:w-[85%] md:ml-auto pt-6 md:pt-12 flex flex-col md:flex-row gap-3 md:gap-8 items-start">
+            <div className="relative w-full md:w-[88%] lg:w-[85%] md:ml-auto flex flex-col md:flex-row gap-3 md:gap-8 items-start">
               <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase shrink-0 pt-3">
                 ETHOS
               </span>
               <BlurSplitText 
                 text="Fortalecer marcas, potencializar resultados e ser parceiro estratégico em cada etapa da jornada. Somos a Fábrica: retiramos as marcas do estado bruto e as lapidamos até se tornarem ferramentas afiadas de conversão."
-                className="text-2xl sm:text-4xl md:text-5xl lg:text-[3.2vw] leading-[1.12] text-stone-200 font-serif font-light tracking-tight"
+                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed text-stone-300 font-serif font-light tracking-wide"
               />
             </div>
           </div>
