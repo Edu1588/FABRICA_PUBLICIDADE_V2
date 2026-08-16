@@ -21,10 +21,12 @@ import {
   LayoutDashboard,
   Palette,
   Sun,
-  Moon
+  Moon,
+  Newspaper
 } from 'lucide-react';
 import { AdminDashboard } from '../components/AdminDashboard';
 import { DesignBrandbook } from '../components/DesignBrandbook';
+import { JornalManager } from '../components/JornalManager';
 
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
@@ -91,6 +93,7 @@ export default function Outgrid() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showCarrosseis, setShowCarrosseis] = useState(false);
   const [showDesign, setShowDesign] = useState(false);
+  const [showJornal, setShowJornal] = useState(false);
   const [activeEditor, setActiveEditor] = useState<'destaque' | 'ofertas' | null>(null);
   const [showEditClient, setShowEditClient] = useState(false);
   
@@ -366,9 +369,36 @@ export default function Outgrid() {
     
     
     const loadData = async () => {
+      const defaultClients: AppClient[] = [
+        {
+          id: 'azul-veiculos',
+          name: 'Azul Veículos',
+          description: 'Concessionária e revenda de veículos multimarcas com forte presença regional.',
+          logoUrl: 'https://res.cloudinary.com/ifuatk2z/image/upload/v1785183130/logo_Azul_spqf9c.svg',
+          active: true,
+          corCliente: '#0055FF'
+        },
+        {
+          id: 'unimais',
+          name: 'Unimais Veículos',
+          description: 'Rede de concessionárias multimarcas.',
+          logoUrl: 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+          active: true,
+          corCliente: '#FF7A00'
+        },
+        {
+          id: 'meta-veiculos',
+          name: 'Meta Veículos',
+          description: 'Revenda de veículos e tecnologia de vendas.',
+          logoUrl: 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png',
+          active: true,
+          corCliente: '#C46A1A'
+        }
+      ];
+
       const { data: clientsData } = await supabase.from('clients').select('*');
       if (clientsData && clientsData.length > 0) {
-        setClients(clientsData.map(c => {
+        const loaded = clientsData.map(c => {
           let extra: any = {};
           try { if (c.description && c.description.startsWith('{')) extra = JSON.parse(c.description); } catch(e){}
           return {
@@ -381,7 +411,14 @@ export default function Outgrid() {
             anexos: extra.anexos || '',
             corCliente: extra.corCliente || ''
           };
-        }));
+        });
+        const hasAzul = loaded.some(c => c.name?.toLowerCase().includes('azul'));
+        if (!hasAzul) {
+          loaded.unshift(defaultClients[0]);
+        }
+        setClients(loaded);
+      } else {
+        setClients(defaultClients);
       }
 
       const { data: slidesData } = await supabase.from('slides').select('*').order('order_index', { ascending: true });
@@ -780,6 +817,7 @@ export default function Outgrid() {
                     setSelectedClientId(null);
                     setShowCarrosseis(false);
                     setShowDesign(false);
+                    setShowJornal(false);
                     setActiveEditor(null);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
@@ -797,6 +835,7 @@ export default function Outgrid() {
                     setSelectedClientId(null);
                     setShowCarrosseis(false);
                     setShowDesign(false);
+                    setShowJornal(false);
                     setActiveEditor(null);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
@@ -814,6 +853,7 @@ export default function Outgrid() {
                     setSelectedClientId(null);
                     setShowCarrosseis(false);
                     setShowDesign(false);
+                    setShowJornal(false);
                     setActiveEditor(null);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
@@ -935,8 +975,8 @@ export default function Outgrid() {
               </div>
             )}
 
-            {/* STEP 2: Selected Client -> Show Option: "Carrossel" */}
-            {activeTab === 'clientes' && selectedClientId && !showCarrosseis && !showDesign && !showEditClient && (
+            {/* STEP 2: Selected Client -> Show Option: "Carrossel", "Design" or "Jornal" */}
+            {activeTab === 'clientes' && selectedClientId && !showCarrosseis && !showDesign && !showJornal && !showEditClient && (
               <div className="space-y-6 animate-fade-in">
                 
                 <button 
@@ -947,7 +987,7 @@ export default function Outgrid() {
                   Voltar para lista de clientes
                 </button>
 
-                <div className="bg-[#0c0c10] border border-white/5 rounded-2xl p-8 max-w-4xl">
+                <div className="bg-[#0c0c10] border border-white/5 rounded-2xl p-8 max-w-5xl">
                   
                   <div className="flex items-center gap-4 border-b border-white/5 pb-6 mb-8">
                     {selectedClientData?.logoUrl ? (
@@ -967,7 +1007,71 @@ export default function Outgrid() {
                     </div>
                   </div>
 
-                  {selectedClientData?.name?.toLowerCase().includes('unimais') || selectedClientData?.name?.toLowerCase().includes('meta') ? (
+                  {selectedClientData?.name?.toLowerCase().includes('azul') ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {/* Option: Card Carrosseis */}
+                      <div 
+                        onClick={() => setShowCarrosseis(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#0055FF]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#3388FF] mb-4 group-hover:bg-[#0055FF]/10 transition-colors">
+                          <ImageIcon className="w-5 h-5" />
+                        </div>
+                        
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#3388FF] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Card Carrosseis
+                        </h4>
+                        
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Selecione entre o Carrossel Destaque e o Carrossel Ofertas para realizar as edições.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#3388FF] transition-colors">
+                          <span>Acessar Carrosseis</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+
+                      {/* Option: Design */}
+                      <div 
+                        onClick={() => setShowDesign(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#0055FF]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#3388FF] mb-4 group-hover:bg-[#0055FF]/10 transition-colors">
+                          <Palette className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#3388FF] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Design & Brandbook
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Gerencie a identidade visual, paleta de cores e moodboard do cliente.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#3388FF] transition-colors">
+                          <span>Acessar Design</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+
+                      {/* Option: Card Jornal */}
+                      <div 
+                        onClick={() => setShowJornal(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#0055FF]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-[#0055FF]/10 border border-[#0055FF]/20 flex items-center justify-center text-[#3388FF] mb-4 group-hover:bg-[#0055FF]/20 transition-colors">
+                          <Newspaper className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#3388FF] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Card Jornal
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Gerencie as edições do jornal impresso, tablóides digitais, encartes e ofertas de veículos.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#3388FF] transition-colors">
+                          <span>Acessar Jornal</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  ) : selectedClientData?.name?.toLowerCase().includes('unimais') || selectedClientData?.name?.toLowerCase().includes('meta') ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {/* Option: Card Carrosseis */}
                       <div 
@@ -1035,6 +1139,20 @@ export default function Outgrid() {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* STEP 3.3: Jornal */}
+            {activeTab === 'clientes' && selectedClientId && showJornal && (
+              <div className="space-y-6">
+                <button 
+                  onClick={() => setShowJornal(false)}
+                  className="flex items-center gap-2 text-xs font-outfit uppercase tracking-widest text-white/40 hover:text-white transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Voltar para opções de {selectedClientData?.name || 'Cliente'}
+                </button>
+                <JornalManager client={selectedClientData!} />
               </div>
             )}
 
