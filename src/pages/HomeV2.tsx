@@ -228,24 +228,24 @@ function BlurLineReveal({ children, className = '', delay = 0 }: { children: Rea
             setAnimated(true);
             observer.disconnect();
 
-            const split = new SplitType(el, { types: 'lines' });
+            const split = new SplitType(el, { types: 'lines,words' });
             
-            if (split.lines) {
+            if (split.words) {
               gsap.fromTo(
-                split.lines,
+                split.words,
                 {
                   opacity: 0,
-                  filter: 'blur(12px)',
-                  y: 32,
+                  filter: 'blur(8px)',
+                  y: 15,
                 },
                 {
                   opacity: 1,
                   filter: 'blur(0px)',
                   y: 0,
-                  duration: 1.2,
+                  duration: 0.8,
                   delay: delay,
-                  stagger: 0.15,
-                  ease: 'power3.out',
+                  stagger: 0.02,
+                  ease: 'power2.out',
                 }
               );
             }
@@ -658,9 +658,14 @@ export default function HomeV2() {
                 <span className="text-[10px] text-[#ff4d16] font-mono tracking-widest uppercase bg-white/5 px-3 py-1 border border-white/10">
                   CONCEITO & ORIGEM
                 </span>
-                <h3 className="text-3xl sm:text-4xl md:text-5xl font-light text-white tracking-wide uppercase mt-4 font-sans">
-                  FORJA VEM DE FÁBRICA
-                </h3>
+                <BlurText
+                  as="h3"
+                  text="FORJA VEM DE FÁBRICA"
+                  className="text-3xl sm:text-4xl md:text-5xl font-light text-white tracking-wide uppercase mt-4 font-sans"
+                  delay={150}
+                  animateBy="words"
+                  direction="top"
+                />
               </div>
               
               {/* Top fade out overlay (line by line fade/blur) */}
