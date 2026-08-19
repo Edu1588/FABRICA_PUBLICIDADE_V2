@@ -1,10 +1,10 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
 
 useGLTF.preload('/models/HEFESTO_FABRICA.glb');
-useGLTF.preload('/models/HEFESTO_v3-v2.glb');
+useGLTF.preload('/models/003_anvil.glb');
 
 // Global mouse tracker ref so canvas reacts even when pointer-events-none is on container
 const globalMouse = { x: 0, y: 0 };
@@ -15,7 +15,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgress, scrollY, isClean, modelPath = '/models/HEFESTO_FABRICA.glb' }: any) {
+function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateSpeed, scrollProgress, scrollY, isClean, modelPath = '/models/HEFESTO_FABRICA.glb', fixedScale, fixedY }: any) {
   const modelRef = useRef<THREE.Group>(null);
   
   // Hook call at top level
@@ -61,7 +61,12 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
     let targetRotX = 0.25;
     let targetRotY = -0.8;
     
-    if (!isClean) {
+    if (fixedScale !== undefined && fixedY !== undefined) {
+      targetScale = fixedScale;
+      targetY = fixedY;
+      targetRotX = 0.1;
+      targetRotY = 0;
+    } else if (!isClean) {
       if (scroll <= vh) {
         // Section 1: Zoom into the top of the head
         let p = scroll / vh;
@@ -93,7 +98,7 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
       modelRef.current.position.lerp(new THREE.Vector3(0.0, targetY, 0), 0.05);
 
       if (autoRotate) {
-        modelRef.current.rotation.y += delta * 0.5;
+        modelRef.current.rotation.y += delta * (autoRotateSpeed !== undefined ? autoRotateSpeed : 0.5);
       } else {
         if (isClean) {
           // Repulsive mouse effect
@@ -109,9 +114,22 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
   });
 
   if (clonedScene) {
+    const initialY = fixedY !== undefined ? fixedY : (isClean ? -1.4 : -0.8);
+    const initialRotY = fixedScale !== undefined ? 0 : (isClean ? -0.6 : -0.8);
+    const initialScale = fixedScale !== undefined ? fixedScale : (isClean ? 3.6 : 3.5);
+    
     return (
-      <group ref={modelRef} position={[0, isClean ? -1.4 : -0.8, 0]} rotation={[0, isClean ? -0.6 : -0.8, 0]} scale={isClean ? 3.6 : 3.5}>
-        <primitive object={clonedScene} />
+      <group ref={modelRef} position={[0, initialY, 0]} rotation={[0, initialRotY, 0]} scale={initialScale}>
+        {fixedScale !== undefined && (
+          <pointLight position={[0, 2, 2]} intensity={10} color="#ff4d16" distance={10} />
+        )}
+        {fixedScale !== undefined ? (
+          <Center>
+            <primitive object={clonedScene} />
+          </Center>
+        ) : (
+          <primitive object={clonedScene} />
+        )}
       </group>
     );
   }
@@ -121,6 +139,8 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, scrollProgr
 
 function SceneContent(props: any) {
   const isClean = props.renderClean;
+  const isFixed = props.fixedScale !== undefined;
+  
   return (
     <>
       {isClean ? (
@@ -133,6 +153,13 @@ function SceneContent(props: any) {
           {/* Rim Light: Left side, slightly behind, pointing towards the face/shoulder */}
           <directionalLight position={[-8, 3, -4]} intensity={6} color="#ff5500" />
           <pointLight position={[-6, 2, -3]} intensity={12} distance={15} color="#ff6600" />
+        </>
+      ) : isFixed ? (
+        <>
+          <ambientLight intensity={4.0} />
+          <directionalLight position={[5, 5, 5]} intensity={10} color="#ffffff" />
+          <directionalLight position={[-5, -5, -5]} intensity={5} color="#ffffff" />
+          <pointLight position={[0, 2, 5]} intensity={15} color="#ff4d16" distance={50} />
         </>
       ) : (
         <>

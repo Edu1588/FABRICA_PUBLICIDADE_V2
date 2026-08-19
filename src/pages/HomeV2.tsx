@@ -5,6 +5,7 @@ import PixelArtCanvas from '../components/V2/PixelArtCanvas';
 import PaperBurnCard from '../components/V2/PaperBurnCard';
 import BlurText from '../components/V2/BlurText';
 import { EmBreveGate } from '../components/EmBreveGate';
+import { ArrowUp } from 'lucide-react';
 import gsap from 'gsap';
 import SplitType from 'split-type';
 
@@ -270,10 +271,10 @@ function BlurLineReveal({ children, className = '', delay = 0 }: { children: Rea
 
 function SectionLabel({ n, children }: { n: string; children: string }) {
   return (
-    <div className="flex flex-col items-center gap-2 pt-12 pb-6 select-none w-full border-t border-white/10">
+    <div className="flex flex-col items-center gap-2 pt-12 pb-6 select-none w-[70%] mx-auto border-t-[3px] border-dotted border-white/20">
       <span className="text-4xl sm:text-6xl md:text-7xl text-[#ff4d16] font-mono font-extralight tracking-widest">{n}</span>
       <h2 
-        className="text-2xl sm:text-4xl md:text-5xl text-white tracking-widest uppercase font-sans font-light"
+        className="text-2xl sm:text-4xl md:text-5xl text-white tracking-widest uppercase font-sans font-light text-center"
       >
         {children}
       </h2>
@@ -427,6 +428,16 @@ export default function HomeV2() {
       >
         Iniciar Projeto
       </a>
+
+      {/* Back to Top Button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className={`fixed bottom-6 right-6 z-50 p-3 bg-transparent transition-all duration-500 flex items-center justify-center border border-transparent
+          ${scrollY > 400 ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+        aria-label="Voltar ao topo"
+      >
+        <ArrowUp className="w-8 h-8 text-stone-500 stroke-[1] transition-colors hover:text-[#ff4d16]" />
+      </button>
 
       {/* Navigation Header Bar (Matching Reference) */}
       <div ref={menuRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center">
@@ -624,7 +635,7 @@ export default function HomeV2() {
 
         <div className="bg-[#050505] relative z-20 pointer-events-auto w-full">
         {/* Section 03: O que forjamos */}
-        <section className="rule-top mx-auto max-w-[1400px] px-6">
+        <section className="mx-auto max-w-[1400px] px-6">
           <SectionLabel n="03">O que forjamos</SectionLabel>
 
           <ul className="pb-24 border-t border-white/10">
@@ -646,7 +657,7 @@ export default function HomeV2() {
         </section>
 
         {/* Section 04: Por que Forja */}
-        <section id="porque-forja" className="rule-top mx-auto max-w-[1400px] px-6 relative py-12">
+        <section id="porque-forja" className="mx-auto max-w-[1400px] px-6 relative py-12">
           {/* Section 04 Header (Standard scrolling header, non-sticky) */}
           <SectionLabel n="04">Por que Forja</SectionLabel>
 
@@ -714,13 +725,13 @@ export default function HomeV2() {
 
             {/* Column 2: Sticky 3D Clean Metal Hefesto Image */}
             <div className="lg:sticky lg:top-28 h-[520px] sm:h-[620px] lg:h-[700px] w-full relative bg-[#050505] z-40">
-              <ThreeCanvas isEmbedded renderClean modelPath="/models/HEFESTO_v3-v2.glb" />
+              <ThreeCanvas isEmbedded renderClean modelPath="/models/HEFESTO_FABRICA.glb" />
             </div>
           </div>
         </section>
 
         {/* Section 05: Nosso Time */}
-        <section id="clientes" className="rule-top mx-auto max-w-[1400px] px-6">
+        <section id="clientes" className="mx-auto max-w-[1400px] px-6">
           <SectionLabel n="05">Nosso time</SectionLabel>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -749,7 +760,7 @@ export default function HomeV2() {
         </section>
 
         {/* Section 06: Mercados em que forjamos */}
-        <section id="projeto" className="rule-top mx-auto max-w-[1400px] px-6">
+        <section id="projeto" className="mx-auto max-w-[1400px] px-6">
           <SectionLabel n="06">Mercados em que forjamos</SectionLabel>
 
           <p className="mx-auto max-w-2xl pb-12 text-center text-sm leading-relaxed text-stone-400 font-mono">
@@ -778,9 +789,9 @@ export default function HomeV2() {
           </ul>
         </section>
 
-        {/* Section 06: Jornada da forja */}
-        <section className="rule-top mx-auto max-w-[1400px] px-6">
-          <SectionLabel n="06">Jornada da forja</SectionLabel>
+        {/* Section 07: Jornada da forja */}
+        <section className="mx-auto max-w-[1400px] px-6">
+          <SectionLabel n="07">Jornada da forja</SectionLabel>
 
           <ul className="grid grid-cols-2 gap-x-8 gap-y-2 pb-24 sm:grid-cols-3 md:grid-cols-4 font-mono">
             {INDEX.map((c) => (
@@ -795,9 +806,29 @@ export default function HomeV2() {
           </ul>
         </section>
 
-        {/* Section 07: Contato */}
-        <section id="contato" className="rule-top mx-auto max-w-[1400px] px-6">
-          <SectionLabel n="07">Contato</SectionLabel>
+        {/* Small 3D Anvil before Contato */}
+        <div className="mx-auto max-w-[1400px] px-6 flex justify-center pb-12 pt-8">
+          <div className="w-64 h-64 sm:w-80 sm:h-80 relative opacity-90 pointer-events-auto">
+            <ThreeCanvas 
+              isEmbedded 
+              modelPath="/models/003_anvil.glb" 
+              pixelFactor={4.5} 
+              autoRotate={true}
+              autoRotateSpeed={0.1}
+              cameraZ={8}
+              brightness={1.8}
+              smearIntensity={0.2}
+              roughness={0.2}
+              metalness={0.8}
+              fixedScale={0.012}
+              fixedY={0}
+            />
+          </div>
+        </div>
+
+        {/* Section 08: Contato */}
+        <section id="contato" className="mx-auto max-w-[1400px] px-6">
+          <SectionLabel n="08">Contato</SectionLabel>
 
           <p className="mx-auto max-w-2xl pb-14 text-center text-sm leading-relaxed text-stone-400 font-mono">
             A forja está acesa. Fale diretamente com os mestres da Fábrica — preferimos contato
@@ -835,7 +866,7 @@ export default function HomeV2() {
         </section>
 
         {/* Footer */}
-        <footer className="mt-24 rule-top bg-[#0a0a0c]">
+        <footer className="mt-24 bg-[#0a0a0c]">
           <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-6 py-12 md:flex-row md:items-end md:justify-between">
             <p className="max-w-md text-xs leading-relaxed text-stone-400 font-mono border-l border-[#ff4d16] pl-4">
               Forjando marcas com estratégia, criatividade e performance desde o primeiro martelo.
