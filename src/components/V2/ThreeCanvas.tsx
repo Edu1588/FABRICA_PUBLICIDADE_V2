@@ -23,8 +23,9 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
 
   // Clone scene so multiple canvas instances render separate copies without stealing Object3D
   const clonedScene = useMemo(() => {
-    if (!gltf || !gltf.scene) return null;
-    const clone = gltf.scene.clone(true);
+    const rawScene = Array.isArray(gltf) ? gltf[0]?.scene : (gltf as any)?.scene;
+    if (!rawScene) return null;
+    const clone = rawScene.clone(true);
     clone.traverse((child: any) => {
       if (child.isMesh) {
         if (isClean) {
@@ -349,7 +350,7 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
   return (
     <mesh
       onUpdate={(self) => quadScene.add(self)}
-      onRemove={(self) => quadScene.remove(self)}
+      {...({ onRemove: (self: any) => quadScene.remove(self) } as any)}
     >
       <planeGeometry args={[2, 2]} />
       <shaderMaterial

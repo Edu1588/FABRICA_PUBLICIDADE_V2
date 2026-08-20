@@ -94,7 +94,9 @@ async function startServer() {
           data: {
             montadora: "JEEP",
             modelo: "RENEGADE",
-            descricao: "1.8 16V FLEX 4P AUTOMÁTICO"
+            descricao: "1.8 16V FLEX 4P AUTOMÁTICO",
+            fipe: "99.590",
+            valor: "99.590"
           }
         });
       }
@@ -146,7 +148,9 @@ Return ONLY a valid JSON object with the following keys, with NO markdown format
 {
   "montadora": "String (e.g., Toyota, Honda, Chevrolet)",
   "modelo": "String (The main car model, e.g., Corolla, Civic)",
-  "descricao": "String (The specific version/description, e.g., 2.0 VVT-IE FLEX XEI DIRECT SHIFT)"
+  "descricao": "String (The specific version/description, e.g., 2.0 VVT-IE FLEX XEI DIRECT SHIFT)",
+  "fipe": "String (Tabela FIPE price if present, e.g. 99.590 or R$ 99.590)",
+  "valor": "String (Car sale price / full value if present, e.g. 99.590 or R$ 99.590)"
 }
 
 Text to extract from:
@@ -163,7 +167,9 @@ ${cleanHtml}
             properties: {
               montadora: { type: Type.STRING, description: "A marca ou fabricante do veículo (ex: JEEP, TOYOTA, VOLKSWAGEN)" },
               modelo: { type: Type.STRING, description: "O modelo principal do veículo (ex: COMPASS, COROLLA, POLO)" },
-              descricao: { type: Type.STRING, description: "A versão completa ou descrição do modelo do veículo (ex: 2.0 TD350 TURBO DIESEL LIMITED AWD AUTOMÁTICO)" }
+              descricao: { type: Type.STRING, description: "A versão completa ou descrição do modelo do veículo (ex: 2.0 TD350 TURBO DIESEL LIMITED AWD AUTOMÁTICO)" },
+              fipe: { type: Type.STRING, description: "Valor da Tabela FIPE do veículo (ex: 99.590)" },
+              valor: { type: Type.STRING, description: "Valor integral de venda do veículo (ex: 99.590)" }
             },
             required: ["montadora", "modelo", "descricao"]
           }

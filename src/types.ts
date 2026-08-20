@@ -18,6 +18,8 @@ export interface CarouselSlide {
   fabricante?: string;    // manufacturer (VEICULO)
   modelo?: string;        // model (VEICULO)
   descricao?: string;     // description / subtitle (VEICULO/CAPA)
+  valorFipe?: string;     // FIPE table value (VEICULO)
+  valorIntegral?: string; // Full car price value (VEICULO)
   
   // Capa exclusive fields
   lojasCapa?: string;     // store locations for cover slide

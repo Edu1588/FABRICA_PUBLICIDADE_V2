@@ -153,7 +153,7 @@ function BlurSplitText({
   text: string;
   className?: string;
   style?: React.CSSProperties;
-  as?: React.ElementType;
+  as?: any;
   delay?: number;
   stagger?: number;
 }) {

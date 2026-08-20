@@ -193,6 +193,8 @@ export default function Admin() {
       condicao2Label: baseSlide ? baseSlide.condicao2Label : '', condicao2Val: baseSlide ? baseSlide.condicao2Val : '',
       condicao3Label: baseSlide ? baseSlide.condicao3Label : '', condicao3Val: baseSlide ? baseSlide.condicao3Val : '',
       condicao4Label: baseSlide ? baseSlide.condicao4Label : '', condicao4Val: baseSlide ? baseSlide.condicao4Val : '',
+      valorFipe: baseSlide ? baseSlide.valorFipe : '',
+      valorIntegral: baseSlide ? baseSlide.valorIntegral : '',
       lojasCapa: baseSlide ? baseSlide.lojasCapa : '',
       website: baseSlide ? baseSlide.website : ''
     };
@@ -241,7 +243,7 @@ export default function Admin() {
     setIsDragging(false);
   };
 
-  const globalVehicleFields = ['fabricante', 'modelo', 'descricao', 'condicao1Label', 'condicao1Val', 'condicao2Label', 'condicao2Val', 'condicao3Label', 'condicao3Val', 'condicao4Label', 'condicao4Val', 'title'];
+  const globalVehicleFields = ['fabricante', 'modelo', 'descricao', 'valorFipe', 'valorIntegral', 'condicao1Label', 'condicao1Val', 'condicao2Label', 'condicao2Val', 'condicao3Label', 'condicao3Val', 'condicao4Label', 'condicao4Val', 'title'];
 
   const updateActiveSlideField = (field: keyof CarouselSlide, value: any) => {
     setSlides(prevSlides => prevSlides.map((s, idx) => {
@@ -310,6 +312,8 @@ export default function Admin() {
                 fabricante: data.data.montadora || '',
                 modelo: data.data.modelo || '',
                 descricao: data.data.descricao || '',
+                valorFipe: data.data.fipe || '',
+                valorIntegral: data.data.valor || '',
                 title: `${scrapeQuery.toUpperCase().replace(/[^A-Z0-9]/g, '')}_carrossel_${selectedClientData?.name?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") || 'unimais'}`,
                 condicao1Label: '', condicao1Val: '',
                 condicao2Label: '', condicao2Val: '',
@@ -464,7 +468,7 @@ export default function Admin() {
         });
         const hasAzul = loaded.some(c => c.name?.toLowerCase().includes('azul'));
         if (!hasAzul) {
-          loaded.unshift(defaultClients[0]);
+          loaded.unshift(defaultClients[0] as any);
         }
         setClients(loaded);
       } else {
@@ -481,6 +485,8 @@ export default function Admin() {
           fabricante: s.fabricante || '',
           modelo: s.modelo || '',
           descricao: s.descricao || '',
+          valorFipe: s.valorfipe || s.valor_fipe || '',
+          valorIntegral: s.valorintegral || s.valor_integral || '',
           lojasCapa: s.lojascapa || '',
           imageUrl: s.imageurl || '',
           zoom: s.zoom || 1,
@@ -567,6 +573,8 @@ export default function Admin() {
         fabricante: s.fabricante || null,
         modelo: s.modelo || null,
         descricao: s.descricao || null,
+        valorfipe: s.valorFipe || null,
+        valorintegral: s.valorIntegral || null,
         lojascapa: s.lojasCapa || null,
         imageurl: s.imageUrl || null,
         zoom: s.zoom || 1,
@@ -1448,6 +1456,38 @@ export default function Admin() {
                                 className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white"
                               />
                             </div>
+
+                            {/* PREÇO E FIPE */}
+                            <div className="pt-3 border-t border-white/5 space-y-3">
+                              <span className="text-[10px] text-[#FFD000] font-bold uppercase tracking-wider block">Precificação & Tabela FIPE</span>
+                              
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1.5">
+                                  <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Tabela FIPE</label>
+                                  <input
+                                    type="text"
+                                    value={activeSlide.valorFipe || ''}
+                                    onChange={e => updateActiveSlideField('valorFipe', e.target.value)}
+                                    placeholder="Ex: 99.590 ou R$ 99.590"
+                                    className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold text-[#FFD000]">Valor Carro Integral</label>
+                                  <input
+                                    type="text"
+                                    value={activeSlide.valorIntegral || ''}
+                                    onChange={e => updateActiveSlideField('valorIntegral', e.target.value)}
+                                    placeholder="Ex: 99.590"
+                                    className="w-full bg-[#111116] border border-[#FFD000]/40 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-bold"
+                                  />
+                                </div>
+                              </div>
+                              <p className="text-[9px] text-white/40 leading-relaxed font-outfit">
+                                Se não houver FIPE, preencha o <strong className="text-white">Valor Carro Integral</strong> manualmente. Ele será exibido abaixo do Tag FIPE em <strong className="text-[#FFD000]">fonte 28 amarela Antonio</strong>.
+                              </p>
+                            </div>
                           </div>
                         ) : (
                           // FINAL SLIDE EDITABLES (Static)
@@ -1768,9 +1808,9 @@ export default function Admin() {
                               
                               {/* Capa Text Overlay */}
                               {(activeSlide.modelo || activeSlide.descricao) && (
-                                <div className="absolute top-1/2 right-[25px] -translate-y-1/2 flex flex-col items-end text-right z-20 pointer-events-none w-[90%]" style={{ fontFamily: '"Poppins", sans-serif' }}>
+                                <div className="absolute top-[58%] right-[25px] -translate-y-1/2 flex flex-col items-end text-right z-20 pointer-events-none w-[90%]" style={{ fontFamily: '"Poppins", sans-serif' }}>
                                   {activeSlide.modelo && (
-                                    <div className="text-white font-bold leading-none uppercase drop-shadow-md" style={{ fontSize: '20px' }}>
+                                    <div className="text-white font-bold leading-none uppercase drop-shadow-md" style={{ fontSize: '18px' }}>
                                       {activeSlide.modelo}
                                     </div>
                                   )}
@@ -1833,6 +1873,37 @@ export default function Admin() {
                                 </div>
                                 <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
                                   {activeSlide.descricao || 'DESCRIÇÃO COMPLETA'}
+                                </div>
+
+                                {/* TAG FIPE E VALOR DO CARRO (FONTE 28 AMARELA ANTONIO) */}
+                                <div className="mt-3 flex flex-col items-start gap-1 not-italic">
+                                  {/* Tag FIPE */}
+                                  <div className="inline-flex items-center gap-1.5 bg-[#000000]/85 backdrop-blur-md border border-[#FFD000]/50 px-2 py-0.5 rounded shadow-lg">
+                                    <span className="text-[8px] font-black tracking-widest text-white uppercase font-sans">
+                                      FIPE
+                                    </span>
+                                    <span className="text-[9px] font-extrabold text-[#FFD000] tracking-tight font-sans">
+                                      {activeSlide.valorFipe ? (activeSlide.valorFipe.startsWith('R$') ? activeSlide.valorFipe : `R$ ${activeSlide.valorFipe}`) : (activeSlide.valorIntegral ? (activeSlide.valorIntegral.startsWith('R$') ? activeSlide.valorIntegral : `R$ ${activeSlide.valorIntegral}`) : 'R$ 99.590')}
+                                    </span>
+                                  </div>
+
+                                  {/* Valor do carro abaixo da tag FIPE em fonte 28 amarela Antonio */}
+                                  <div className="flex items-center gap-1.5 mt-0.5 drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
+                                    <div className="flex flex-col text-white leading-[0.9] tracking-tight font-black font-sans text-left" style={{ fontSize: '11px' }}>
+                                      <span>POR</span>
+                                      <span>R$</span>
+                                    </div>
+                                    <div 
+                                      className="text-[#FFD000] font-black leading-none tracking-tight"
+                                      style={{ 
+                                        fontFamily: '"Antonio", "Anton", sans-serif', 
+                                        fontSize: '40px',
+                                        textShadow: '2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000'
+                                      }}
+                                    >
+                                      {(activeSlide.valorIntegral || activeSlide.valorFipe || '99.590').replace(/^R\$\s*/i, '')}
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                               <div className="flex-1 z-20 pointer-events-none"></div>
