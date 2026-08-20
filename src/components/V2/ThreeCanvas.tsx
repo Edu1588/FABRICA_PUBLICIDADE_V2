@@ -29,9 +29,14 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
       if (child.isMesh) {
         if (isClean) {
           const mat = child.material.clone();
-          mat.color.set('#808080'); 
-          mat.roughness = 0.7; // more opaque/less shiny
-          mat.metalness = 0.4; 
+          mat.color.set('#3f322a'); // Requested warm bronze tone
+          mat.roughness = 0.35; // Lower roughness for high-res glossy reflections
+          mat.metalness = 0.6; // Keep metallic aspect for the 8k texture to react to light
+          
+          // Slight warm emissive to lift pitch-black shadows without blowing out the texture
+          mat.emissive = new THREE.Color('#3f322a');
+          mat.emissiveIntensity = 0.15; 
+          
           child.material = mat;
         } else {
           child.material = new THREE.MeshStandardMaterial({
@@ -123,13 +128,7 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
         {fixedScale !== undefined && (
           <pointLight position={[0, 2, 2]} intensity={10} color="#ff4d16" distance={10} />
         )}
-        {fixedScale !== undefined ? (
-          <Center>
-            <primitive object={clonedScene} />
-          </Center>
-        ) : (
-          <primitive object={clonedScene} />
-        )}
+        <primitive object={clonedScene} />
       </group>
     );
   }
@@ -146,13 +145,16 @@ function SceneContent(props: any) {
       {isClean ? (
         <>
           <ambientLight intensity={1.5} />
-          {/* Main front light (dimmed) */}
-          <directionalLight position={[2, 4, 5]} intensity={4} color="#ffffff" />
-          <directionalLight position={[-2, -2, 5]} intensity={2} color="#ffffff" />
+          {/* Main front light (dimmed, cool white) */}
+          <directionalLight position={[3, 5, 5]} intensity={4} color="#ffffff" />
+          <directionalLight position={[-2, -2, 4]} intensity={2} color="#ffffff" />
           
-          {/* Rim Light: Left side, slightly behind, pointing towards the face/shoulder */}
-          <directionalLight position={[-8, 3, -4]} intensity={6} color="#ff5500" />
-          <pointLight position={[-6, 2, -3]} intensity={12} distance={15} color="#ff6600" />
+          {/* Strong Fiery Rim Light: Left side, slightly behind */}
+          <directionalLight position={[-8, 1, -4]} intensity={12} color="#ff4400" />
+          <pointLight position={[-6, 1, -3]} intensity={25} distance={20} color="#ff3300" />
+          
+          {/* Subtle warm fill from bottom right */}
+          <directionalLight position={[4, -4, 2]} intensity={1} color="#ff8844" />
         </>
       ) : isFixed ? (
         <>

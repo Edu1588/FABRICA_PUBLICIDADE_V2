@@ -43,7 +43,7 @@ async function startServer() {
         try {
           const metaRes = await fetch('https://metaveiculos.com.br/vehicles.json');
           const metaVehicles = await metaRes.json();
-          const vehicle = metaVehicles.find(v => v.plate === normalizedSearch || v.model.toLowerCase().includes(search.toLowerCase()) || v.version.toLowerCase().includes(search.toLowerCase()));
+          const vehicle = metaVehicles.find((v: any) => v.plate === normalizedSearch || v.model.toLowerCase().includes(search.toLowerCase()) || v.version.toLowerCase().includes(search.toLowerCase()));
           
           if (vehicle) {
             return res.json({
@@ -60,6 +60,30 @@ async function startServer() {
         } catch (err) {
           console.error("Meta search error", err);
           return res.status(500).json({ error: "Erro ao buscar no site da Meta Veículos." });
+        }
+      }
+
+      if (client === 'azul') {
+        try {
+          const azulRes = await fetch('https://azulveiculos.com.br/vehicles.json');
+          const azulVehicles = await azulRes.json();
+          const vehicle = azulVehicles.find((v: any) => v.plate === normalizedSearch || v.model?.toLowerCase().includes(search.toLowerCase()) || v.version?.toLowerCase().includes(search.toLowerCase()));
+          
+          if (vehicle) {
+            return res.json({
+              success: true,
+              data: {
+                montadora: vehicle.brand || '',
+                modelo: vehicle.model || '',
+                descricao: vehicle.version || ''
+              }
+            });
+          } else {
+            return res.status(404).json({ error: "Veículo não encontrado no site da Azul Veículos." });
+          }
+        } catch (err) {
+          console.error("Azul search error", err);
+          return res.status(500).json({ error: "Erro ao buscar no site da Azul Veículos." });
         }
       }
 

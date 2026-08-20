@@ -35,20 +35,20 @@ import { saveAs } from 'file-saver';
 import { supabase } from '../lib/supabase';
 import { AppClient, CarouselSlide } from '../types';
 
-export default function Outgrid() {
+export default function Admin() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   
   useEffect(() => {
-    const savedTheme = localStorage.getItem('outgrid_theme');
+    const savedTheme = localStorage.getItem('admin_theme');
     if (savedTheme) setTheme(savedTheme as 'dark' | 'light');
   }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    localStorage.setItem('outgrid_theme', newTheme);
+    localStorage.setItem('admin_theme', newTheme);
   };
   const [errorMsg, setErrorMsg] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -60,9 +60,9 @@ export default function Outgrid() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === '654321') {
+    if (password === '1234') {
       setIsAuthenticated(true);
-      sessionStorage.setItem('outgrid_admin_authenticated', 'true');
+      sessionStorage.setItem('aforja_admin_authenticated', 'true');
       setErrorMsg('');
     } else {
       setErrorMsg('PIN INCOMPATÍVEL');
@@ -84,7 +84,7 @@ export default function Outgrid() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    sessionStorage.removeItem('outgrid_admin_authenticated');
+    sessionStorage.removeItem('aforja_admin_authenticated');
     setPassword('');
   };
 
@@ -120,9 +120,57 @@ export default function Outgrid() {
 
   // Slides State
   const [slides, setSlides] = useState<CarouselSlide[]>([]);
-  const [activeSlideIndex, setActiveSlideIndex] = useState<number>(1);
+  const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  // Automatically update default images when changing clients
+  useEffect(() => {
+    if (!selectedClientData) return;
+    
+    const defaultCapaUrls = [
+      'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png',
+      'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png',
+      'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png'
+    ];
+    
+    const defaultFinalUrls = [
+      'https://res.cloudinary.com/ifuatk2z/image/upload/v1787248141/finalAzul2.png',
+      'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png',
+      'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png'
+    ];
+    
+    const targetCapaUrl = selectedClientData?.name?.toLowerCase().includes('meta') ? defaultCapaUrls[1] : selectedClientData?.name?.toLowerCase().includes('azul') ? defaultCapaUrls[0] : defaultCapaUrls[2];
+    const targetFinalUrl = selectedClientData?.name?.toLowerCase().includes('meta') ? defaultFinalUrls[1] : selectedClientData?.name?.toLowerCase().includes('azul') ? defaultFinalUrls[0] : defaultFinalUrls[2];
+    const targetWebsite = selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'AZULVEICULOS.COM.BR' : 'unimaisveiculos.com.br';
+
+    let hasChanges = false;
+    const newSlides = slides.map(s => {
+      if (s.type === 'capa') {
+        // If it's a known default URL from ANY client, swap it to the correct one for the current client
+        if (!s.imageUrl || defaultCapaUrls.includes(s.imageUrl)) {
+           if (s.imageUrl !== targetCapaUrl || s.website !== targetWebsite) {
+             hasChanges = true;
+             return { ...s, imageUrl: targetCapaUrl, website: targetWebsite };
+           }
+        }
+      }
+      if (s.type === 'final') {
+        if (!s.imageUrl || defaultFinalUrls.includes(s.imageUrl)) {
+           if (s.imageUrl !== targetFinalUrl || s.website !== targetWebsite) {
+             hasChanges = true;
+             return { ...s, imageUrl: targetFinalUrl, website: targetWebsite };
+           }
+        }
+      }
+      return s;
+    });
+    
+    if (hasChanges) {
+      setSlides(newSlides);
+    }
+  }, [selectedClientId, selectedClientData, slides.length]);
+  
 
   const handleAddSlide = (type: 'veiculo' | 'capa' | 'final') => {
     let baseSlide = null;
@@ -137,7 +185,7 @@ export default function Outgrid() {
       fabricante: baseSlide ? baseSlide.fabricante : '',
       modelo: baseSlide ? baseSlide.modelo : '',
       descricao: baseSlide ? baseSlide.descricao : '',
-      imageUrl: '',
+      imageUrl: type === 'capa' ? (baseSlide?.imageUrl || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png')) : type === 'final' ? (baseSlide?.imageUrl || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787248141/finalAzul2.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png')) : '',
       zoom: 1,
       posX: 0,
       posY: 0,
@@ -247,7 +295,7 @@ export default function Outgrid() {
       const res = await fetch('/api/scrape-vehicle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ search: scrapeQuery, client: selectedClientData?.name?.toLowerCase().includes('meta') ? 'meta' : 'unimais' })
+        body: JSON.stringify({ search: scrapeQuery, client: selectedClientData?.name?.toLowerCase().includes('meta') ? 'meta' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'azul' : 'unimais' })
       });
       const data = await res.json();
       if (data.success && data.data) {
@@ -276,7 +324,9 @@ export default function Outgrid() {
             if (s.type === 'capa') {
               return {
                 ...s,
-                imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+                modelo: data.data.modelo || '',
+                descricao: data.data.descricao || '',
+                imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
                 zoom: 1,
                 posX: 0,
                 posY: 0
@@ -287,7 +337,7 @@ export default function Outgrid() {
           
           const veiculoIdx = resetSlides.findIndex(s => s.type === 'veiculo');
           if (veiculoIdx !== -1) {
-            setTimeout(() => setActiveSlideIndex(veiculoIdx), 0);
+            setTimeout(() => setActiveSlideIndex(0), 0);
           } else {
             setTimeout(() => setActiveSlideIndex(0), 0);
           }
@@ -334,7 +384,7 @@ export default function Outgrid() {
         if (s.type === 'capa') {
           return {
             ...s,
-            imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+            imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
             zoom: 1,
             posX: 0,
             posY: 0
@@ -345,7 +395,7 @@ export default function Outgrid() {
       
       const veiculoIdx = newSlides.findIndex(s => s.type === 'veiculo');
       if (veiculoIdx !== -1) {
-        setTimeout(() => setActiveSlideIndex(veiculoIdx), 0);
+        setTimeout(() => setActiveSlideIndex(0), 0);
       } else {
         setTimeout(() => setActiveSlideIndex(0), 0);
       }
@@ -362,7 +412,7 @@ export default function Outgrid() {
 
   // Load configuration and authentication
   useEffect(() => {
-    const auth = sessionStorage.getItem('outgrid_admin_authenticated');
+    const auth = sessionStorage.getItem('aforja_admin_authenticated');
     if (auth === 'true') {
       setIsAuthenticated(true);
     }
@@ -456,11 +506,11 @@ export default function Outgrid() {
           id: crypto.randomUUID(),
           type: 'capa',
           title: 'CAPA DO CARROSSEL',
-          imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+          imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
           zoom: 1,
           posX: 0,
           posY: 0,
-          website: selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : 'unimaisveiculos.com.br'
+          website: selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'AZULVEICULOS.COM.BR' : 'unimaisveiculos.com.br'
         });
       }
 
@@ -471,11 +521,11 @@ export default function Outgrid() {
           id: crypto.randomUUID(),
           type: 'final',
           title: 'FINAL DO CARROSSEL',
-          imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png',
+          imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787248141/finalAzul2.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png',
           zoom: 1,
           posX: 0,
           posY: 0,
-          website: selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : 'unimaisveiculos.com.br'
+          website: selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'AZULVEICULOS.COM.BR' : 'unimaisveiculos.com.br'
         });
       }
 
@@ -490,7 +540,7 @@ export default function Outgrid() {
 
       setSlides(loadedSlides);
       if (loadedSlides.length > 1) {
-        setActiveSlideIndex(1);
+        setActiveSlideIndex(0);
       }
     };
     loadData();
@@ -1071,7 +1121,7 @@ export default function Outgrid() {
                         </div>
                       </div>
                     </div>
-                  ) : selectedClientData?.name?.toLowerCase().includes('unimais') || selectedClientData?.name?.toLowerCase().includes('meta') ? (
+                  ) : selectedClientData?.name?.toLowerCase().includes('unimais') || selectedClientData?.name?.toLowerCase().includes('meta') || selectedClientData?.name?.toLowerCase().includes('azul') ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {/* Option: Card Carrosseis */}
                       <div 
@@ -1247,8 +1297,7 @@ export default function Outgrid() {
                         
 
 
-                        {activeSlide.type === 'veiculo' && (
-                          <>
+                        <>
                           <style dangerouslySetInnerHTML={{__html: `
                             @keyframes slideRight {
                               0% { transform: translateX(-100%); }
@@ -1295,8 +1344,6 @@ export default function Outgrid() {
                             )}
                           </div>
                           </>
-                        )}
-
                         {/* Slide Type Switcher */}
                         <div className="space-y-1.5">
                           <label className="text-white/60 uppercase text-[9px] tracking-wider block">Tipo de Slide</label>
@@ -1340,8 +1387,28 @@ export default function Outgrid() {
                                                 {/* CONDITIONAL CONTROLS BASED ON TYPE */}
                         {activeSlide.type === 'capa' ? (
                           // COVER SLIDE EDITABLES
-                          <div className="space-y-4 pt-2 border-t border-white/5 text-center text-white/50 text-xs font-outfit">
-                            A Capa utiliza apenas configuração de imagem.
+                          <div className="space-y-4 pt-2 border-t border-white/5">
+                            <span className="text-[10px] text-[#C46A1A] uppercase tracking-wider block mt-4">Campos da Capa (Preenchidos pela placa)</span>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <label className="text-white/50 text-[9px] tracking-wider block">Modelo (ex: Fastback)</label>
+                                <input
+                                  type="text"
+                                  value={activeSlide.modelo || ''}
+                                  onChange={e => updateActiveSlideField('modelo', e.target.value)}
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-white/50 text-[9px] tracking-wider block">Detalhes (ex: 1.3 TURBO)</label>
+                                <input
+                                  type="text"
+                                  value={activeSlide.descricao || ''}
+                                  onChange={e => updateActiveSlideField('descricao', e.target.value)}
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                />
+                              </div>
+                            </div>
                           </div>
                         ) : activeSlide.type === 'veiculo' ? (
                           // VEHICLE SLIDE EDITABLES
@@ -1539,23 +1606,16 @@ export default function Outgrid() {
                           Slides do Carrossel ({slides.length})
                         </span>
                         
-                        {/* Slide creation trigger */}
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleAddSlide('veiculo')}
-                            className="bg-[#18120e] hover:bg-[#C46A1A] text-[#FF7A00] hover:text-black border border-[#C46A1A]/30 font-outfit text-[10px] uppercase tracking-widest px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 font-bold cursor-pointer"
-                          >
-                            <Plus className="w-3.5 h-3.5" />
-                            + Veículo
-                          </button>
-                        </div>
                       </div>
 
                       {/* Grid list of slides */}
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                        {slides.map((slide, idx) => (
-                          <div
-                            key={slide.id}
+                        {slides.map((slide, idx) => {
+                          const isFinal = slide.type === 'final';
+                          
+                          const cardNode = (
+                            <div
+                              key={slide.id}
                             onClick={() => setActiveSlideIndex(idx)}
                             className={`p-3 rounded-xl border cursor-pointer transition-all shrink-0 w-[140px] flex flex-col justify-between h-[120px] ${
                               activeSlideIndex === idx
@@ -1594,7 +1654,27 @@ export default function Outgrid() {
                               </p>
                             </div>
                           </div>
-                        ))}
+                        );
+                          if (isFinal) {
+                            return (
+                              <React.Fragment key={slide.id}>
+                                <div
+                                  onClick={() => handleAddSlide('veiculo')}
+                                  className="bg-[#111116] border border-dashed border-[#C46A1A]/30 hover:border-[#C46A1A] rounded-xl p-4 cursor-pointer transition-all hover:bg-[#C46A1A]/5 flex flex-col items-center justify-center min-h-[120px] group w-[140px] shrink-0"
+                                >
+                                  <div className="w-8 h-8 rounded-full bg-[#18120e] flex items-center justify-center text-[#FF7A00] group-hover:scale-110 transition-transform mb-2">
+                                    <Plus className="w-4 h-4" />
+                                  </div>
+                                  <span className="text-[10px] font-outfit uppercase tracking-widest text-[#FF7A00] font-bold">
+                                    + Veículo
+                                  </span>
+                                </div>
+                                {cardNode}
+                              </React.Fragment>
+                            );
+                          }
+                          return cardNode;
+                        })}
                       </div>
 
                     </div>
@@ -1680,10 +1760,26 @@ export default function Outgrid() {
                                 </>
                               ) : (
                                 <img 
-                                  src={activeSlide.imageUrl || "https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png"} 
+                                  src={activeSlide.imageUrl || (selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png')} 
                                   alt="Capa" 
-                                  className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" 
-                                />
+                                  className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous"
+                                 />
+                              )}
+                              
+                              {/* Capa Text Overlay */}
+                              {(activeSlide.modelo || activeSlide.descricao) && (
+                                <div className="absolute top-1/2 right-[25px] -translate-y-1/2 flex flex-col items-end text-right z-20 pointer-events-none w-[90%]" style={{ fontFamily: '"Poppins", sans-serif' }}>
+                                  {activeSlide.modelo && (
+                                    <div className="text-white font-bold leading-none uppercase drop-shadow-md" style={{ fontSize: '20px' }}>
+                                      {activeSlide.modelo}
+                                    </div>
+                                  )}
+                                  {activeSlide.descricao && (
+                                    <div className="text-white font-light italic leading-tight uppercase mt-2 drop-shadow-md" style={{ fontSize: '8px' }}>
+                                      {activeSlide.descricao}
+                                    </div>
+                                  )}
+                                </div>
                               )}
                             </div>
 
@@ -1718,23 +1814,24 @@ export default function Outgrid() {
                                 
                               {/* Header Texts (Transparent background) */}
                               <div className="absolute top-[25px] left-0 w-full px-[20px] z-20 pointer-events-none uppercase italic" style={{ fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '"Saira Extra Condensed", sans-serif' }}>
-                                <div className={`leading-none tracking-widest italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white' : 'text-[#0377f9] font-light'}`} style={{ fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '13px' : '24px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#0377f9', marginBottom: '-4px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Oswald", sans-serif' : undefined }}>
+                                <div className={`leading-none tracking-widest italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white' : 'text-[#0377f9] font-light'}`} style={{ fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '13px' : '24px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#0377f9', marginBottom: '-4px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
                                   {activeSlide.fabricante || 'FABRICANTE'}
                                 </div>
                                 <div className={`leading-none tracking-tighter italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? '' : 'text-[#1b3265] font-black'}`} style={{ 
                                   fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '32px' : '48px', 
                                   marginBottom: '2px', 
                                   marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '4px' : '-8px',
-                                  fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Anton", sans-serif' : undefined,
                                   color: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '#1b3265',
                                   background: selectedClientData?.name?.toLowerCase().includes('meta') ? 'linear-gradient(180deg, #FF6B00 20%, #FF8C00 50%, #FF6B00 80%)' : undefined,
                                   WebkitBackgroundClip: selectedClientData?.name?.toLowerCase().includes('meta') ? 'text' : undefined,
                                   WebkitTextFillColor: selectedClientData?.name?.toLowerCase().includes('meta') ? 'transparent' : undefined,
                                   filter: selectedClientData?.name?.toLowerCase().includes('meta') ? 'drop-shadow(3px 3px 2px rgba(0,0,0,0.6))' : undefined,
+                                  fontWeight: selectedClientData?.name?.toLowerCase().includes('meta') ? 400 : undefined,
+                                  fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Anton", sans-serif' : undefined,
                                 }}>
                                   {activeSlide.modelo || 'MODELO'}
                                 </div>
-                                <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Oswald", sans-serif' : undefined }}>
+                                <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
                                   {activeSlide.descricao || 'DESCRIÇÃO COMPLETA'}
                                 </div>
                               </div>
@@ -1747,7 +1844,7 @@ export default function Outgrid() {
                             // C. FINAL TEMPLATE (FIXED IMAGE)
                             <div className="flex-1 w-full h-full relative">
                               <img 
-                                src={selectedClientData?.name?.toLowerCase().includes('meta') ? "https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png" : (activeSlide.imageUrl || "https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png")} 
+                                src={activeSlide.imageUrl || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787248141/finalAzul2.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png')} 
                                 alt="Final" 
                                 className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous" 
                               />
@@ -1762,7 +1859,7 @@ export default function Outgrid() {
                                 <line x1="2" y1="12" x2="22" y2="12"></line>
                                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                               </svg>
-                              <span>{activeSlide.website || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : 'UNIMAISVEICULOS.COM.BR')}</span>
+                              <span>{activeSlide.website || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'AZULVEICULOS.COM.BR' : 'UNIMAISVEICULOS.COM.BR')}</span>
                             </div>
                           )}
 
