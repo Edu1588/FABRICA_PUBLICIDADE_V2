@@ -1897,7 +1897,7 @@ export default function Admin() {
                                       className="text-[#FFD000] font-black leading-none tracking-tight"
                                       style={{ 
                                         fontFamily: '"Antonio", "Anton", sans-serif', 
-                                        fontSize: '40px',
+                                        fontSize: '28px',
                                         textShadow: '2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000'
                                       }}
                                     >
