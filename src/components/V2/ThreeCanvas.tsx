@@ -336,13 +336,8 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
         }
       }
       
-      // The background color of the canvas
-      vec3 bgCol = vec3(0.0196, 0.0196, 0.0196); 
-      
-      // Final color: mix background with dot color based on the shape and opacity
-      vec3 finalCol = mix(bgCol, baseCol, shape * uOpacity);
-      
-      gl_FragColor = vec4(finalCol, 1.0);
+      // Render dots with alpha transparency so background seamlessly matches page
+      gl_FragColor = vec4(baseCol, shape * uOpacity);
     }
   `;
 
@@ -373,11 +368,11 @@ export default function ThreeCanvas(props: any) {
           camera={{ position: [0, 0, props.cameraZ || 6.5], fov: props.cameraFOV || 45 }}
           gl={{ 
             antialias: true, 
-            alpha: false,
+            alpha: true,
             powerPreference: 'high-performance'
           }}
         >
-          <color attach="background" args={[props.bgColor || '#050505']} />
+          {props.renderClean && <color attach="background" args={[props.bgColor || '#050505']} />}
           
           <React.Suspense fallback={null}>
             <SceneContent {...props} />
@@ -395,7 +390,7 @@ export default function ThreeCanvas(props: any) {
         camera={{ position: [0, 0, props.cameraZ || 7], fov: props.cameraFOV || 45 }}
         gl={{ 
           antialias: true, 
-          alpha: false,
+          alpha: true,
           powerPreference: 'high-performance'
         }}
       >

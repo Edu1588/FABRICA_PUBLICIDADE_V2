@@ -821,13 +821,14 @@ export default function HomeV2() {
               pixelFactor={4.5} 
               autoRotate={true}
               autoRotateSpeed={0.1}
-              cameraZ={8}
-              brightness={1.8}
+              cameraZ={10.5}
+              cameraFOV={40}
+              brightness={1.9}
               smearIntensity={0.2}
               roughness={0.2}
               metalness={0.8}
-              fixedScale={0.012}
-              fixedY={0}
+              fixedScale={0.008}
+              fixedY={-0.3}
             />
           </div>
         </div>
