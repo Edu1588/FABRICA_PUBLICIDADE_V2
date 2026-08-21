@@ -1935,38 +1935,26 @@ export default function Admin() {
                                     </div>
                                   )}
 
-                                  {/* Bloco de Preço: DE FIPE riscado em vermelho + POR R$ valor em amarelo */}
-                                  <div className="absolute top-[70.5%] right-[22px] -translate-y-1/2 flex flex-col items-end z-20 pointer-events-none">
+                                  {/* Bloco de Preço: DE FIPE riscado em vermelho (acima) + Valor Amarelo ao lado do POR R$ da moldura */}
+                                  <div className="absolute top-[72.2%] right-[22px] -translate-y-1/2 flex flex-col items-end z-20 pointer-events-none">
                                     {/* DE R$ ... com risco vermelho (só renderiza se valorFipe foi preenchido) */}
                                     {(activeSlide.valorFipe || slides.find(s => s.type === 'veiculo')?.valorFipe) ? (
-                                      <div className="relative inline-block text-white tracking-normal leading-none mb-1 mr-3" style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 300, fontSize: '11px', textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
+                                      <div className="relative inline-block text-white tracking-normal leading-none mb-1 mr-2" style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 300, fontSize: '11px', textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
                                         <span>DE {activeSlide.valorFipe ? (activeSlide.valorFipe.startsWith('R$') ? activeSlide.valorFipe : `R$ ${activeSlide.valorFipe}`) : (slides.find(s => s.type === 'veiculo')?.valorFipe?.startsWith('R$') ? slides.find(s => s.type === 'veiculo')?.valorFipe : `R$ ${slides.find(s => s.type === 'veiculo')?.valorFipe}`)}</span>
                                         <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[1px] bg-[#ff2222] shadow-[0_0_2px_rgba(255,0,0,0.9)] pointer-events-none" />
                                       </div>
                                     ) : null}
 
-                                    {/* POR R$ */}
-                                    <div className="flex items-center gap-1.5">
-                                      <div 
-                                        className="flex flex-col text-white leading-[0.88] tracking-tight font-black font-sans text-left" 
-                                        style={{ 
-                                          fontSize: '10px',
-                                          textShadow: '0 0 4px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.7)'
-                                        }}
-                                      >
-                                        <span>POR</span>
-                                        <span>R$</span>
-                                      </div>
-                                      <div 
-                                        className="text-[#FFD000] font-black leading-none tracking-tight"
-                                        style={{ 
-                                          fontFamily: '"Antonio", "Anton", sans-serif', 
-                                          fontSize: '32px',
-                                          textShadow: '0 0 6px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)'
-                                        }}
-                                      >
-                                        {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
-                                      </div>
+                                    {/* Valor em Amarelo (o POR R$ já está estampado nativamente na imagem base da capa) */}
+                                    <div 
+                                      className="text-[#FFD000] font-black leading-none tracking-tight"
+                                      style={{ 
+                                        fontFamily: '"Antonio", "Anton", sans-serif', 
+                                        fontSize: '32px',
+                                        textShadow: '0 0 6px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)'
+                                      }}
+                                    >
+                                      {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
                                     </div>
                                   </div>
                                 </>
