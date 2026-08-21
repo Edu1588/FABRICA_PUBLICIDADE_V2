@@ -412,7 +412,7 @@ export default function Admin() {
             valorFipe: '',
             valorIntegral: '',
             fabricante: '',
-            imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+            imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? '' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
             imageFileName: '',
             zoom: 1,
             posX: 0,
