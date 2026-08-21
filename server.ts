@@ -24,6 +24,7 @@ function getAI() {
 }
 
 
+async function startServer() {
   const app = express();
   const PORT = 3000;
 
@@ -325,7 +326,7 @@ ${cleanHtml}
 }
 
 const appPromise = startServer();
-export default (req, res) => {
+export default (req: any, res: any) => {
   appPromise.then(app => app(req, res)).catch(err => {
     console.error(err);
     res.status(500).send('Server Error');
