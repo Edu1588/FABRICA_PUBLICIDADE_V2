@@ -1913,13 +1913,15 @@ export default function Admin() {
                                     >
                                       {activeSlide.modelo && (
                                         <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
-                                          {/* 4 Barras Diagonais Azuis //// */}
-                                          <div className="flex items-center gap-[2.5px] -skew-x-[22deg] transform select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                                            <div className="w-[4px] h-[14px] bg-[#0088FF] rounded-[0.5px]" />
-                                            <div className="w-[4px] h-[14px] bg-[#0088FF] rounded-[0.5px]" />
-                                            <div className="w-[4px] h-[14px] bg-[#0088FF] rounded-[0.5px]" />
-                                            <div className="w-[4px] h-[14px] bg-[#0088FF] rounded-[0.5px]" />
-                                          </div>
+                                          {/* Seta Azul Pequena ▶ */}
+                                          <svg 
+                                            className="w-[10px] h-[11px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] flex-shrink-0" 
+                                            viewBox="0 0 10 12" 
+                                            fill="none" 
+                                            xmlns="http://www.w3.org/2000/svg"
+                                          >
+                                            <path d="M1.5 1.7C1.5 1.05 2.22 0.65 2.76 1.01L8.9 5.31C9.4 5.66 9.4 6.34 8.9 6.69L2.76 10.99C2.22 11.35 1.5 10.95 1.5 10.3V1.7Z" fill="#0088FF" />
+                                          </svg>
                                           <div className="text-white font-bold leading-none uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] tracking-tight" style={{ fontSize: '19px' }}>
                                             {activeSlide.modelo}
                                           </div>
