@@ -37,13 +37,16 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
           mat.needsUpdate = true;
           child.material = mat;
         } else {
-          // Para o modo com shader/efeito, manter material padrão responsivo
-          const mat = child.material.clone();
-          mat.color.set(modelColor || '#ffffff');
-          mat.roughness = roughness ?? 0.35;
-          mat.metalness = metalness ?? 0.65;
-          mat.needsUpdate = true;
-          child.material = mat;
+          // Para o modo com shader/efeito do Hero: material monocromático prateado reflexivo para o EffectPass
+          child.material = new THREE.MeshStandardMaterial({
+            color: modelColor || '#d8d8d8',
+            roughness: roughness ?? 0.25,
+            metalness: metalness ?? 0.75,
+            emissive: new THREE.Color('#151515'),
+            emissiveIntensity: 0.1,
+            map: null,
+            envMapIntensity: 1.0,
+          });
         }
       }
     });
