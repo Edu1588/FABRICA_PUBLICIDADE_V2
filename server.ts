@@ -64,22 +64,91 @@ function getAI() {
 
       if (client === 'azul') {
         try {
-          const azulRes = await fetch('https://azulveiculos.com.br/vehicles.json');
-          const azulVehicles = await azulRes.json();
-          const vehicle = azulVehicles.find((v: any) => v.plate === normalizedSearch || v.model?.toLowerCase().includes(search.toLowerCase()) || v.version?.toLowerCase().includes(search.toLowerCase()));
+          // 1. First search in vehicles.json (contains complete active stock with all details)
+          try {
+            const azulRes = await fetch('https://azulveiculos.com.br/vehicles.json');
+            const azulVehicles = await azulRes.json();
+            const vehicle = azulVehicles.find((v: any) => {
+              const plateNorm = (v.plate || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+              return plateNorm === normalizedSearch || 
+                v.model?.toLowerCase().includes(search.toLowerCase()) || 
+                v.version?.toLowerCase().includes(search.toLowerCase());
+            });
+            if (vehicle) {
+              const ano = vehicle.modelYear 
+                ? (vehicle.manufacturingYear && vehicle.manufacturingYear !== vehicle.modelYear 
+                    ? `${vehicle.manufacturingYear}/${vehicle.modelYear}` 
+                    : `${vehicle.modelYear}`) 
+                : (vehicle.year || vehicle.model_year || '');
+              
+              const km = vehicle.mileage ? Number(vehicle.mileage).toLocaleString('pt-BR') : (vehicle.km || '');
+              const valor = vehicle.price ? Number(vehicle.price).toLocaleString('pt-BR') : '';
+
+              return res.json({
+                success: true,
+                data: {
+                  montadora: vehicle.brand || '',
+                  modelo: vehicle.model || '',
+                  descricao: vehicle.version || '',
+                  ano,
+                  km,
+                  valor,
+                  fipe: ''
+                }
+              });
+            }
+          } catch(e) {
+            console.error("vehicles.json fetch error", e);
+          }
+
+          // 2. Fallback to HTML scraping of /estoque
+          const azulEstoqueRes = await fetch('https://azulveiculos.com.br/estoque');
+          const azulEstoqueHtml = await azulEstoqueRes.text();
+          const $ = cheerio.load(azulEstoqueHtml);
           
-          if (vehicle) {
+          let foundVehicle: any = null;
+          
+          $('article.car-card, .car-card').each((_, el) => {
+            const card = $(el);
+            const plate = card.find('.vehicle-plate-element').text().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            const h6 = card.find('.car-model h6').text().trim();
+            const version = card.find('.car-model .title').text().trim();
+            const yearText = card.find('.car-info-item:has(.bi-calendar), .car-info-item:contains("/")').text().trim();
+            const kmText = card.find('.car-info-item:has(.bi-speedometer2), .car-info-item:contains("km")').text().trim();
+            const price = card.find('.vehicle-price-element').text().replace(/[^0-9.,]/g, '').trim();
+            
+            const matchPlate = plate && (plate === normalizedSearch || plate.includes(normalizedSearch));
+            const matchSearch = h6.toLowerCase().includes(search.toLowerCase()) || version.toLowerCase().includes(search.toLowerCase());
+            
+            if (matchPlate || matchSearch) {
+              const parts = h6.split(' ');
+              const montadora = parts[0] || '';
+              const modelo = parts.slice(1).join(' ') || h6;
+              const ano = yearText.replace(/[^0-9/]/g, '').trim();
+              const kmRaw = kmText.replace(/[^0-9]/g, '');
+              const km = kmRaw ? Number(kmRaw).toLocaleString('pt-BR') : kmText;
+              
+              foundVehicle = {
+                montadora,
+                modelo,
+                descricao: version,
+                ano,
+                km,
+                valor: price,
+                fipe: ''
+              };
+              return false;
+            }
+          });
+          
+          if (foundVehicle) {
             return res.json({
               success: true,
-              data: {
-                montadora: vehicle.brand || '',
-                modelo: vehicle.model || '',
-                descricao: vehicle.version || ''
-              }
+              data: foundVehicle
             });
-          } else {
-            return res.status(404).json({ error: "Veículo não encontrado no site da Azul Veículos." });
           }
+
+          return res.status(404).json({ error: "Veículo não encontrado no site da Azul Veículos." });
         } catch (err) {
           console.error("Azul search error", err);
           return res.status(500).json({ error: "Erro ao buscar no site da Azul Veículos." });
@@ -94,7 +163,9 @@ function getAI() {
             montadora: "JEEP",
             modelo: "RENEGADE",
             descricao: "1.8 16V FLEX 4P AUTOMÁTICO",
-            fipe: "99.590",
+            ano: "2021",
+            km: "45.000",
+            fipe: "",
             valor: "99.590"
           }
         });
@@ -148,6 +219,8 @@ Return ONLY a valid JSON object with the following keys, with NO markdown format
   "montadora": "String (e.g., Toyota, Honda, Chevrolet)",
   "modelo": "String (The main car model, e.g., Corolla, Civic)",
   "descricao": "String (The specific version/description, e.g., 2.0 VVT-IE FLEX XEI DIRECT SHIFT)",
+  "ano": "String (Year or Year/Model, e.g., 2024 or 2024/2024)",
+  "km": "String (Kilometers, e.g., 76.098)",
   "fipe": "String (Tabela FIPE price if present, e.g. 99.590 or R$ 99.590)",
   "valor": "String (Car sale price / full value if present, e.g. 99.590 or R$ 99.590)"
 }

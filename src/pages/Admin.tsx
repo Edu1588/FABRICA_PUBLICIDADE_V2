@@ -130,6 +130,7 @@ export default function Admin() {
     
     const defaultCapaUrls = [
       'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png',
+      'https://res.cloudinary.com/ifuatk2z/image/upload/v1787262380/capaAZULBASE2.png',
       'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png',
       'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png'
     ];
@@ -140,19 +141,20 @@ export default function Admin() {
       'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png'
     ];
     
-    const targetCapaUrl = selectedClientData?.name?.toLowerCase().includes('meta') ? defaultCapaUrls[1] : selectedClientData?.name?.toLowerCase().includes('azul') ? defaultCapaUrls[0] : defaultCapaUrls[2];
     const targetFinalUrl = selectedClientData?.name?.toLowerCase().includes('meta') ? defaultFinalUrls[1] : selectedClientData?.name?.toLowerCase().includes('azul') ? defaultFinalUrls[0] : defaultFinalUrls[2];
     const targetWebsite = selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'AZULVEICULOS.COM.BR' : 'unimaisveiculos.com.br';
 
     let hasChanges = false;
     const newSlides = slides.map(s => {
       if (s.type === 'capa') {
-        // If it's a known default URL from ANY client, swap it to the correct one for the current client
-        if (!s.imageUrl || defaultCapaUrls.includes(s.imageUrl)) {
-           if (s.imageUrl !== targetCapaUrl || s.website !== targetWebsite) {
-             hasChanges = true;
-             return { ...s, imageUrl: targetCapaUrl, website: targetWebsite };
-           }
+        // Clear any old overlay frame images from the background image slot
+        if (s.imageUrl && defaultCapaUrls.includes(s.imageUrl)) {
+          hasChanges = true;
+          return { ...s, imageUrl: '', website: targetWebsite };
+        }
+        if (s.website !== targetWebsite) {
+          hasChanges = true;
+          return { ...s, website: targetWebsite };
         }
       }
       if (s.type === 'final') {
@@ -185,7 +187,7 @@ export default function Admin() {
       fabricante: baseSlide ? baseSlide.fabricante : '',
       modelo: baseSlide ? baseSlide.modelo : '',
       descricao: baseSlide ? baseSlide.descricao : '',
-      imageUrl: type === 'capa' ? (baseSlide?.imageUrl || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png')) : type === 'final' ? (baseSlide?.imageUrl || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787248141/finalAzul2.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png')) : '',
+      imageUrl: type === 'capa' ? '' : type === 'final' ? (baseSlide?.imageUrl || (selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/kokdbgwrmrj2h3pki9li.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787248141/finalAzul2.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783274796/rhd5ngpu9rhntpkqeh7v.png')) : '',
       zoom: 1,
       posX: 0,
       posY: 0,
@@ -243,11 +245,21 @@ export default function Admin() {
     setIsDragging(false);
   };
 
+  const formatPriceMask = (value: string) => {
+    if (!value) return '';
+    const clean = value.replace(/\D/g, '');
+    if (!clean) return '';
+    return clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
   const globalVehicleFields = ['fabricante', 'modelo', 'descricao', 'valorFipe', 'valorIntegral', 'condicao1Label', 'condicao1Val', 'condicao2Label', 'condicao2Val', 'condicao3Label', 'condicao3Val', 'condicao4Label', 'condicao4Val', 'title'];
 
   const updateActiveSlideField = (field: keyof CarouselSlide, value: any) => {
     setSlides(prevSlides => prevSlides.map((s, idx) => {
       if (idx === activeSlideIndex) return { ...s, [field]: value };
+      if (['valorFipe', 'valorIntegral', 'modelo', 'descricao'].includes(field as string)) {
+        return { ...s, [field]: value };
+      }
       if (s.type === 'veiculo' && globalVehicleFields.includes(field as string) && prevSlides[activeSlideIndex]?.type === 'veiculo') {
         return { ...s, [field]: value };
       }
@@ -312,11 +324,11 @@ export default function Admin() {
                 fabricante: data.data.montadora || '',
                 modelo: data.data.modelo || '',
                 descricao: data.data.descricao || '',
-                valorFipe: data.data.fipe || '',
-                valorIntegral: data.data.valor || '',
-                title: `${scrapeQuery.toUpperCase().replace(/[^A-Z0-9]/g, '')}_carrossel_${selectedClientData?.name?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") || 'unimais'}`,
-                condicao1Label: '', condicao1Val: '',
-                condicao2Label: '', condicao2Val: '',
+                valorFipe: '',
+                valorIntegral: formatPriceMask(data.data.valor || ''),
+                title: `${scrapeQuery.toUpperCase().replace(/[^A-Z0-9]/g, '')}_carrossel_${selectedClientData?.name?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") || 'azul'}`,
+                condicao1Label: 'ANO', condicao1Val: data.data.ano || '',
+                condicao2Label: 'KM', condicao2Val: data.data.km || '',
                 condicao3Label: '', condicao3Val: '',
                 condicao4Label: '', condicao4Val: '',
                 imageUrl: '',
@@ -330,7 +342,9 @@ export default function Admin() {
                 ...s,
                 modelo: data.data.modelo || '',
                 descricao: data.data.descricao || '',
-                imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+                valorFipe: '',
+                valorIntegral: formatPriceMask(data.data.valor || ''),
+                imageUrl: s.imageUrl && (s.imageUrl.includes('capaAZUL') || s.imageUrl.includes('hnxtcxhrqr4ejekmfkea') || s.imageUrl.includes('ze7bf5yd9ozh3tsccopb')) ? '' : (s.imageUrl || ''),
                 zoom: 1,
                 posX: 0,
                 posY: 0
@@ -374,12 +388,15 @@ export default function Admin() {
             fabricante: '',
             modelo: '',
             descricao: '',
+            valorFipe: '',
+            valorIntegral: '',
             title: 'NOVO VEÍCULO',
             condicao1Label: '', condicao1Val: '',
             condicao2Label: '', condicao2Val: '',
             condicao3Label: '', condicao3Val: '',
             condicao4Label: '', condicao4Val: '',
             imageUrl: '',
+            imageFileName: '',
             zoom: 1,
             posX: 0,
             posY: 0
@@ -388,26 +405,30 @@ export default function Admin() {
         if (s.type === 'capa') {
           return {
             ...s,
+            modelo: '',
+            descricao: '',
+            valorFipe: '',
+            valorIntegral: '',
+            fabricante: '',
             imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+            imageFileName: '',
             zoom: 1,
             posX: 0,
             posY: 0
-          }
+          };
         }
-        return s;
+        return {
+          ...s,
+          valorFipe: '',
+          valorIntegral: ''
+        };
       });
       
-      const veiculoIdx = newSlides.findIndex(s => s.type === 'veiculo');
-      if (veiculoIdx !== -1) {
-        setTimeout(() => setActiveSlideIndex(0), 0);
-      } else {
-        setTimeout(() => setActiveSlideIndex(0), 0);
-      }
-      
+      setTimeout(() => setActiveSlideIndex(0), 0);
       return newSlides;
     });
     
-    setToast({ message: 'Dados limpos com sucesso.', type: 'success' });
+    setToast({ message: 'Todas as informações foram resetadas com sucesso.', type: 'success' });
   };
 
   // Image Input Ref for file upload
@@ -512,11 +533,18 @@ export default function Admin() {
           id: crypto.randomUUID(),
           type: 'capa',
           title: 'CAPA DO CARROSSEL',
-          imageUrl: selectedClientData?.name?.toLowerCase().includes('meta') ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png',
+          imageUrl: '',
           zoom: 1,
           posX: 0,
           posY: 0,
           website: selectedClientData?.name?.toLowerCase().includes('meta') ? 'METAVEICULOS.COM.BR' : selectedClientData?.name?.toLowerCase().includes('azul') ? 'AZULVEICULOS.COM.BR' : 'unimaisveiculos.com.br'
+        });
+      } else {
+        loadedSlides = loadedSlides.map(s => {
+          if (s.type === 'capa' && s.imageUrl && (s.imageUrl.includes('capaAZUL') || s.imageUrl.includes('hnxtcxhrqr4ejekmfkea') || s.imageUrl.includes('ze7bf5yd9ozh3tsccopb'))) {
+            return { ...s, imageUrl: '' };
+          }
+          return s;
         });
       }
 
@@ -608,6 +636,14 @@ export default function Admin() {
   const handleDownloadPNG = async () => {
     if (!previewRef.current || slides.length === 0) return;
     
+    if (selectedClientData?.name?.toLowerCase().includes('azul')) {
+      const hasFipe = slides.some(s => (s.type === 'veiculo' || s.type === 'capa') && s.valorFipe && s.valorFipe.trim().length > 0);
+      if (!hasFipe) {
+        showToast('Preenchimento obrigatório: informe o valor da Tabela FIPE antes de baixar!', 'error');
+        return;
+      }
+    }
+    
     showToast('Processando download do carrossel (PNG)... Isso pode levar alguns segundos.');
     try {
       const zip = new JSZip();
@@ -669,6 +705,14 @@ export default function Admin() {
   // Download slide as PDF
   const handleDownloadPDF = async () => {
     if (!previewRef.current || slides.length === 0) return;
+    
+    if (selectedClientData?.name?.toLowerCase().includes('azul')) {
+      const hasFipe = slides.some(s => (s.type === 'veiculo' || s.type === 'capa') && s.valorFipe && s.valorFipe.trim().length > 0);
+      if (!hasFipe) {
+        showToast('Preenchimento obrigatório: informe o valor da Tabela FIPE antes de baixar!', 'error');
+        return;
+      }
+    }
     
     showToast('Gerando Carrossel em PDF... Isso pode levar alguns segundos.');
     try {
@@ -1007,9 +1051,20 @@ export default function Admin() {
                         <span className="text-[9px] font-outfit bg-white/10 text-white/70 px-2 py-0.5 rounded uppercase tracking-wider">
                           Ativo
                         </span>
-                        {client.logoUrl && (
-                          <div className="w-24 h-24 rounded-lg bg-white border border-white/10 flex items-center justify-center overflow-hidden shadow-sm">
-                            <img src={client.logoUrl} alt={client.name} className="w-full h-full object-contain p-2" />
+                        {client.logoUrl ? (
+                          <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden p-2 shadow-sm">
+                            <img src={client.logoUrl} alt={client.name} className="w-full h-full object-contain" />
+                          </div>
+                        ) : (
+                          <div 
+                            className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold font-outfit shadow-sm"
+                            style={{ 
+                              backgroundColor: `${client.corCliente || '#FF7A00'}15`, 
+                              color: client.corCliente || '#FF7A00',
+                              border: `1px solid ${client.corCliente || '#FF7A00'}30`
+                            }}
+                          >
+                            {client.name ? client.name.charAt(0).toUpperCase() : 'C'}
                           </div>
                         )}
                       </div>
@@ -1049,10 +1104,19 @@ export default function Admin() {
                   
                   <div className="flex items-center gap-4 border-b border-white/5 pb-6 mb-8">
                     {selectedClientData?.logoUrl ? (
-                      <img src={selectedClientData.logoUrl} alt="Logo Cliente" className="w-20 h-20 rounded-xl object-contain bg-white p-2" />
+                      <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center p-2">
+                        <img src={selectedClientData.logoUrl} alt="Logo Cliente" className="w-full h-full object-contain" />
+                      </div>
                     ) : (
-                      <div className="w-12 h-12 rounded-xl bg-[#18120e] border border-[#C46A1A]/30 flex items-center justify-center text-[#FF7A00] text-xl font-bold font-outfit">
-                        {selectedClientData?.name ? selectedClientData.name.charAt(0).toUpperCase() : 'U'}
+                      <div 
+                        className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold font-outfit"
+                        style={{ 
+                          backgroundColor: `${selectedClientData?.corCliente || '#FF7A00'}15`, 
+                          color: selectedClientData?.corCliente || '#FF7A00',
+                          border: `1px solid ${selectedClientData?.corCliente || '#FF7A00'}30`
+                        }}
+                      >
+                        {selectedClientData?.name ? selectedClientData.name.charAt(0).toUpperCase() : 'C'}
                       </div>
                     )}
                     <div>
@@ -1417,6 +1481,33 @@ export default function Admin() {
                                 />
                               </div>
                             </div>
+
+                            {/* PRECIFICAÇÃO NA CAPA (AZUL VEÍCULOS) */}
+                            <div className="pt-3 border-t border-white/5 space-y-3">
+                              <span className="text-[10px] text-[#FFD000] font-bold uppercase tracking-wider block">Precificação do Veículo</span>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                  <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Tabela FIPE (Riscado)</label>
+                                  <input
+                                    type="text"
+                                    value={activeSlide.valorFipe || ''}
+                                    onChange={e => updateActiveSlideField('valorFipe', formatPriceMask(e.target.value))}
+                                    placeholder="Ex: 119.990"
+                                    className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Oferta (Amarelo)</label>
+                                  <input
+                                    type="text"
+                                    value={activeSlide.valorIntegral || ''}
+                                    onChange={e => updateActiveSlideField('valorIntegral', formatPriceMask(e.target.value))}
+                                    placeholder="Ex: 99.590"
+                                    className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
+                                  />
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         ) : activeSlide.type === 'veiculo' ? (
                           // VEHICLE SLIDE EDITABLES
@@ -1452,41 +1543,49 @@ export default function Admin() {
                                 type="text"
                                 value={activeSlide.descricao || ''}
                                 onChange={e => updateActiveSlideField('descricao', e.target.value)}
-                                placeholder="1.6 16V FLEX ALLURE 4P AUTOMÁTICO"
-                                className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white"
+                                placeholder="TURBO FLEX AT"
+                                className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
                               />
+                            </div>
+
+                            {/* ANO E KM DO VEÍCULO */}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <label className="text-white/50 text-[9px] tracking-wider block">Ano do Veículo</label>
+                                <input
+                                  type="text"
+                                  value={activeSlide.condicao1Val || ''}
+                                  onChange={e => updateActiveSlideField('condicao1Val', e.target.value)}
+                                  placeholder="Ex: 2023 ou 2023 / 2024"
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-white/50 text-[9px] tracking-wider block">Quilometragem (KM)</label>
+                                <input
+                                  type="text"
+                                  value={activeSlide.condicao2Val || ''}
+                                  onChange={e => updateActiveSlideField('condicao2Val', formatPriceMask(e.target.value))}
+                                  placeholder="Ex: 35.000"
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                />
+                              </div>
                             </div>
 
                             {/* PREÇO E FIPE */}
                             <div className="pt-3 border-t border-white/5 space-y-3">
-                              <span className="text-[10px] text-[#FFD000] font-bold uppercase tracking-wider block">Precificação & Tabela FIPE</span>
+                              <span className="text-[10px] text-[#FFD000] font-bold uppercase tracking-wider block">Precificação Tabela FIPE</span>
                               
-                              <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                  <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Tabela FIPE</label>
-                                  <input
-                                    type="text"
-                                    value={activeSlide.valorFipe || ''}
-                                    onChange={e => updateActiveSlideField('valorFipe', e.target.value)}
-                                    placeholder="Ex: 99.590 ou R$ 99.590"
-                                    className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
-                                  />
-                                </div>
-
-                                <div className="space-y-1.5">
-                                  <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold text-[#FFD000]">Valor Carro Integral</label>
-                                  <input
-                                    type="text"
-                                    value={activeSlide.valorIntegral || ''}
-                                    onChange={e => updateActiveSlideField('valorIntegral', e.target.value)}
-                                    placeholder="Ex: 99.590"
-                                    className="w-full bg-[#111116] border border-[#FFD000]/40 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-bold"
-                                  />
-                                </div>
+                              <div className="space-y-1.5">
+                                <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Tabela FIPE</label>
+                                <input
+                                  type="text"
+                                  value={activeSlide.valorFipe || ''}
+                                  onChange={e => updateActiveSlideField('valorFipe', formatPriceMask(e.target.value))}
+                                  placeholder="Ex: 119.990"
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
+                                />
                               </div>
-                              <p className="text-[9px] text-white/40 leading-relaxed font-outfit">
-                                Se não houver FIPE, preencha o <strong className="text-white">Valor Carro Integral</strong> manualmente. Ele será exibido abaixo do Tag FIPE em <strong className="text-[#FFD000]">fonte 28 amarela Antonio</strong>.
-                              </p>
                             </div>
                           </div>
                         ) : (
@@ -1649,64 +1748,64 @@ export default function Admin() {
                       </div>
 
                       {/* Grid list of slides */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                      <div className="flex flex-wrap gap-2.5">
                         {slides.map((slide, idx) => {
                           const isFinal = slide.type === 'final';
                           
                           const cardNode = (
                             <div
                               key={slide.id}
-                            onClick={() => setActiveSlideIndex(idx)}
-                            className={`p-3 rounded-xl border cursor-pointer transition-all shrink-0 w-[140px] flex flex-col justify-between h-[120px] ${
-                              activeSlideIndex === idx
-                                ? 'bg-[#18120e] border-[#C46A1A] text-[#FF7A00]'
-                                : 'bg-[#111116] border-white/5 text-white/60 hover:border-white/20'
-                            }`}
-                          >
-                            <div className="flex justify-between items-start">
-                              <span className="text-[9px] font-outfit uppercase bg-[#050505]/40 px-1.5 py-0.5 rounded text-white/70">
-                                #{idx + 1}
-                              </span>
-                              
-                              {slide.type !== 'capa' && slide.type !== 'final' && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteSlide(idx);
-                                  }}
-                                  className="p-1 hover:text-red-400 transition-colors"
-                                  title="Excluir slide"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-                            </div>
+                              onClick={() => setActiveSlideIndex(idx)}
+                              className={`p-2.5 rounded-xl border cursor-pointer transition-all shrink-0 w-[125px] flex flex-col justify-between h-[110px] ${
+                                activeSlideIndex === idx
+                                  ? 'bg-[#18120e] border-[#C46A1A] text-[#FF7A00]'
+                                  : 'bg-[#111116] border-white/5 text-white/60 hover:border-white/20'
+                              }`}
+                            >
+                              <div className="flex justify-between items-start">
+                                <span className="text-[9px] font-outfit uppercase bg-[#050505]/40 px-1.5 py-0.5 rounded text-white/70">
+                                  #{idx + 1}
+                                </span>
+                                
+                                {slide.type !== 'capa' && slide.type !== 'final' && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteSlide(idx);
+                                    }}
+                                    className="p-1 hover:text-red-400 transition-colors"
+                                    title="Excluir slide"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
 
-                            <div className="mt-2 text-left">
-                              <p className="text-[8px] font-outfit text-white/30 uppercase tracking-wider leading-none">
-                                {slide.type === 'capa' ? 'Capa' : slide.type === 'final' ? 'Final' : 'Veículo'}
-                              </p>
-                              <h5 className="text-[11px] font-semibold tracking-wide text-white line-clamp-1 mt-1">
-                                {slide.title}
-                              </h5>
-                              <p className="text-[9px] text-white/40 line-clamp-1 mt-0.5 font-light leading-none">
-                                {slide.type === 'veiculo' ? `${slide.fabricante} ${slide.modelo}` : slide.type === 'final' ? 'Layout Final' : slide.descricao}
-                              </p>
+                              <div className="mt-1 text-left">
+                                <p className="text-[8px] font-outfit text-white/30 uppercase tracking-wider leading-none">
+                                  {slide.type === 'capa' ? 'Capa' : slide.type === 'final' ? 'Final' : 'Veículo'}
+                                </p>
+                                <h5 className="text-[11px] font-semibold tracking-wide text-white line-clamp-1 mt-0.5">
+                                  {slide.title}
+                                </h5>
+                                <p className="text-[9px] text-white/40 line-clamp-1 mt-0.5 font-light leading-none">
+                                  {slide.type === 'veiculo' ? `${slide.fabricante} ${slide.modelo}` : slide.type === 'final' ? 'Layout Final' : slide.descricao}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        );
+                          );
                           if (isFinal) {
                             return (
                               <React.Fragment key={slide.id}>
                                 <div
                                   onClick={() => handleAddSlide('veiculo')}
-                                  className="bg-[#111116] border border-dashed border-[#C46A1A]/30 hover:border-[#C46A1A] rounded-xl p-4 cursor-pointer transition-all hover:bg-[#C46A1A]/5 flex flex-col items-center justify-center min-h-[120px] group w-[140px] shrink-0"
+                                  className="bg-[#111116] border border-dashed border-[#C46A1A]/30 hover:border-[#C46A1A] rounded-xl p-2.5 cursor-pointer transition-all hover:bg-[#C46A1A]/5 flex flex-col items-center justify-center h-[110px] w-[125px] shrink-0 group"
                                 >
-                                  <div className="w-8 h-8 rounded-full bg-[#18120e] flex items-center justify-center text-[#FF7A00] group-hover:scale-110 transition-transform mb-2">
-                                    <Plus className="w-4 h-4" />
+                                  <div className="w-7 h-7 rounded-full bg-[#18120e] flex items-center justify-center text-[#FF7A00] group-hover:scale-110 transition-transform mb-1.5">
+                                    <Plus className="w-3.5 h-3.5" />
                                   </div>
-                                  <span className="text-[10px] font-outfit uppercase tracking-widest text-[#FF7A00] font-bold">
-                                    + Veículo
+                                  <span className="text-[9px] font-outfit uppercase tracking-widest text-[#FF7A00] font-bold">
+                                    + Card
                                   </span>
                                 </div>
                                 {cardNode}
@@ -1767,59 +1866,125 @@ export default function Admin() {
                             
                             // A. COVER LAYOUT (FIXED IMAGE)
                             <div className="flex-1 w-full h-full relative overflow-hidden bg-[#050505]">
-                              {/* If Meta, show the uploaded image as background and fixed frame on top. Otherwise, just show the uploaded image. */}
-                              {selectedClientData?.name?.toLowerCase().includes('meta') ? (
-                                <>
-                                  {(activeSlide.imageUrl && !activeSlide.imageUrl.includes('hnxtcxhrqr4ejekmfkea') && !activeSlide.imageUrl.includes('ze7bf5yd9ozh3tsccopb')) && (
-                                    <img
-                                      src={activeSlide.imageUrl}
-                                      alt="Carro Capa"
-                                      className="absolute max-w-none origin-center z-0"
-                                      style={{
-                                        width: `${100 * activeSlide.zoom}%`,
-                                        height: `${100 * activeSlide.zoom}%`,
-                                        left: `calc(50% + ${activeSlide.posX}px)`,
-                                        top: `calc(50% + ${activeSlide.posY}px)`,
-                                        transform: 'translate(-50%, -50%)',
-                                        objectFit: 'cover',
-                                        cursor: 'move',
-                                        pointerEvents: 'auto'
-                                      }}
-                                      onMouseDown={handleMouseDown}
-                                      onMouseMove={handleMouseMove}
-                                      onMouseUp={handleMouseUp}
-                                      onMouseLeave={handleMouseUp}
-                                      crossOrigin="anonymous"
-                                    />
-                                  )}
-                                  <img 
-                                    src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png" 
-                                    alt="Capa Overlay" 
-                                    className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" crossOrigin="anonymous" 
-                                  />
-                                </>
-                              ) : (
-                                <img 
-                                  src={activeSlide.imageUrl || (selectedClientData?.name?.toLowerCase().includes('azul') ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png')} 
-                                  alt="Capa" 
-                                  className="absolute inset-0 w-full h-full object-cover" crossOrigin="anonymous"
-                                 />
+                              {/* Background Photo for Capa (Uploaded by User) */}
+                              {activeSlide.imageUrl && (
+                                <img
+                                  src={activeSlide.imageUrl}
+                                  alt="Capa Fundo"
+                                  className="absolute max-w-none origin-center z-0"
+                                  style={{
+                                    transform: `translate(${activeSlide.posX}px, ${activeSlide.posY}px) scale(${activeSlide.zoom})`,
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    cursor: 'move',
+                                    pointerEvents: 'auto'
+                                  }}
+                                  onMouseDown={handleMouseDown}
+                                  onMouseMove={handleMouseMove}
+                                  onMouseUp={handleMouseUp}
+                                  onMouseLeave={handleMouseUp}
+                                  crossOrigin="anonymous"
+                                />
                               )}
+
+                              {/* FIXED COVER OVERLAY */}
+                              <img 
+                                src={selectedClientData?.name?.toLowerCase().includes('azul') 
+                                  ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787262380/capaAZULBASE2.png'
+                                  : selectedClientData?.name?.toLowerCase().includes('meta') 
+                                  ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png'
+                                  : (activeSlide.imageUrl ? '' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png')
+                                } 
+                                alt="Capa Overlay" 
+                                className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" crossOrigin="anonymous" 
+                              />
                               
                               {/* Capa Text Overlay */}
-                              {(activeSlide.modelo || activeSlide.descricao) && (
-                                <div className="absolute top-[58%] right-[25px] -translate-y-1/2 flex flex-col items-end text-right z-20 pointer-events-none w-[90%]" style={{ fontFamily: '"Poppins", sans-serif' }}>
-                                  {activeSlide.modelo && (
-                                    <div className="text-white font-bold leading-none uppercase drop-shadow-md" style={{ fontSize: '18px' }}>
-                                      {activeSlide.modelo}
+                              {selectedClientData?.name?.toLowerCase().includes('azul') ? (
+                                <>
+                                  {/* Bloco Modelo & Descrição - Centralizado na coluna direita com margens de respiro seguras */}
+                                  {(activeSlide.modelo || activeSlide.descricao) && (
+                                    <div 
+                                      className="absolute top-[52%] flex flex-col items-center text-center z-20 pointer-events-none w-[145px]" 
+                                      style={{ 
+                                        right: '88px', 
+                                        transform: 'translate(50%, -50%)',
+                                        fontFamily: '"Poppins", sans-serif' 
+                                      }}
+                                    >
+                                      {activeSlide.modelo && (
+                                        <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                                          {/* 4 Barras Diagonais Azuis //// */}
+                                          <div className="flex items-center gap-[2.5px] -skew-x-[22deg] transform select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                                            <div className="w-[4px] h-[14px] bg-[#0088FF] rounded-[0.5px]" />
+                                            <div className="w-[4px] h-[14px] bg-[#0088FF] rounded-[0.5px]" />
+                                            <div className="w-[4px] h-[14px] bg-[#0088FF] rounded-[0.5px]" />
+                                            <div className="w-[4px] h-[14px] bg-[#0088FF] rounded-[0.5px]" />
+                                          </div>
+                                          <div className="text-white font-bold leading-none uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] tracking-tight" style={{ fontSize: '19px' }}>
+                                            {activeSlide.modelo}
+                                          </div>
+                                        </div>
+                                      )}
+                                      {activeSlide.descricao && (
+                                        <div className="text-white font-light italic leading-tight uppercase mt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] tracking-wide w-full text-center px-1 break-words" style={{ fontSize: '7.5px' }}>
+                                          {activeSlide.descricao}
+                                        </div>
+                                      )}
                                     </div>
                                   )}
-                                  {activeSlide.descricao && (
-                                    <div className="text-white font-light italic leading-tight uppercase mt-2 drop-shadow-md" style={{ fontSize: '8px' }}>
-                                      {activeSlide.descricao}
+
+                                  {/* Bloco de Preço: DE FIPE riscado em vermelho + POR R$ valor em amarelo */}
+                                  <div className="absolute top-[70.5%] right-[22px] -translate-y-1/2 flex flex-col items-end z-20 pointer-events-none drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+                                    {/* DE R$ ... com risco vermelho (só renderiza se valorFipe foi preenchido) */}
+                                    {(activeSlide.valorFipe || slides.find(s => s.type === 'veiculo')?.valorFipe) ? (
+                                      <div className="relative inline-block text-white tracking-normal leading-none mb-1 mr-3" style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 300, fontSize: '11px' }}>
+                                        <span>DE {activeSlide.valorFipe ? (activeSlide.valorFipe.startsWith('R$') ? activeSlide.valorFipe : `R$ ${activeSlide.valorFipe}`) : (slides.find(s => s.type === 'veiculo')?.valorFipe?.startsWith('R$') ? slides.find(s => s.type === 'veiculo')?.valorFipe : `R$ ${slides.find(s => s.type === 'veiculo')?.valorFipe}`)}</span>
+                                        <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[1px] bg-[#ff2222] shadow-[0_0_2px_rgba(255,0,0,0.9)] pointer-events-none" />
+                                      </div>
+                                    ) : null}
+
+                                    {/* POR R$ */}
+                                    <div className="flex items-center gap-1.5">
+                                      <div 
+                                        className="flex flex-col text-white leading-[0.85] tracking-tight font-black font-sans text-left" 
+                                        style={{ 
+                                          fontSize: '10px',
+                                          textShadow: '1px 1px 2px rgba(0,0,0,0.95), 0px 0px 4px rgba(0,0,0,0.9), -1px -1px 0px rgba(0,0,0,0.7)'
+                                        }}
+                                      >
+                                        <span>POR</span>
+                                        <span>R$</span>
+                                      </div>
+                                      <div 
+                                        className="text-[#FFD000] font-black leading-none tracking-tight"
+                                        style={{ 
+                                          fontFamily: '"Antonio", "Anton", sans-serif', 
+                                          fontSize: '32px',
+                                          textShadow: '2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000'
+                                        }}
+                                      >
+                                        {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
+                                      </div>
                                     </div>
-                                  )}
-                                </div>
+                                  </div>
+                                </>
+                              ) : (
+                                (activeSlide.modelo || activeSlide.descricao) && (
+                                  <div className="absolute top-[58%] right-[25px] -translate-y-1/2 flex flex-col items-end text-right z-20 pointer-events-none w-[90%]" style={{ fontFamily: '"Poppins", sans-serif' }}>
+                                    {activeSlide.modelo && (
+                                      <div className="text-white font-bold leading-none uppercase drop-shadow-md" style={{ fontSize: '18px' }}>
+                                        {activeSlide.modelo}
+                                      </div>
+                                    )}
+                                    {activeSlide.descricao && (
+                                      <div className="text-white font-light italic leading-tight uppercase mt-2 drop-shadow-md" style={{ fontSize: '8px' }}>
+                                        {activeSlide.descricao}
+                                      </div>
+                                    )}
+                                  </div>
+                                )
                               )}
                             </div>
 
@@ -1838,8 +2003,13 @@ export default function Admin() {
                                     transform: `translate(${activeSlide.posX}px, ${activeSlide.posY}px) scale(${activeSlide.zoom})`,
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'contain'
+                                    objectFit: 'contain',
+                                    cursor: 'move'
                                   }}
+                                  onMouseDown={handleMouseDown}
+                                  onMouseMove={handleMouseMove}
+                                  onMouseUp={handleMouseUp}
+                                  onMouseLeave={handleMouseUp}
                                   crossOrigin="anonymous"
                                   referrerPolicy="no-referrer"
                                 />
@@ -1847,49 +2017,41 @@ export default function Admin() {
 
                               {/* FIXED PNG OVERLAY */}
                               <img 
-                                src={selectedClientData?.name?.toLowerCase().includes('meta') ? "https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/fiowzjsmie0jn35bn49h.png" : "https://res.cloudinary.com/djw0tqmiw/image/upload/v1784051477/ox5x9ezq4stcwbocpbdg.png"} 
+                                src={selectedClientData?.name?.toLowerCase().includes('meta') ? "https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/fiowzjsmie0jn35bn49h.png" : selectedClientData?.name?.toLowerCase().includes('azul') ? "https://res.cloudinary.com/ifuatk2z/image/upload/v1787258892/baseAZUL.png" : "https://res.cloudinary.com/djw0tqmiw/image/upload/v1784051477/ox5x9ezq4stcwbocpbdg.png"} 
                                 alt="Base Frame" 
                                 className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" crossOrigin="anonymous" 
                               />
                                 
-                              {/* Header Texts (Transparent background) */}
-                              <div className="absolute top-[25px] left-0 w-full px-[20px] z-20 pointer-events-none uppercase italic" style={{ fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '"Saira Extra Condensed", sans-serif' }}>
-                                <div className={`leading-none tracking-widest italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white' : 'text-[#0377f9] font-light'}`} style={{ fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '13px' : '24px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#0377f9', marginBottom: '-4px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
-                                  {activeSlide.fabricante || 'FABRICANTE'}
-                                </div>
-                                <div className={`leading-none tracking-tighter italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? '' : 'text-[#1b3265] font-black'}`} style={{ 
-                                  fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '32px' : '48px', 
-                                  marginBottom: '2px', 
-                                  marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '4px' : '-8px',
-                                  color: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '#1b3265',
-                                  background: selectedClientData?.name?.toLowerCase().includes('meta') ? 'linear-gradient(180deg, #FF6B00 20%, #FF8C00 50%, #FF6B00 80%)' : undefined,
-                                  WebkitBackgroundClip: selectedClientData?.name?.toLowerCase().includes('meta') ? 'text' : undefined,
-                                  WebkitTextFillColor: selectedClientData?.name?.toLowerCase().includes('meta') ? 'transparent' : undefined,
-                                  filter: selectedClientData?.name?.toLowerCase().includes('meta') ? 'drop-shadow(3px 3px 2px rgba(0,0,0,0.6))' : undefined,
-                                  fontWeight: selectedClientData?.name?.toLowerCase().includes('meta') ? 400 : undefined,
-                                  fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Anton", sans-serif' : undefined,
-                                }}>
-                                  {activeSlide.modelo || 'MODELO'}
-                                </div>
-                                <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
-                                  {activeSlide.descricao || 'DESCRIÇÃO COMPLETA'}
-                                </div>
+                              {/* Header Texts / Footer Texts */}
+                              {selectedClientData?.name?.toLowerCase().includes('azul') ? (
+                                <>
+                                  {/* Preço FIPE Riscado em cima da tarja preta (só renderiza se valorFipe foi preenchido) */}
+                                  {(activeSlide.valorFipe || slides.find(s => s.type === 'veiculo')?.valorFipe) ? (
+                                    <div className="absolute top-[77.2%] right-[54px] -translate-y-1/2 z-20 pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                                      <div className="relative inline-block text-white tracking-normal leading-none" style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 300, fontSize: '10.5px' }}>
+                                        <span>DE {activeSlide.valorFipe ? (activeSlide.valorFipe.startsWith('R$') ? activeSlide.valorFipe : `R$ ${activeSlide.valorFipe}`) : (slides.find(s => s.type === 'veiculo')?.valorFipe?.startsWith('R$') ? slides.find(s => s.type === 'veiculo')?.valorFipe : `R$ ${slides.find(s => s.type === 'veiculo')?.valorFipe}`)}</span>
+                                        <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[1px] bg-[#ff2222] shadow-[0_0_2px_rgba(255,0,0,0.9)]" />
+                                      </div>
+                                    </div>
+                                  ) : null}
 
-                                {/* TAG FIPE E VALOR DO CARRO (FONTE 28 AMARELA ANTONIO) */}
-                                <div className="mt-3 flex flex-col items-start gap-1 not-italic">
-                                  {/* Tag FIPE */}
-                                  <div className="inline-flex items-center gap-1.5 bg-[#000000]/85 backdrop-blur-md border border-[#FFD000]/50 px-2 py-0.5 rounded shadow-lg">
-                                    <span className="text-[8px] font-black tracking-widest text-white uppercase font-sans">
-                                      FIPE
-                                    </span>
-                                    <span className="text-[9px] font-extrabold text-[#FFD000] tracking-tight font-sans">
-                                      {activeSlide.valorFipe ? (activeSlide.valorFipe.startsWith('R$') ? activeSlide.valorFipe : `R$ ${activeSlide.valorFipe}`) : (activeSlide.valorIntegral ? (activeSlide.valorIntegral.startsWith('R$') ? activeSlide.valorIntegral : `R$ ${activeSlide.valorIntegral}`) : 'R$ 99.590')}
-                                    </span>
+                                  {/* Lado Esquerdo da Tarja Preta: MONTADORA MODELO / DESCRIÇÃO / ANO & KM */}
+                                  <div className="absolute bottom-[43px] left-[20px] max-w-[155px] z-20 pointer-events-none text-left" style={{ fontFamily: '"Poppins", sans-serif' }}>
+                                    <div className="text-white uppercase font-bold tracking-tight leading-none truncate" style={{ fontSize: '13px' }}>
+                                      <strong className="font-extrabold">{activeSlide.fabricante || 'JEEP'}</strong> {activeSlide.modelo || 'RENEGADE'}
+                                    </div>
+                                    <div className="text-white font-light italic uppercase tracking-tight leading-tight truncate mt-0.5" style={{ fontSize: '7.5px' }}>
+                                      {activeSlide.descricao || 'TURBO FLEX AT'}
+                                    </div>
+                                    <div className="text-white italic uppercase tracking-wider text-[8px] mt-0.5 flex items-center gap-3">
+                                      <span>ANO <span className="text-[#FFD000] font-semibold italic">{activeSlide.condicao1Val || '0000'}</span></span>
+                                      <span>KM <span className="text-[#FFD000] font-semibold italic">{activeSlide.condicao2Val || '000.000'}</span></span>
+                                    </div>
                                   </div>
 
-                                  {/* Valor do carro abaixo da tag FIPE em fonte 28 amarela Antonio */}
-                                  <div className="flex items-center gap-1.5 mt-0.5 drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
-                                    <div className="flex flex-col text-white leading-[0.9] tracking-tight font-black font-sans text-left" style={{ fontSize: '11px' }}>
+                                  {/* Lado Direito da Tarja Preta: POR R$ (Preço Amarelo - Ajustado mais para esquerda right-[38px]) */}
+                                  <div className="absolute bottom-[48px] right-[38px] z-20 pointer-events-none flex items-center gap-1.5">
+                                    <div className="flex flex-col text-white leading-[0.85] tracking-tight font-black font-sans text-left" style={{ fontSize: '10px' }}>
                                       <span>POR</span>
                                       <span>R$</span>
                                     </div>
@@ -1897,18 +2059,69 @@ export default function Admin() {
                                       className="text-[#FFD000] font-black leading-none tracking-tight"
                                       style={{ 
                                         fontFamily: '"Antonio", "Anton", sans-serif', 
-                                        fontSize: '28px',
+                                        fontSize: '32px',
                                         textShadow: '2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000'
                                       }}
                                     >
-                                      {(activeSlide.valorIntegral || activeSlide.valorFipe || '99.590').replace(/^R\$\s*/i, '')}
+                                      {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
+                                    </div>
+                                  </div>
+                                </>
+                              ) : (
+                                // META E UNIMAIS LAYOUT PADRÃO
+                                <div className="absolute top-[25px] left-0 w-full px-[20px] z-20 pointer-events-none uppercase italic" style={{ fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '"Saira Extra Condensed", sans-serif' }}>
+                                  <div className={`leading-none tracking-widest italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white' : 'text-[#0377f9] font-light'}`} style={{ fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '13px' : '24px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#0377f9', marginBottom: '-4px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
+                                    {activeSlide.fabricante || 'FABRICANTE'}
+                                  </div>
+                                  <div className={`leading-none tracking-tighter italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? '' : 'text-[#1b3265] font-black'}`} style={{ 
+                                    fontSize: selectedClientData?.name?.toLowerCase().includes('meta') ? '32px' : '48px', 
+                                    marginBottom: '2px', 
+                                    marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '4px' : '-8px',
+                                    color: selectedClientData?.name?.toLowerCase().includes('meta') ? undefined : '#1b3265',
+                                    background: selectedClientData?.name?.toLowerCase().includes('meta') ? 'linear-gradient(180deg, #FF6B00 20%, #FF8C00 50%, #FF6B00 80%)' : undefined,
+                                    WebkitBackgroundClip: selectedClientData?.name?.toLowerCase().includes('meta') ? 'text' : undefined,
+                                    WebkitTextFillColor: selectedClientData?.name?.toLowerCase().includes('meta') ? 'transparent' : undefined,
+                                    filter: selectedClientData?.name?.toLowerCase().includes('meta') ? 'drop-shadow(3px 3px 2px rgba(0,0,0,0.6))' : undefined,
+                                    fontWeight: selectedClientData?.name?.toLowerCase().includes('meta') ? 400 : undefined,
+                                    fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Anton", sans-serif' : undefined,
+                                  }}>
+                                    {activeSlide.modelo || 'MODELO'}
+                                  </div>
+                                  <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
+                                    {activeSlide.descricao || 'DESCRIÇÃO COMPLETA'}
+                                  </div>
+
+                                  {/* TAG FIPE E VALOR DO CARRO */}
+                                  <div className="mt-3 flex flex-col items-start gap-1 not-italic">
+                                    <div className="inline-flex items-center gap-1.5 bg-[#000000]/85 backdrop-blur-md border border-[#FFD000]/50 px-2 py-0.5 rounded shadow-lg">
+                                      <span className="text-[8px] font-black tracking-widest text-white uppercase font-sans">
+                                        FIPE
+                                      </span>
+                                      <span className="text-[9px] font-extrabold text-[#FFD000] tracking-tight font-sans">
+                                        {activeSlide.valorFipe ? (activeSlide.valorFipe.startsWith('R$') ? activeSlide.valorFipe : `R$ ${activeSlide.valorFipe}`) : (activeSlide.valorIntegral ? (activeSlide.valorIntegral.startsWith('R$') ? activeSlide.valorIntegral : `R$ ${activeSlide.valorIntegral}`) : 'R$ 99.590')}
+                                      </span>
+                                    </div>
+
+                                    <div className="flex items-center gap-1.5 mt-0.5 drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
+                                      <div className="flex flex-col text-white leading-[0.9] tracking-tight font-black font-sans text-left" style={{ fontSize: '11px' }}>
+                                        <span>POR</span>
+                                        <span>R$</span>
+                                      </div>
+                                      <div 
+                                        className="text-[#FFD000] font-black leading-none tracking-tight"
+                                        style={{ 
+                                          fontFamily: '"Antonio", "Anton", sans-serif', 
+                                          fontSize: '28px',
+                                          textShadow: '2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000'
+                                        }}
+                                      >
+                                        {(activeSlide.valorIntegral || activeSlide.valorFipe || '99.590').replace(/^R\$\s*/i, '')}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              )}
                               <div className="flex-1 z-20 pointer-events-none"></div>
-
-                              
 
                             </div>
                           ) : (
@@ -1922,8 +2135,8 @@ export default function Admin() {
                             </div>
                           )}
 
-                          {/* GLOBALLY SHARED WEB FOOTER BAR - Only show if not capa or final, or overlay it? Actually, if capa and final are fixed full-height images, they probably contain the footer. We will only render it for veiculo if the PNG doesn't have it. We'll render it absolutely at the bottom for veiculo. */}
-                          {activeSlide.type === 'veiculo' && !selectedClientData?.name?.toLowerCase().includes('meta') && (
+                          {/* GLOBALLY SHARED WEB FOOTER BAR - Only show for Unimais (Meta and Azul use their own PNG bases) */}
+                          {activeSlide.type === 'veiculo' && !selectedClientData?.name?.toLowerCase().includes('meta') && !selectedClientData?.name?.toLowerCase().includes('azul') && (
                             <div className="absolute bottom-0 left-0 right-0 bg-[#012d6a] text-white py-2 flex items-center justify-center gap-1 text-[8px] font-outfit tracking-widest uppercase border-t border-cyan-400/10 z-20">
                               <svg className="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10"></circle>
