@@ -1,7 +1,20 @@
 node_modules/
+dist/
 coverage/
 .DS_Store
 *.log
 .env*
 !.env.example
 scratch_*
+
+# Arquivos temporários de fix/rewrite
+fix_*.js
+fix_*.cjs
+rewrite_*.js
+rewrite_*.cjs
+*.bak
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
