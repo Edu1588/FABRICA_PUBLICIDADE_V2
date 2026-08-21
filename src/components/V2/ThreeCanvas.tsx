@@ -27,28 +27,23 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     if (!rawScene) return null;
     const clone = rawScene.clone(true);
     clone.traverse((child: any) => {
-      if (child.isMesh) {
+      if (child.isMesh && child.material) {
         if (isClean) {
           const mat = child.material.clone();
-          mat.color.set('#3f322a'); // Requested warm bronze tone
-          mat.roughness = 0.35; // Lower roughness for high-res glossy reflections
-          mat.metalness = 0.6; // Keep metallic aspect for the 8k texture to react to light
-          
-          // Slight warm emissive to lift pitch-black shadows without blowing out the texture
-          mat.emissive = new THREE.Color('#3f322a');
-          mat.emissiveIntensity = 0.15; 
-          
+          // Manter a textura original do modelo (map, normalMap, roughnessMap) intacta
+          mat.color.set('#ffffff'); // Branco neutro garante que a textura original do GLB (olhos brancos, barba e bronze) apareça com fidelidade 100%
+          mat.roughness = child.material.roughness !== undefined ? child.material.roughness : 0.4;
+          mat.metalness = child.material.metalness !== undefined ? child.material.metalness : 0.5;
+          mat.needsUpdate = true;
           child.material = mat;
         } else {
-          child.material = new THREE.MeshStandardMaterial({
-            color: modelColor || '#d8d8d8',
-            roughness: roughness ?? 0.25,
-            metalness: metalness ?? 0.75,
-            emissive: new THREE.Color('#151515'),
-            emissiveIntensity: 0.1,
-            map: null,
-            envMapIntensity: 1.0,
-          });
+          // Para o modo com shader/efeito, manter material padrão responsivo
+          const mat = child.material.clone();
+          mat.color.set(modelColor || '#ffffff');
+          mat.roughness = roughness ?? 0.35;
+          mat.metalness = metalness ?? 0.65;
+          mat.needsUpdate = true;
+          child.material = mat;
         }
       }
     });
@@ -126,9 +121,6 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     
     return (
       <group ref={modelRef} position={[0, initialY, 0]} rotation={[0, initialRotY, 0]} scale={initialScale}>
-        {fixedScale !== undefined && (
-          <pointLight position={[0, 2, 2]} intensity={10} color="#ff4d16" distance={10} />
-        )}
         <primitive object={clonedScene} />
       </group>
     );
@@ -145,24 +137,28 @@ function SceneContent(props: any) {
     <>
       {isClean ? (
         <>
-          <ambientLight intensity={1.5} />
-          {/* Main front light (dimmed, cool white) */}
-          <directionalLight position={[3, 5, 5]} intensity={4} color="#ffffff" />
-          <directionalLight position={[-2, -2, 4]} intensity={2} color="#ffffff" />
+          {/* Luz Ambiente Geral */}
+          <ambientLight intensity={1.6} color="#ffffff" />
           
-          {/* Strong Fiery Rim Light: Left side, slightly behind */}
-          <directionalLight position={[-8, 1, -4]} intensity={12} color="#ff4400" />
-          <pointLight position={[-6, 1, -3]} intensity={25} distance={20} color="#ff3300" />
+          {/* Luz Principal Frontal/Topo (Key Light - Realça a textura facial e os olhos) */}
+          <directionalLight position={[3, 5, 5]} intensity={3.5} color="#ffffff" />
           
-          {/* Subtle warm fill from bottom right */}
-          <directionalLight position={[4, -4, 2]} intensity={1} color="#ff8844" />
+          {/* Luz de Preenchimento Suave (Fill Light - Revela sombras sem estourar) */}
+          <directionalLight position={[-3, 2, 4]} intensity={2.0} color="#eef2f7" />
+          
+          {/* Luz Inferior para Detalhes do Avental e Peito */}
+          <directionalLight position={[0, -4, 3]} intensity={1.2} color="#ffffff" />
+          
+          {/* Luz Quente da Forja (Rim/Edge Light - Realce elegante nas costas e contorno) */}
+          <directionalLight position={[-6, 2, -4]} intensity={3.0} color="#ff5511" />
+          <pointLight position={[-4, -1, -2]} intensity={8.0} distance={15} color="#ff4400" />
         </>
       ) : isFixed ? (
         <>
-          <ambientLight intensity={4.0} />
-          <directionalLight position={[5, 5, 5]} intensity={10} color="#ffffff" />
-          <directionalLight position={[-5, -5, -5]} intensity={5} color="#ffffff" />
-          <pointLight position={[0, 2, 5]} intensity={15} color="#ff4d16" distance={50} />
+          <ambientLight intensity={3.5} />
+          <directionalLight position={[5, 5, 5]} intensity={8} color="#ffffff" />
+          <directionalLight position={[-5, -5, -5]} intensity={4} color="#ffffff" />
+          <pointLight position={[0, 2, 5]} intensity={10} color="#ff4d16" distance={50} />
         </>
       ) : (
         <>
@@ -372,7 +368,11 @@ export default function ThreeCanvas(props: any) {
       <div className={`w-full h-full relative overflow-hidden pointer-events-auto ${props.className || ''}`}>
         <Canvas
           camera={{ position: [0, 0, props.cameraZ || 6.5], fov: props.cameraFOV || 45 }}
-          gl={{ antialias: true, alpha: false }}
+          gl={{ 
+            antialias: true, 
+            alpha: false,
+            powerPreference: 'high-performance'
+          }}
         >
           <color attach="background" args={[props.bgColor || '#050505']} />
           
@@ -390,7 +390,11 @@ export default function ThreeCanvas(props: any) {
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
       <Canvas
         camera={{ position: [0, 0, props.cameraZ || 7], fov: props.cameraFOV || 45 }}
-        gl={{ antialias: true, alpha: false }}
+        gl={{ 
+          antialias: true, 
+          alpha: false,
+          powerPreference: 'high-performance'
+        }}
       >
         <color attach="background" args={[props.bgColor || '#050505']} />
         
