@@ -39,9 +39,14 @@ async function startServer() {
       if (!search) return res.status(400).json({ error: "Search term is required" });
       const normalizedSearch = search.toUpperCase().replace(/[^A-Z0-9]/g, '');
       
+      const defaultHeaders = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/html, */*'
+      };
+
       if (client === 'meta') {
         try {
-          const metaRes = await fetch('https://metaveiculos.com.br/vehicles.json');
+          const metaRes = await fetch('https://metaveiculos.com.br/vehicles.json', { headers: defaultHeaders });
           const metaVehicles = await metaRes.json();
           const vehicle = metaVehicles.find((v: any) => v.plate === normalizedSearch || v.model.toLowerCase().includes(search.toLowerCase()) || v.version.toLowerCase().includes(search.toLowerCase()));
           
@@ -67,7 +72,7 @@ async function startServer() {
         try {
           // 1. First search in vehicles.json (contains complete active stock with all details)
           try {
-            const azulRes = await fetch('https://azulveiculos.com.br/vehicles.json');
+            const azulRes = await fetch('https://azulveiculos.com.br/vehicles.json', { headers: defaultHeaders });
             const azulVehicles = await azulRes.json();
             const vehicle = azulVehicles.find((v: any) => {
               const plateNorm = (v.plate || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -103,7 +108,7 @@ async function startServer() {
           }
 
           // 2. Fallback to HTML scraping of /estoque
-          const azulEstoqueRes = await fetch('https://azulveiculos.com.br/estoque');
+          const azulEstoqueRes = await fetch('https://azulveiculos.com.br/estoque', { headers: defaultHeaders });
           const azulEstoqueHtml = await azulEstoqueRes.text();
           const $ = cheerio.load(azulEstoqueHtml);
           
