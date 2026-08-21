@@ -4,6 +4,8 @@ import path from "path";
 import * as cheerio from "cheerio";
 import { GoogleGenAI, Type } from "@google/genai";
 
+const isVercel = !!process.env.VERCEL;
+
 let aiInstance: GoogleGenAI | null = null;
 function getAI() {
   if (!aiInstance) {
@@ -23,202 +25,201 @@ function getAI() {
   return aiInstance;
 }
 
+// Create Express app (synchronous — no await needed)
+const app = express();
+const PORT = 3000;
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+app.use(express.json({ limit: '50mb' }));
 
-  app.use(express.json({ limit: '50mb' }));
+// API route for scraping vehicle data
+app.post("/api/scrape-vehicle", async (req, res) => {
+  try {
+    
+    // 1. Search for the vehicle
+    const { search, client } = req.body;
+    if (!search) return res.status(400).json({ error: "Search term is required" });
+    const normalizedSearch = search.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    
+    const defaultHeaders = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/json, text/html, */*'
+    };
 
-  // API route for scraping vehicle data
-  app.post("/api/scrape-vehicle", async (req, res) => {
-    try {
-      
-      // 1. Search for the vehicle
-      const { search, client } = req.body;
-      if (!search) return res.status(400).json({ error: "Search term is required" });
-      const normalizedSearch = search.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      
-      const defaultHeaders = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/html, */*'
-      };
+    if (client === 'meta') {
+      try {
+        const metaRes = await fetch('https://metaveiculos.com.br/vehicles.json', { headers: defaultHeaders });
+        const metaVehicles = await metaRes.json();
+        const vehicle = metaVehicles.find((v: any) => v.plate === normalizedSearch || v.model.toLowerCase().includes(search.toLowerCase()) || v.version.toLowerCase().includes(search.toLowerCase()));
+        
+        if (vehicle) {
+          return res.json({
+            success: true,
+            data: {
+              montadora: vehicle.brand,
+              modelo: vehicle.model,
+              descricao: vehicle.version
+            }
+          });
+        } else {
+          return res.status(404).json({ error: "Veículo não encontrado no site da Meta Veículos." });
+        }
+      } catch (err) {
+        console.error("Meta search error", err);
+        return res.status(500).json({ error: "Erro ao buscar no site da Meta Veículos." });
+      }
+    }
 
-      if (client === 'meta') {
+    if (client === 'azul') {
+      try {
+        // 1. First search in vehicles.json (contains complete active stock with all details)
         try {
-          const metaRes = await fetch('https://metaveiculos.com.br/vehicles.json', { headers: defaultHeaders });
-          const metaVehicles = await metaRes.json();
-          const vehicle = metaVehicles.find((v: any) => v.plate === normalizedSearch || v.model.toLowerCase().includes(search.toLowerCase()) || v.version.toLowerCase().includes(search.toLowerCase()));
-          
+          const azulRes = await fetch('https://azulveiculos.com.br/vehicles.json', { headers: defaultHeaders });
+          const azulVehicles = await azulRes.json();
+          const vehicle = azulVehicles.find((v: any) => {
+            const plateNorm = (v.plate || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            return plateNorm === normalizedSearch || 
+              v.model?.toLowerCase().includes(search.toLowerCase()) || 
+              v.version?.toLowerCase().includes(search.toLowerCase());
+          });
           if (vehicle) {
+            const ano = vehicle.modelYear 
+              ? (vehicle.manufacturingYear && vehicle.manufacturingYear !== vehicle.modelYear 
+                  ? `${vehicle.manufacturingYear}/${vehicle.modelYear}` 
+                  : `${vehicle.modelYear}`) 
+              : (vehicle.year || vehicle.model_year || '');
+            
+            const km = vehicle.mileage ? Number(vehicle.mileage).toLocaleString('pt-BR') : (vehicle.km || '');
+            const valor = vehicle.price ? Number(vehicle.price).toLocaleString('pt-BR') : '';
+
             return res.json({
               success: true,
               data: {
-                montadora: vehicle.brand,
-                modelo: vehicle.model,
-                descricao: vehicle.version
-              }
-            });
-          } else {
-            return res.status(404).json({ error: "Veículo não encontrado no site da Meta Veículos." });
-          }
-        } catch (err) {
-          console.error("Meta search error", err);
-          return res.status(500).json({ error: "Erro ao buscar no site da Meta Veículos." });
-        }
-      }
-
-      if (client === 'azul') {
-        try {
-          // 1. First search in vehicles.json (contains complete active stock with all details)
-          try {
-            const azulRes = await fetch('https://azulveiculos.com.br/vehicles.json', { headers: defaultHeaders });
-            const azulVehicles = await azulRes.json();
-            const vehicle = azulVehicles.find((v: any) => {
-              const plateNorm = (v.plate || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-              return plateNorm === normalizedSearch || 
-                v.model?.toLowerCase().includes(search.toLowerCase()) || 
-                v.version?.toLowerCase().includes(search.toLowerCase());
-            });
-            if (vehicle) {
-              const ano = vehicle.modelYear 
-                ? (vehicle.manufacturingYear && vehicle.manufacturingYear !== vehicle.modelYear 
-                    ? `${vehicle.manufacturingYear}/${vehicle.modelYear}` 
-                    : `${vehicle.modelYear}`) 
-                : (vehicle.year || vehicle.model_year || '');
-              
-              const km = vehicle.mileage ? Number(vehicle.mileage).toLocaleString('pt-BR') : (vehicle.km || '');
-              const valor = vehicle.price ? Number(vehicle.price).toLocaleString('pt-BR') : '';
-
-              return res.json({
-                success: true,
-                data: {
-                  montadora: vehicle.brand || '',
-                  modelo: vehicle.model || '',
-                  descricao: vehicle.version || '',
-                  ano,
-                  km,
-                  valor,
-                  fipe: ''
-                }
-              });
-            }
-          } catch(e) {
-            console.error("vehicles.json fetch error", e);
-          }
-
-          // 2. Fallback to HTML scraping of /estoque
-          const azulEstoqueRes = await fetch('https://azulveiculos.com.br/estoque', { headers: defaultHeaders });
-          const azulEstoqueHtml = await azulEstoqueRes.text();
-          const $ = cheerio.load(azulEstoqueHtml);
-          
-          let foundVehicle: any = null;
-          
-          $('article.car-card, .car-card').each((_, el) => {
-            const card = $(el);
-            const plate = card.find('.vehicle-plate-element').text().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-            const h6 = card.find('.car-model h6').text().trim();
-            const version = card.find('.car-model .title').text().trim();
-            const yearText = card.find('.car-info-item:has(.bi-calendar), .car-info-item:contains("/")').text().trim();
-            const kmText = card.find('.car-info-item:has(.bi-speedometer2), .car-info-item:contains("km")').text().trim();
-            const price = card.find('.vehicle-price-element').text().replace(/[^0-9.,]/g, '').trim();
-            
-            const matchPlate = plate && (plate === normalizedSearch || plate.includes(normalizedSearch));
-            const matchSearch = h6.toLowerCase().includes(search.toLowerCase()) || version.toLowerCase().includes(search.toLowerCase());
-            
-            if (matchPlate || matchSearch) {
-              const parts = h6.split(' ');
-              const montadora = parts[0] || '';
-              const modelo = parts.slice(1).join(' ') || h6;
-              const ano = yearText.replace(/[^0-9/]/g, '').trim();
-              const kmRaw = kmText.replace(/[^0-9]/g, '');
-              const km = kmRaw ? Number(kmRaw).toLocaleString('pt-BR') : kmText;
-              
-              foundVehicle = {
-                montadora,
-                modelo,
-                descricao: version,
+                montadora: vehicle.brand || '',
+                modelo: vehicle.model || '',
+                descricao: vehicle.version || '',
                 ano,
                 km,
-                valor: price,
+                valor,
                 fipe: ''
-              };
-              return false;
-            }
-          });
-          
-          if (foundVehicle) {
-            return res.json({
-              success: true,
-              data: foundVehicle
+              }
             });
           }
-
-          return res.status(404).json({ error: "Veículo não encontrado no site da Azul Veículos." });
-        } catch (err) {
-          console.error("Azul search error", err);
-          return res.status(500).json({ error: "Erro ao buscar no site da Azul Veículos." });
+        } catch(e) {
+          console.error("vehicles.json fetch error", e);
         }
-      }
 
-      // If it's a specific test plate from the user, return the mock data directly
-      if (normalizedSearch === 'GAP4D01') {
-        return res.json({
-          success: true,
-          data: {
-            montadora: "JEEP",
-            modelo: "RENEGADE",
-            descricao: "1.8 16V FLEX 4P AUTOMÁTICO",
-            ano: "2021",
-            km: "45.000",
-            fipe: "",
-            valor: "99.590"
+        // 2. Fallback to HTML scraping of /estoque
+        const azulEstoqueRes = await fetch('https://azulveiculos.com.br/estoque', { headers: defaultHeaders });
+        const azulEstoqueHtml = await azulEstoqueRes.text();
+        const $ = cheerio.load(azulEstoqueHtml);
+        
+        let foundVehicle: any = null;
+        
+        $('article.car-card, .car-card').each((_, el) => {
+          const card = $(el);
+          const plate = card.find('.vehicle-plate-element').text().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+          const h6 = card.find('.car-model h6').text().trim();
+          const version = card.find('.car-model .title').text().trim();
+          const yearText = card.find('.car-info-item:has(.bi-calendar), .car-info-item:contains("/")').text().trim();
+          const kmText = card.find('.car-info-item:has(.bi-speedometer2), .car-info-item:contains("km")').text().trim();
+          const price = card.find('.vehicle-price-element').text().replace(/[^0-9.,]/g, '').trim();
+          
+          const matchPlate = plate && (plate === normalizedSearch || plate.includes(normalizedSearch));
+          const matchSearch = h6.toLowerCase().includes(search.toLowerCase()) || version.toLowerCase().includes(search.toLowerCase());
+          
+          if (matchPlate || matchSearch) {
+            const parts = h6.split(' ');
+            const montadora = parts[0] || '';
+            const modelo = parts.slice(1).join(' ') || h6;
+            const ano = yearText.replace(/[^0-9/]/g, '').trim();
+            const kmRaw = kmText.replace(/[^0-9]/g, '');
+            const km = kmRaw ? Number(kmRaw).toLocaleString('pt-BR') : kmText;
+            
+            foundVehicle = {
+              montadora,
+              modelo,
+              descricao: version,
+              ano,
+              km,
+              valor: price,
+              fipe: ''
+            };
+            return false;
           }
         });
-      }
-
-      // Use the correct product search URL for WooCommerce
-      const searchUrl = `https://unimaisveiculos.com.br/?post_type=product&s=${encodeURIComponent(search)}`;
-      console.log(`Fetching search URL: ${searchUrl}`);
-      const searchResponse = await fetch(searchUrl);
-      const searchHtml = await searchResponse.text();
-      
-      let productHtml = "";
-      
-      // If we were redirected directly to a product page
-      if (searchResponse.url && searchResponse.url.includes('/product/')) {
-        console.log(`Redirected directly to product page: ${searchResponse.url}`);
-        productHtml = searchHtml;
-      } else {
-        const $search = cheerio.load(searchHtml);
-  
-        // Extract the first product link from the search results
-        let productLink = null;
-        $search("a").each((i, el) => {
-          const href = $search(el).attr("href");
-          if (href && href.includes("/product/") && !productLink) {
-            productLink = href;
-          }
-        });
-  
-        if (!productLink) {
-          return res.status(404).json({ error: "Veículo não encontrado no site." });
+        
+        if (foundVehicle) {
+          return res.json({
+            success: true,
+            data: foundVehicle
+          });
         }
-  
-        console.log(`Found product link: ${productLink}`);
-  
-        // 2. Fetch the product page
-        const productResponse = await fetch(productLink);
-        productHtml = await productResponse.text();
-      }
-      
-      // Clean up HTML to reduce tokens before sending to Gemini
-      const $product = cheerio.load(productHtml);
-      $product("script, style, noscript, iframe, img, svg").remove();
-      const cleanHtml = $product("body").text().replace(/\s+/g, " ").trim().substring(0, 8000); // Send up to 8000 chars
 
-      // 3. Ask Gemini to extract details
-      const prompt = `
+        return res.status(404).json({ error: "Veículo não encontrado no site da Azul Veículos." });
+      } catch (err) {
+        console.error("Azul search error", err);
+        return res.status(500).json({ error: "Erro ao buscar no site da Azul Veículos." });
+      }
+    }
+
+    // If it's a specific test plate from the user, return the mock data directly
+    if (normalizedSearch === 'GAP4D01') {
+      return res.json({
+        success: true,
+        data: {
+          montadora: "JEEP",
+          modelo: "RENEGADE",
+          descricao: "1.8 16V FLEX 4P AUTOMÁTICO",
+          ano: "2021",
+          km: "45.000",
+          fipe: "",
+          valor: "99.590"
+        }
+      });
+    }
+
+    // Use the correct product search URL for WooCommerce
+    const searchUrl = `https://unimaisveiculos.com.br/?post_type=product&s=${encodeURIComponent(search)}`;
+    console.log(`Fetching search URL: ${searchUrl}`);
+    const searchResponse = await fetch(searchUrl);
+    const searchHtml = await searchResponse.text();
+    
+    let productHtml = "";
+    
+    // If we were redirected directly to a product page
+    if (searchResponse.url && searchResponse.url.includes('/product/')) {
+      console.log(`Redirected directly to product page: ${searchResponse.url}`);
+      productHtml = searchHtml;
+    } else {
+      const $search = cheerio.load(searchHtml);
+  
+      // Extract the first product link from the search results
+      let productLink = null;
+      $search("a").each((i, el) => {
+        const href = $search(el).attr("href");
+        if (href && href.includes("/product/") && !productLink) {
+          productLink = href;
+        }
+      });
+  
+      if (!productLink) {
+        return res.status(404).json({ error: "Veículo não encontrado no site." });
+      }
+  
+      console.log(`Found product link: ${productLink}`);
+  
+      // 2. Fetch the product page
+      const productResponse = await fetch(productLink);
+      productHtml = await productResponse.text();
+    }
+    
+    // Clean up HTML to reduce tokens before sending to Gemini
+    const $product = cheerio.load(productHtml);
+    $product("script, style, noscript, iframe, img, svg").remove();
+    const cleanHtml = $product("body").text().replace(/\s+/g, " ").trim().substring(0, 8000); // Send up to 8000 chars
+
+    // 3. Ask Gemini to extract details
+    const prompt = `
 Extract the vehicle details from the following text extracted from a car dealership website.
 Return ONLY a valid JSON object with the following keys, with NO markdown formatting:
 {
@@ -235,85 +236,92 @@ Text to extract from:
 ${cleanHtml}
 `;
 
-      const response = await getAI().models.generateContent({
-        model: 'gemini-3.6-flash',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              montadora: { type: Type.STRING, description: "A marca ou fabricante do veículo (ex: JEEP, TOYOTA, VOLKSWAGEN)" },
-              modelo: { type: Type.STRING, description: "O modelo principal do veículo (ex: COMPASS, COROLLA, POLO)" },
-              descricao: { type: Type.STRING, description: "A versão completa ou descrição do modelo do veículo (ex: 2.0 TD350 TURBO DIESEL LIMITED AWD AUTOMÁTICO)" },
-              fipe: { type: Type.STRING, description: "Valor da Tabela FIPE do veículo (ex: 99.590)" },
-              valor: { type: Type.STRING, description: "Valor integral de venda do veículo (ex: 99.590)" }
-            },
-            required: ["montadora", "modelo", "descricao"]
-          }
+    const response = await getAI().models.generateContent({
+      model: 'gemini-3.6-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            montadora: { type: Type.STRING, description: "A marca ou fabricante do veículo (ex: JEEP, TOYOTA, VOLKSWAGEN)" },
+            modelo: { type: Type.STRING, description: "O modelo principal do veículo (ex: COMPASS, COROLLA, POLO)" },
+            descricao: { type: Type.STRING, description: "A versão completa ou descrição do modelo do veículo (ex: 2.0 TD350 TURBO DIESEL LIMITED AWD AUTOMÁTICO)" },
+            fipe: { type: Type.STRING, description: "Valor da Tabela FIPE do veículo (ex: 99.590)" },
+            valor: { type: Type.STRING, description: "Valor integral de venda do veículo (ex: 99.590)" }
+          },
+          required: ["montadora", "modelo", "descricao"]
         }
-      });
-
-      let jsonResponse = response.text || "{}";
-      const vehicleData = JSON.parse(jsonResponse);
-      
-      return res.json({ success: true, data: vehicleData });
-
-    } catch (error) {
-      console.error("Error scraping vehicle:", error);
-      return res.status(500).json({ error: "Erro ao buscar dados do veículo." });
-    }
-  });
-
-
-
-  // Analytics Routes
-  app.post("/api/track", (req, res) => {
-    try {
-      const { path, client_id, user_agent } = req.body;
-      const dataPath = process.cwd() + "/data/analytics.json";
-      let analytics = { pageViews: [], leads: [] };
-      if (fs.existsSync(dataPath)) {
-        analytics = JSON.parse(fs.readFileSync(dataPath, "utf8"));
       }
-      analytics.pageViews.push({
-        path,
-        client_id,
-        user_agent,
-        timestamp: new Date().toISOString()
-      });
-      fs.writeFileSync(dataPath, JSON.stringify(analytics, null, 2));
-      return res.json({ success: true });
-    } catch(err) {
-      console.error(err);
-      return res.status(500).json({ error: "Failed to track", details: err.message, stack: err.stack });
+    });
+
+    let jsonResponse = response.text || "{}";
+    const vehicleData = JSON.parse(jsonResponse);
+    
+    return res.json({ success: true, data: vehicleData });
+
+  } catch (error) {
+    console.error("Error scraping vehicle:", error);
+    return res.status(500).json({ error: "Erro ao buscar dados do veículo." });
+  }
+});
+
+
+
+// Analytics Routes — use filesystem only when NOT on Vercel (read-only filesystem)
+app.post("/api/track", (req, res) => {
+  try {
+    if (isVercel) {
+      // Vercel has a read-only filesystem — just acknowledge
+      return res.json({ success: true, note: "analytics skipped on serverless" });
     }
-  });
-
-  app.get("/api/analytics", (req, res) => {
-    try {
-      const dataPath = process.cwd() + "/data/analytics.json";
-      let analytics = { pageViews: [], leads: [] };
-      if (fs.existsSync(dataPath)) {
-        analytics = JSON.parse(fs.readFileSync(dataPath, "utf8"));
-      }
-      return res.json(analytics);
-    } catch(err) {
-      console.error(err);
-      return res.status(500).json({ error: "Failed to get analytics" });
+    const { path: routePath, client_id, user_agent } = req.body;
+    const dataPath = process.cwd() + "/data/analytics.json";
+    let analytics: any = { pageViews: [], leads: [] };
+    if (fs.existsSync(dataPath)) {
+      analytics = JSON.parse(fs.readFileSync(dataPath, "utf8"));
     }
-  });
+    analytics.pageViews.push({
+      path: routePath,
+      client_id,
+      user_agent,
+      timestamp: new Date().toISOString()
+    });
+    fs.writeFileSync(dataPath, JSON.stringify(analytics, null, 2));
+    return res.json({ success: true });
+  } catch(err: any) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to track", details: err.message });
+  }
+});
 
-  // Vite middleware for development
+app.get("/api/analytics", (req, res) => {
+  try {
+    if (isVercel) {
+      return res.json({ pageViews: [], leads: [] });
+    }
+    const dataPath = process.cwd() + "/data/analytics.json";
+    let analytics = { pageViews: [], leads: [] };
+    if (fs.existsSync(dataPath)) {
+      analytics = JSON.parse(fs.readFileSync(dataPath, "utf8"));
+    }
+    return res.json(analytics);
+  } catch(err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to get analytics" });
+  }
+});
 
-  if (process.env.NODE_ENV !== "production") {
+// ── Dev-only: Vite middleware + listen ──────────────────────────
+async function startDevServer() {
+  if (!isVercel && process.env.NODE_ENV !== "production") {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
-  } else {
+  } else if (!isVercel) {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
@@ -321,19 +329,15 @@ ${cleanHtml}
     });
   }
 
-  if (process.env.NODE_ENV !== 'production' || process.env.RENDER || process.env.RAILWAY_ENVIRONMENT || !process.env.VERCEL) {
+  if (!isVercel) {
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
   }
-  
-  return app;
 }
 
-const appPromise = startServer();
-export default (req: any, res: any) => {
-  appPromise.then(app => app(req, res)).catch(err => {
-    console.error(err);
-    res.status(500).send('Server Error');
-  });
-};
+// Start dev server only when NOT on Vercel
+startDevServer().catch(console.error);
+
+// Export for Vercel serverless function
+export default app;
