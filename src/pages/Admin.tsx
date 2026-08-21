@@ -1939,10 +1939,10 @@ export default function Admin() {
                                   )}
 
                                   {/* Bloco de Preço: DE FIPE riscado em vermelho + POR R$ valor em amarelo */}
-                                  <div className="absolute top-[70.5%] right-[22px] -translate-y-1/2 flex flex-col items-end z-20 pointer-events-none drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+                                  <div className="absolute top-[70.5%] right-[22px] -translate-y-1/2 flex flex-col items-end z-20 pointer-events-none">
                                     {/* DE R$ ... com risco vermelho (só renderiza se valorFipe foi preenchido) */}
                                     {(activeSlide.valorFipe || slides.find(s => s.type === 'veiculo')?.valorFipe) ? (
-                                      <div className="relative inline-block text-white tracking-normal leading-none mb-1 mr-3" style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 300, fontSize: '11px' }}>
+                                      <div className="relative inline-block text-white tracking-normal leading-none mb-1 mr-3" style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 300, fontSize: '11px', textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
                                         <span>DE {activeSlide.valorFipe ? (activeSlide.valorFipe.startsWith('R$') ? activeSlide.valorFipe : `R$ ${activeSlide.valorFipe}`) : (slides.find(s => s.type === 'veiculo')?.valorFipe?.startsWith('R$') ? slides.find(s => s.type === 'veiculo')?.valorFipe : `R$ ${slides.find(s => s.type === 'veiculo')?.valorFipe}`)}</span>
                                         <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[1px] bg-[#ff2222] shadow-[0_0_2px_rgba(255,0,0,0.9)] pointer-events-none" />
                                       </div>
@@ -1951,10 +1951,10 @@ export default function Admin() {
                                     {/* POR R$ */}
                                     <div className="flex items-center gap-1.5">
                                       <div 
-                                        className="flex flex-col text-white leading-[0.85] tracking-tight font-black font-sans text-left" 
+                                        className="flex flex-col text-white leading-[0.88] tracking-tight font-black font-sans text-left" 
                                         style={{ 
                                           fontSize: '10px',
-                                          textShadow: '1px 1px 2px rgba(0,0,0,0.95), 0px 0px 4px rgba(0,0,0,0.9), -1px -1px 0px rgba(0,0,0,0.7)'
+                                          textShadow: '0 2px 5px rgba(0, 0, 0, 0.75)'
                                         }}
                                       >
                                         <span>POR</span>
@@ -1965,7 +1965,7 @@ export default function Admin() {
                                         style={{ 
                                           fontFamily: '"Antonio", "Anton", sans-serif', 
                                           fontSize: '32px',
-                                          textShadow: '2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000'
+                                          textShadow: '1px 1px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000, 0 3px 6px rgba(0,0,0,0.7)'
                                         }}
                                       >
                                         {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
