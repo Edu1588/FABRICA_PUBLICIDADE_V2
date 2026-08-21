@@ -129,6 +129,7 @@ export default function Admin() {
     if (!selectedClientData) return;
     
     const defaultCapaUrls = [
+      'https://res.cloudinary.com/ifuatk2z/image/upload/v1787339431/NOVA_CAPA_AZUL3.png',
       'https://res.cloudinary.com/ifuatk2z/image/upload/v1787333196/NOVA_CAPA_AZUL.png',
       'https://res.cloudinary.com/ifuatk2z/image/upload/v1787262380/capaAZULBASE2.png',
       'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png',
@@ -1892,7 +1893,7 @@ export default function Admin() {
                               {/* FIXED COVER OVERLAY */}
                               <img 
                                 src={selectedClientData?.name?.toLowerCase().includes('azul') 
-                                  ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787333196/NOVA_CAPA_AZUL.png'
+                                  ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787339431/NOVA_CAPA_AZUL3.png'
                                   : selectedClientData?.name?.toLowerCase().includes('meta') 
                                   ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png'
                                   : (activeSlide.imageUrl ? '' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png')
@@ -1938,7 +1939,7 @@ export default function Admin() {
                                     </div>
                                   )}
 
-                                  {/* Bloco de Preço: DE FIPE riscado em vermelho (acima) + Valor Amarelo ao lado do POR R$ da moldura */}
+                                  {/* Bloco de Preço: DE FIPE riscado em vermelho (acima) + POR R$ (com sombra suave em blur) + Valor Amarelo */}
                                   <div className="absolute top-[72.2%] right-[22px] -translate-y-1/2 flex flex-col items-end z-20 pointer-events-none">
                                     {/* DE R$ ... com risco vermelho (só renderiza se valorFipe foi preenchido) */}
                                     {(activeSlide.valorFipe || slides.find(s => s.type === 'veiculo')?.valorFipe) ? (
@@ -1948,16 +1949,28 @@ export default function Admin() {
                                       </div>
                                     ) : null}
 
-                                    {/* Valor em Amarelo (o POR R$ já está estampado nativamente na imagem base da capa) */}
-                                    <div 
-                                      className="text-[#FFD000] font-black leading-none tracking-tight"
-                                      style={{ 
-                                        fontFamily: '"Antonio", "Anton", sans-serif', 
-                                        fontSize: '32px',
-                                        textShadow: '0 0 6px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)'
-                                      }}
-                                    >
-                                      {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
+                                    {/* POR R$ + Valor Amarelo */}
+                                    <div className="flex items-center gap-1.5">
+                                      <div 
+                                        className="flex flex-col text-white leading-[0.88] tracking-tight font-black font-sans text-left" 
+                                        style={{ 
+                                          fontSize: '10px',
+                                          textShadow: '0 0 4px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.7)'
+                                        }}
+                                      >
+                                        <span>POR</span>
+                                        <span>R$</span>
+                                      </div>
+                                      <div 
+                                        className="text-[#FFD000] font-black leading-none tracking-tight"
+                                        style={{ 
+                                          fontFamily: '"Antonio", "Anton", sans-serif', 
+                                          fontSize: '32px',
+                                          textShadow: '0 0 6px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)'
+                                        }}
+                                      >
+                                        {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
+                                      </div>
                                     </div>
                                   </div>
                                 </>
