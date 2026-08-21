@@ -129,8 +129,9 @@ export default function Admin() {
     if (!selectedClientData) return;
     
     const defaultCapaUrls = [
-      'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png',
+      'https://res.cloudinary.com/ifuatk2z/image/upload/v1787333196/NOVA_CAPA_AZUL.png',
       'https://res.cloudinary.com/ifuatk2z/image/upload/v1787262380/capaAZULBASE2.png',
+      'https://res.cloudinary.com/ifuatk2z/image/upload/v1787242854/capaAZUL.png',
       'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png',
       'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png'
     ];
@@ -1891,7 +1892,7 @@ export default function Admin() {
                               {/* FIXED COVER OVERLAY */}
                               <img 
                                 src={selectedClientData?.name?.toLowerCase().includes('azul') 
-                                  ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787262380/capaAZULBASE2.png'
+                                  ? 'https://res.cloudinary.com/ifuatk2z/image/upload/v1787333196/NOVA_CAPA_AZUL.png'
                                   : selectedClientData?.name?.toLowerCase().includes('meta') 
                                   ? 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1784237078/hnxtcxhrqr4ejekmfkea.png'
                                   : (activeSlide.imageUrl ? '' : 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1783524054/ze7bf5yd9ozh3tsccopb.png')
