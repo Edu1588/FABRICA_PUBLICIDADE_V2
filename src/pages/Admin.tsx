@@ -1954,7 +1954,7 @@ export default function Admin() {
                                         className="flex flex-col text-white leading-[0.88] tracking-tight font-black font-sans text-left" 
                                         style={{ 
                                           fontSize: '10px',
-                                          textShadow: '0 2px 5px rgba(0, 0, 0, 0.75)'
+                                          textShadow: '0 0 4px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.7)'
                                         }}
                                       >
                                         <span>POR</span>
@@ -1965,7 +1965,7 @@ export default function Admin() {
                                         style={{ 
                                           fontFamily: '"Antonio", "Anton", sans-serif', 
                                           fontSize: '32px',
-                                          textShadow: '1px 1px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000, 0 3px 6px rgba(0,0,0,0.7)'
+                                          textShadow: '0 0 6px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)'
                                         }}
                                       >
                                         {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
@@ -2054,7 +2054,13 @@ export default function Admin() {
 
                                   {/* Lado Direito da Tarja Preta: POR R$ (Preço Amarelo - Ajustado mais para esquerda right-[38px]) */}
                                   <div className="absolute bottom-[48px] right-[38px] z-20 pointer-events-none flex items-center gap-1.5">
-                                    <div className="flex flex-col text-white leading-[0.85] tracking-tight font-black font-sans text-left" style={{ fontSize: '10px' }}>
+                                    <div 
+                                      className="flex flex-col text-white leading-[0.88] tracking-tight font-black font-sans text-left" 
+                                      style={{ 
+                                        fontSize: '10px',
+                                        textShadow: '0 0 4px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.7)'
+                                      }}
+                                    >
                                       <span>POR</span>
                                       <span>R$</span>
                                     </div>
@@ -2063,7 +2069,7 @@ export default function Admin() {
                                       style={{ 
                                         fontFamily: '"Antonio", "Anton", sans-serif', 
                                         fontSize: '32px',
-                                        textShadow: '2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000'
+                                        textShadow: '0 0 6px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)'
                                       }}
                                     >
                                       {(activeSlide.valorIntegral || slides.find(s => s.type === 'veiculo')?.valorIntegral || '00.000').replace(/^R\$\s*/i, '')}
