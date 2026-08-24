@@ -82,9 +82,9 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     if (fixedScale !== undefined && fixedY !== undefined) {
       targetScale = fixedScale;
       targetY = fixedY;
-      // Leve movimento suave e sutil acompanhando o mouse
-      targetRotX = 0.05 - (py * Math.PI) / 10.0;
-      targetRotY = (px * Math.PI) / 8.0;
+      // Leve movimento suave e sutil acompanhando o mouse, com base virada para a esquerda (olhando para o texto)
+      targetRotX = 0.06 - (py * Math.PI) / 10.0;
+      targetRotY = -0.42 + (px * Math.PI) / 8.0;
     } else if (!isClean) {
       if (scroll <= vh) {
         // Section 1: Zoom into the top of the head
@@ -138,7 +138,7 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
 
   if (clonedScene) {
     const initialY = fixedY !== undefined ? fixedY : (isClean ? -1.4 : -0.8);
-    const initialRotY = fixedScale !== undefined ? 0 : (isClean ? -0.6 : -0.8);
+    const initialRotY = fixedScale !== undefined ? -0.42 : (isClean ? -0.6 : -0.8);
     const initialScale = fixedScale !== undefined ? fixedScale : (isClean ? 3.6 : 3.5);
     
     return (
