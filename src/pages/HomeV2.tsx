@@ -723,14 +723,14 @@ export default function HomeV2() {
               </div>
             </div>
 
-            {/* Column 2: Sticky 3D Clean Metal Hefesto Image */}
+            {/* Column 2: Sticky 3D Articulated Hephestinho Bust */}
             <div className="lg:sticky lg:top-28 h-[520px] sm:h-[620px] lg:h-[700px] w-full relative bg-[#050505] z-40">
               <ThreeCanvas 
                 isEmbedded 
                 renderClean 
-                modelPath="/models/HEFESTO_FABRICA.glb" 
-                fixedScale={1.8}
-                fixedY={-0.2}
+                modelPath="/models/hephestinho-v1.glb" 
+                fixedScale={2.4}
+                fixedY={-0.3}
               />
             </div>
           </div>
