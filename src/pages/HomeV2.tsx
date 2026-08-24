@@ -728,9 +728,9 @@ export default function HomeV2() {
               <ThreeCanvas 
                 isEmbedded 
                 renderClean 
-                modelPath="/models/hephestinho-v1.glb" 
-                fixedScale={3.4}
-                fixedY={-0.05}
+                modelPath="/models/HEFESTO_FABRICA.glb" 
+                fixedScale={2.2}
+                fixedY={-0.25}
               />
             </div>
           </div>
