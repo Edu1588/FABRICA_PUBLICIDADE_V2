@@ -18,88 +18,38 @@ if (typeof window !== 'undefined') {
 
 function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateSpeed, scrollProgress, scrollY, isClean, modelPath = '/models/HEFESTO_FABRICA.glb', fixedScale, fixedY }: any) {
   const modelRef = useRef<THREE.Group>(null);
-  const headPivotRef = useRef<THREE.Group | null>(null);
   
   // Hook call at top level
   const gltf = useGLTF(modelPath);
-
-  const isHephestinho = typeof modelPath === 'string' && modelPath.toLowerCase().includes('hephestinho');
 
   // Clone scene so multiple canvas instances render separate copies without stealing Object3D
   const clonedScene = useMemo(() => {
     const rawScene = Array.isArray(gltf) ? gltf[0]?.scene : (gltf as any)?.scene;
     if (!rawScene) return null;
 
-    if (isHephestinho) {
-      // Montagem com separação de Busto Fixo e Cabeça Articulada (padrão RobotBust3D)
-      const wrapper = new THREE.Group();
-      
-      const box = new THREE.Box3().setFromObject(rawScene);
+    const clone = rawScene.clone(true);
+    
+    // Centralizar pivot do modelo se for hephestinho
+    if (typeof modelPath === 'string' && modelPath.toLowerCase().includes('hephestinho')) {
+      const box = new THREE.Box3().setFromObject(clone);
       const center = box.getCenter(new THREE.Vector3());
-      
-      const chestGroup = new THREE.Group();
-      const headPivot = new THREE.Group();
-      const headGroup = new THREE.Group();
-      
-      // Ponto de articulação do pescoço (entre o peitoral e a base do queixo)
-      const neckPivotY = 0.55 - center.y;
-      const neckPivotZ = 0.00 - center.z;
-      
-      headPivot.position.set(0, neckPivotY, neckPivotZ);
-      headGroup.position.set(0, -neckPivotY, -neckPivotZ);
-      headPivot.add(headGroup);
-      
-      const clone = rawScene.clone(true);
-      
-      const allParts: THREE.Object3D[] = [];
-      clone.traverse((child: any) => {
-        if (child.isMesh) {
-          if (child.material) {
-            const mat = child.material.clone();
-            mat.color.set('#ffffff');
-            mat.roughness = 0.45;
-            mat.metalness = 0.40;
-            mat.needsUpdate = true;
-            child.material = mat;
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
-          allParts.push(child);
-        }
-      });
-      
-      allParts.forEach((node) => {
-        node.position.x -= center.x;
-        node.position.y -= center.y;
-        node.position.z -= center.z;
-        
-        if (node.name === 'tripo_part_1') {
-          // Busto / Peitoral / Ombros -> Permanece fixo no peito
-          chestGroup.add(node);
-        } else {
-          // tripo_part_0 (cabeça/cabelo), tripo_part_2..5 (olhos/face/boca) -> Pertencem à cabeça (acompanham o mouse)
-          headGroup.add(node);
-        }
-      });
-      
-      wrapper.add(chestGroup);
-      wrapper.add(headPivot);
-      headPivotRef.current = headPivot;
-      
-      return wrapper;
+      clone.position.x = -center.x;
+      clone.position.y = -center.y;
+      clone.position.z = -center.z;
     }
 
-    const clone = rawScene.clone(true);
     clone.traverse((child: any) => {
       if (child.isMesh && child.material) {
         if (isClean) {
           const mat = child.material.clone();
-          // Manter a textura original do modelo (map, normalMap, roughnessMap) intacta
-          mat.color.set('#ffffff'); // Branco neutro garante que a textura original do GLB (olhos brancos, barba e bronze) apareça com fidelidade 100%
-          mat.roughness = child.material.roughness !== undefined ? child.material.roughness : 0.4;
-          mat.metalness = child.material.metalness !== undefined ? child.material.metalness : 0.5;
+          // Manter as texturas originais do modelo (map, normalMap, roughnessMap) intactas
+          mat.color.set('#ffffff'); // Branco neutro garante que a textura original apareça com fidelidade 100%
+          mat.roughness = child.material.roughness !== undefined ? child.material.roughness : 0.45;
+          mat.metalness = child.material.metalness !== undefined ? child.material.metalness : 0.40;
           mat.needsUpdate = true;
           child.material = mat;
+          child.castShadow = true;
+          child.receiveShadow = true;
         } else {
           // Para o modo com shader/efeito do Hero: material monocromático prateado reflexivo para o EffectPass
           child.material = new THREE.MeshStandardMaterial({
@@ -115,22 +65,11 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
       }
     });
     return clone;
-  }, [gltf, modelColor, roughness, metalness, isClean, isHephestinho]);
+  }, [gltf, modelColor, roughness, metalness, isClean, modelPath]);
 
   useFrame((state, delta) => {
     const px = globalMouse.x || state.pointer.x;
     const py = globalMouse.y || state.pointer.y;
-
-    if (isHephestinho && headPivotRef.current) {
-      // Cabeça acompanha o mouse de forma orgânica e fluida
-      const targetHeadRotY = (px * Math.PI) / 3.2; // Rotação horizontal (olhar esquerda/direita)
-      const targetHeadRotX = -(py * Math.PI) / 4.2; // Rotação vertical (olhar cima/baixo)
-      const targetHeadRotZ = -(px * Math.PI) / 10.0; // Inclinação lateral natural da cabeça
-      
-      headPivotRef.current.rotation.y = THREE.MathUtils.lerp(headPivotRef.current.rotation.y, targetHeadRotY, 0.08);
-      headPivotRef.current.rotation.x = THREE.MathUtils.lerp(headPivotRef.current.rotation.x, targetHeadRotX, 0.08);
-      headPivotRef.current.rotation.z = THREE.MathUtils.lerp(headPivotRef.current.rotation.z, targetHeadRotZ, 0.08);
-    }
 
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
     const scroll = scrollY || 0;
@@ -143,8 +82,9 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     if (fixedScale !== undefined && fixedY !== undefined) {
       targetScale = fixedScale;
       targetY = fixedY;
-      targetRotX = isHephestinho ? 0.05 : 0.1;
-      targetRotY = isHephestinho ? 0 : 0;
+      // Leve movimento suave e sutil acompanhando o mouse
+      targetRotX = 0.05 - (py * Math.PI) / 10.0;
+      targetRotY = (px * Math.PI) / 8.0;
     } else if (!isClean) {
       if (scroll <= vh) {
         // Section 1: Zoom into the top of the head
@@ -178,10 +118,10 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
 
       if (autoRotate) {
         modelRef.current.rotation.y += delta * (autoRotateSpeed !== undefined ? autoRotateSpeed : 0.5);
-      } else if (isHephestinho) {
-        // Busto permanece fixo virado para a frente com leve ângulo
-        modelRef.current.rotation.x = THREE.MathUtils.lerp(modelRef.current.rotation.x, targetRotX, 0.05);
-        modelRef.current.rotation.y = THREE.MathUtils.lerp(modelRef.current.rotation.y, targetRotY, 0.05);
+      } else if (fixedScale !== undefined) {
+        // Interpolação amortecida suave para movimento sutil e orgânico ao mouse
+        modelRef.current.rotation.x = THREE.MathUtils.lerp(modelRef.current.rotation.x, targetRotX, 0.04);
+        modelRef.current.rotation.y = THREE.MathUtils.lerp(modelRef.current.rotation.y, targetRotY, 0.04);
       } else {
         if (isClean) {
           // Repulsive mouse effect
