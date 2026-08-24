@@ -41,15 +41,32 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     clone.traverse((child: any) => {
       if (child.isMesh && child.material) {
         if (isClean) {
-          const mat = child.material.clone();
-          // Manter as texturas originais do modelo (map, normalMap, roughnessMap) intactas
-          mat.color.set('#ffffff'); // Branco neutro garante que a textura original apareça com fidelidade 100%
-          mat.roughness = child.material.roughness !== undefined ? child.material.roughness : 0.45;
-          mat.metalness = child.material.metalness !== undefined ? child.material.metalness : 0.40;
-          mat.needsUpdate = true;
-          child.material = mat;
-          child.castShadow = true;
-          child.receiveShadow = true;
+          const nodeName = `${child.name || ''} ${child.parent?.name || ''} ${child.material?.name || ''}`;
+          const isEye = nodeName.includes('part_3') || nodeName.includes('part_4') || nodeName.includes('tripo_part_3') || nodeName.includes('tripo_part_4');
+
+          if (isEye) {
+            // Olhos da estátua: Branco iluminado simétrico em ambos os olhos sem manchas de IA
+            const eyeMat = new THREE.MeshStandardMaterial({
+              color: new THREE.Color('#f0f4f8'),
+              roughness: 0.15,
+              metalness: 0.05,
+              emissive: new THREE.Color('#ffffff'),
+              emissiveIntensity: 0.22,
+            });
+            child.material = eyeMat;
+            child.castShadow = true;
+            child.receiveShadow = true;
+          } else {
+            const mat = child.material.clone();
+            // Manter as texturas originais do modelo (map, normalMap, roughnessMap) intactas
+            mat.color.set('#ffffff'); // Branco neutro garante que a textura original apareça com fidelidade 100%
+            mat.roughness = child.material.roughness !== undefined ? child.material.roughness : 0.45;
+            mat.metalness = child.material.metalness !== undefined ? child.material.metalness : 0.40;
+            mat.needsUpdate = true;
+            child.material = mat;
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
         } else {
           // Para o modo com shader/efeito do Hero: material monocromático prateado reflexivo para o EffectPass
           child.material = new THREE.MeshStandardMaterial({
