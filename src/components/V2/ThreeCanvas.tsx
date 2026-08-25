@@ -126,14 +126,14 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     const py = globalMouse.y || state.pointer.y;
 
     if (isArticulated && headPivotRef.current) {
-      // Cabeça acompanha o mouse de forma orgânica, fluida e natural
-      const targetHeadRotY = (px * Math.PI) / 3.2; // Rotação horizontal (olhar esquerda/direita)
-      const targetHeadRotX = -(py * Math.PI) / 4.2; // Rotação vertical (olhar cima/baixo)
-      const targetHeadRotZ = -(px * Math.PI) / 10.0; // Inclinação lateral natural da cabeça
+      // Cabeça acompanha o mouse de forma sutil, leve e elegante (amplitude limitada)
+      const targetHeadRotY = (px * Math.PI) / 8.0; // Rotação horizontal sutil (~22° max)
+      const targetHeadRotX = -(py * Math.PI) / 10.0; // Rotação vertical sutil (~18° max)
+      const targetHeadRotZ = -(px * Math.PI) / 22.0; // Inclinação lateral leve (~8° max)
       
-      headPivotRef.current.rotation.y = THREE.MathUtils.lerp(headPivotRef.current.rotation.y, targetHeadRotY, 0.08);
-      headPivotRef.current.rotation.x = THREE.MathUtils.lerp(headPivotRef.current.rotation.x, targetHeadRotX, 0.08);
-      headPivotRef.current.rotation.z = THREE.MathUtils.lerp(headPivotRef.current.rotation.z, targetHeadRotZ, 0.08);
+      headPivotRef.current.rotation.y = THREE.MathUtils.lerp(headPivotRef.current.rotation.y, targetHeadRotY, 0.05);
+      headPivotRef.current.rotation.x = THREE.MathUtils.lerp(headPivotRef.current.rotation.x, targetHeadRotX, 0.05);
+      headPivotRef.current.rotation.z = THREE.MathUtils.lerp(headPivotRef.current.rotation.z, targetHeadRotZ, 0.05);
     }
 
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
@@ -147,9 +147,9 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     if (fixedScale !== undefined && fixedY !== undefined) {
       targetScale = fixedScale;
       targetY = fixedY;
-      // Busto fixo posicionado virado para a esquerda (olhando em direção ao texto)
-      targetRotX = isArticulated ? 0.05 : 0.06 - (py * Math.PI) / 10.0;
-      targetRotY = isArticulated ? -0.38 : -0.42 + (px * Math.PI) / 8.0;
+      // Busto fixo posicionado um pouco mais virado para a direita
+      targetRotX = isArticulated ? 0.04 : 0.06 - (py * Math.PI) / 10.0;
+      targetRotY = isArticulated ? -0.15 : -0.20 + (px * Math.PI) / 8.0;
     } else if (!isClean) {
       if (scroll <= vh) {
         // Section 1: Zoom into the top of the head
@@ -185,7 +185,7 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
         modelRef.current.rotation.y += delta * (autoRotateSpeed !== undefined ? autoRotateSpeed : 0.5);
       } else if (fixedScale !== undefined) {
         if (isArticulated) {
-          // Busto permanece fixo na posição virada para a esquerda
+          // Busto permanece fixo na posição virada
           modelRef.current.rotation.x = THREE.MathUtils.lerp(modelRef.current.rotation.x, targetRotX, 0.05);
           modelRef.current.rotation.y = THREE.MathUtils.lerp(modelRef.current.rotation.y, targetRotY, 0.05);
         } else {
@@ -209,7 +209,7 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
 
   if (clonedScene) {
     const initialY = fixedY !== undefined ? fixedY : (isClean ? -1.4 : -0.8);
-    const initialRotY = fixedScale !== undefined ? (isArticulated ? -0.38 : -0.42) : (isClean ? -0.6 : -0.8);
+    const initialRotY = fixedScale !== undefined ? (isArticulated ? -0.15 : -0.20) : (isClean ? -0.6 : -0.8);
     const initialScale = fixedScale !== undefined ? fixedScale : (isClean ? 3.6 : 3.5);
     
     return (
