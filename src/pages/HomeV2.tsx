@@ -820,7 +820,7 @@ export default function HomeV2() {
               modelPath="/models/003_anvil.glb" 
               pixelFactor={4.5} 
               autoRotate={true}
-              autoRotateSpeed={0.1}
+              autoRotateSpeed={0.45}
               cameraZ={10.5}
               cameraFOV={40}
               brightness={1.9}
