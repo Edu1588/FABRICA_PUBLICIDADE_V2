@@ -725,7 +725,7 @@ export default function HomeV2() {
             </div>
 
             {/* Column 2: Sticky 3D Articulated Hefesto Bust with Interactive Fluid behind */}
-            <div className="lg:sticky lg:top-20 h-[620px] sm:h-[740px] lg:h-[860px] w-full relative bg-[#050505] rounded-2xl overflow-hidden z-40 border border-white/5 shadow-2xl">
+            <div className="lg:sticky lg:top-20 h-[620px] sm:h-[740px] lg:h-[860px] w-full relative bg-transparent overflow-hidden z-40">
               {/* Fluid Splash Effect behind the statue */}
               <SplashCursor
                 isAbsolute={true}
