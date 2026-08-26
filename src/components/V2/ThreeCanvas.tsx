@@ -124,20 +124,32 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
   useFrame((state, delta) => {
     const px = globalMouse.x || state.pointer.x;
     const py = globalMouse.y || state.pointer.y;
+    const time = state.clock.getElapsedTime();
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     if (isArticulated && headPivotRef.current) {
-      // Cabeça acompanha o mouse de forma sutil, leve e elegante (amplitude limitada)
-      const targetHeadRotY = (px * Math.PI) / 8.0; // Rotação horizontal sutil (~22° max)
-      const targetHeadRotX = -(py * Math.PI) / 10.0; // Rotação vertical sutil (~18° max)
-      const targetHeadRotZ = -(px * Math.PI) / 22.0; // Inclinação lateral leve (~8° max)
-      
-      headPivotRef.current.rotation.y = THREE.MathUtils.lerp(headPivotRef.current.rotation.y, targetHeadRotY, 0.05);
-      headPivotRef.current.rotation.x = THREE.MathUtils.lerp(headPivotRef.current.rotation.x, targetHeadRotX, 0.05);
-      headPivotRef.current.rotation.z = THREE.MathUtils.lerp(headPivotRef.current.rotation.z, targetHeadRotZ, 0.05);
+      if (isMobile) {
+        // No Mobile: Movimentação autônoma contínua, orgânica e sutil (olhar vivo e respiração suave)
+        const autoHeadY = Math.sin(time * 0.75) * 0.16 + Math.cos(time * 0.35) * 0.06; // Olhar sutil esquerda/direita (~12°)
+        const autoHeadX = Math.sin(time * 0.55 + 0.8) * 0.06; // Leve inclinação para cima/baixo (~4°)
+        const autoHeadZ = Math.cos(time * 0.65) * 0.03; // Inclinação lateral natural (~2°)
+        
+        headPivotRef.current.rotation.y = THREE.MathUtils.lerp(headPivotRef.current.rotation.y, autoHeadY, 0.04);
+        headPivotRef.current.rotation.x = THREE.MathUtils.lerp(headPivotRef.current.rotation.x, autoHeadX, 0.04);
+        headPivotRef.current.rotation.z = THREE.MathUtils.lerp(headPivotRef.current.rotation.z, autoHeadZ, 0.04);
+      } else {
+        // No Desktop: Cabeça acompanha o cursor do mouse com suavidade e elegância
+        const targetHeadRotY = (px * Math.PI) / 8.0; // Rotação horizontal sutil (~22° max)
+        const targetHeadRotX = -(py * Math.PI) / 10.0; // Rotação vertical sutil (~18° max)
+        const targetHeadRotZ = -(px * Math.PI) / 22.0; // Inclinação lateral leve (~8° max)
+        
+        headPivotRef.current.rotation.y = THREE.MathUtils.lerp(headPivotRef.current.rotation.y, targetHeadRotY, 0.05);
+        headPivotRef.current.rotation.x = THREE.MathUtils.lerp(headPivotRef.current.rotation.x, targetHeadRotX, 0.05);
+        headPivotRef.current.rotation.z = THREE.MathUtils.lerp(headPivotRef.current.rotation.z, targetHeadRotZ, 0.05);
+      }
     }
 
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     const baseHeroScale = isMobile ? 2.65 : 3.05;
     const baseHeroY = isMobile ? -0.55 : -0.70;
     const scroll = scrollY || 0;
