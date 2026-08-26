@@ -658,15 +658,40 @@ export default function HomeV2() {
         </section>
 
         {/* Section 04: Por que Forja */}
-        <section id="porque-forja" className="mx-auto max-w-[1400px] px-6 relative py-12">
-          {/* Section 04 Header (Standard scrolling header, non-sticky) */}
-          <SectionLabel n="04">Por que Forja</SectionLabel>
+        <section id="porque-forja" className="mx-auto max-w-[1400px] px-6 relative py-12 overflow-visible">
+          {/* Interactive Fluid Splash Effect spanning the entire section with soft edge fading */}
+          <div 
+            className="absolute -inset-x-6 -inset-y-4 z-0 pointer-events-none overflow-hidden"
+            style={{
+              maskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.35) 75%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.35) 75%, rgba(0,0,0,0) 100%)',
+            }}
+          >
+            <SplashCursor
+              isAbsolute={true}
+              DENSITY_DISSIPATION={3.5}
+              VELOCITY_DISSIPATION={2}
+              PRESSURE={0.1}
+              CURL={3}
+              SPLAT_RADIUS={0.2}
+              SPLAT_FORCE={6000}
+              COLOR_UPDATE_SPEED={10}
+              SHADING={true}
+              RAINBOW_MODE={false}
+              COLOR="#ff6800"
+            />
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start pb-28 pt-8">
+          {/* Section 04 Header (Standard scrolling header, non-sticky) */}
+          <div className="relative z-10">
+            <SectionLabel n="04">Por que Forja</SectionLabel>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start pb-28 pt-8 relative z-10">
             {/* Column 1: Text Content with Sticky Title and scrolling blur-reveal text */}
             <div className="space-y-10 text-stone-200 font-sans relative">
               {/* Sticky Column 1 Header fixed at top of column while text scrolls */}
-              <div className="lg:sticky lg:top-0 z-30 bg-[#050505] pb-6 pt-6 border-b border-white/10">
+              <div className="lg:sticky lg:top-0 z-30 bg-[#050505]/85 backdrop-blur-sm pb-6 pt-6 border-b border-white/10">
                 <span className="text-[10px] text-[#ff4d16] font-mono tracking-widest uppercase bg-white/5 px-3 py-1 border border-white/10">
                   CONCEITO & ORIGEM
                 </span>
@@ -686,7 +711,7 @@ export default function HomeV2() {
                 style={{ 
                   top: '106px', 
                   height: '140px',
-                  background: 'linear-gradient(to bottom, rgba(5,5,5,1) 0%, rgba(5,5,5,0) 100%)',
+                  background: 'linear-gradient(to bottom, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0) 100%)',
                 }}
               />
 
@@ -724,25 +749,10 @@ export default function HomeV2() {
               </div>
             </div>
 
-            {/* Column 2: Sticky 3D Articulated Hefesto Bust with Interactive Fluid behind */}
-            <div className="lg:sticky lg:top-20 h-[620px] sm:h-[740px] lg:h-[860px] w-full relative bg-transparent overflow-hidden z-40">
-              {/* Fluid Splash Effect behind the statue */}
-              <SplashCursor
-                isAbsolute={true}
-                DENSITY_DISSIPATION={3.5}
-                VELOCITY_DISSIPATION={2}
-                PRESSURE={0.1}
-                CURL={3}
-                SPLAT_RADIUS={0.2}
-                SPLAT_FORCE={6000}
-                COLOR_UPDATE_SPEED={10}
-                SHADING={true}
-                RAINBOW_MODE={false}
-                COLOR="#ff6800"
-              />
-
+            {/* Column 2: Sticky 3D Articulated Hefesto Bust */}
+            <div className="lg:sticky lg:top-20 h-[620px] sm:h-[740px] lg:h-[860px] w-full relative bg-transparent overflow-visible z-40">
               {/* 3D Statue with transparent background layered on top */}
-              <div className="absolute inset-0 z-10 pointer-events-auto">
+              <div className="w-full h-full pointer-events-auto">
                 <ThreeCanvas 
                   isEmbedded 
                   renderClean 
