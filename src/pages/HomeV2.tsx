@@ -40,18 +40,53 @@ const CONTENT: [string, string, string][] = [
 
 const TEAM = [
   {
-    name: "LUCAS CORRÊA",
-    role: "SÓCIO FUNDADOR",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1786045987/Lucas.png",
-    quote: "Temos cenários diferentes para clientes diferentes, a personalização da estratégia é a chave para alcançar cada objetivo",
-    bio: "Pós-graduado em MBA em Marketing e Vendas, especializado em Metodologia e Gestão para Educação a Distância, e graduado em Administração de Empresas com ênfase em Comércio Exterior. Professor universitário por mais de 10 anos e atualmente diretor estratégico na área digital com certificações em Google Ads, Meta Ads, Google Analytics, Google Search Console e Google Business."
+    name: "Lucas Correa",
+    role: "Founder & Head de Estratégia",
+    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/lucasfabrica.png",
+    quote: "Desenha o plano de crescimento e responde pelo número final de cada conta.",
+    bio: "Desenha o plano de crescimento e responde pelo número final de cada conta."
   },
   {
-    name: "MURIEL DUARTE",
-    role: "SÓCIO FUNDADOR",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1786045995/MurielDuarte2.png",
-    quote: "Levamos nossos cliente a se comunicar de forma genuína, e assim conquistamos os corações do público antes de suas mentes!",
-    bio: "Formado em Publicidade e Propaganda pela Pontifícia Universidade Católica de Campinas e pós-graduado em Inovação em Marketing, tem seu olhar focado em Branding e na aplicação estratégica da identidade visual. Iniciou a carreira na área de design, agregando experiências profissionais em gerenciamento e direção de marketing."
+    name: "Muriel Duarte",
+    role: "Head de Criação & Marca",
+    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/murielfabrica.png",
+    quote: "Traduz posicionamento em ideia: conceito, identidade e o criativo que faz o dedo parar.",
+    bio: "Traduz posicionamento em ideia: conceito, identidade e o criativo que faz o dedo parar."
+  },
+  {
+    name: "Douglas Lins",
+    role: "Head de Growth",
+    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/douglasfabrica.png",
+    quote: "Dono da máquina: mídia, funil e dados conversando entre si.",
+    bio: "Dono da máquina: mídia, funil e dados conversando entre si."
+  },
+  {
+    name: "Vitor Hugo",
+    role: "Copywriter de Performance",
+    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/vitorfabrica.png",
+    quote: "Escreve o que vende: anúncio, página e oferta validados um a um.",
+    bio: "Escreve o que vende: anúncio, página e oferta validados um a um."
+  },
+  {
+    name: "Fernanda Amim",
+    role: "Estrategista de Conteúdo",
+    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/fernandafabrica.png",
+    quote: "Cuida da narrativa que aquece o lead antes de qualquer vendedor falar.",
+    bio: "Cuida da narrativa que aquece o lead antes de qualquer vendedor falar."
+  },
+  {
+    name: "Maria Eduarda",
+    role: "Estrategista de Social Media",
+    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/mariaeduardafabrica.png",
+    quote: "Transforma o dia a dia da marca em presença: pauta, publicação e comunidade.",
+    bio: "Transforma o dia a dia da marca em presença: pauta, publicação e comunidade."
+  },
+  {
+    name: "Edu Santos",
+    role: "Web Design & Automação de Sistemas",
+    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785392/edufabrica.png",
+    quote: "Especialista em criar ecossistemas digitais que resolvem os gargalos de captação e gestão",
+    bio: "Especialista em criar ecossistemas digitais que resolvem os gargalos de captação e gestão"
   },
 ];
 
@@ -770,7 +805,7 @@ export default function HomeV2() {
         <section id="clientes" className="mx-auto max-w-[1400px] px-6">
           <SectionLabel n="05">Nosso time</SectionLabel>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-[1400px] mx-auto">
             {TEAM.map((m) => (
               <PaperBurnCard
                 key={m.name}

@@ -105,15 +105,15 @@ export const PaperBurnCard: React.FC<PaperBurnCardProps> = ({
 
     // Member Name
     ctx.fillStyle = hovered ? '#ff4d16' : '#ffffff';
-    ctx.font = 'bold 32px monospace';
+    ctx.font = 'bold 28px monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(name.toUpperCase(), 40, labelY + 40);
+    ctx.fillText(name.toUpperCase(), 32, labelY + 36);
 
     // Role
     ctx.fillStyle = '#d6d3d1';
-    ctx.font = '24px "Cormorant Garamond", Georgia, serif';
-    ctx.fillText(role.toUpperCase(), 40, labelY + 80);
+    ctx.font = '19px monospace';
+    ctx.fillText(role.toUpperCase(), 32, labelY + 76);
 
     // Outer Card Border
     ctx.strokeStyle = hovered ? '#ff4d16' : 'rgba(255, 255, 255, 0.1)';
