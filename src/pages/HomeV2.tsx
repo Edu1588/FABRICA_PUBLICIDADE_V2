@@ -422,10 +422,10 @@ export default function HomeV2() {
       {/* 3D Canvas Background */}
       <ThreeCanvas {...threeProps} />
 
-      {/* Fixed Top-Right Action Button (No Rounded Corners) */}
+      {/* Fixed Top-Right Action Button (Hidden on Mobile to optimize screen and avoid navbar overlap) */}
       <a
         href="#projeto"
-        className="fixed top-6 right-6 z-50 text-black bg-[#ff4d16] hover:bg-white transition-colors uppercase font-bold font-mono text-xs tracking-widest px-6 py-3.5 rounded-none shadow-2xl pointer-events-auto"
+        className="hidden md:block fixed top-6 right-6 z-50 text-black bg-[#ff4d16] hover:bg-white transition-colors uppercase font-bold font-mono text-xs tracking-widest px-6 py-3.5 rounded-none shadow-2xl pointer-events-auto"
       >
         Iniciar Projeto
       </a>

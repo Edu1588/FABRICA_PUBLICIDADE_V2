@@ -137,10 +137,13 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     }
 
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const baseHeroScale = isMobile ? 2.65 : 3.05;
+    const baseHeroY = isMobile ? -0.55 : -0.70;
     const scroll = scrollY || 0;
 
-    let targetScale = isClean ? 3.6 : 3.5;
-    let targetY = isClean ? -1.4 : -0.8;
+    let targetScale = isClean ? 3.6 : baseHeroScale;
+    let targetY = isClean ? -1.4 : baseHeroY;
     let targetRotX = 0.25;
     let targetRotY = -0.8;
     
@@ -154,21 +157,21 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
       if (scroll <= vh) {
         // Section 1: Zoom into the top of the head
         let p = scroll / vh;
-        targetScale = 3.5 + p * 4.0; // zoom in up to 7.5
-        targetY = -0.8 - p * 1.5; 
+        targetScale = baseHeroScale + p * 3.6; // zoom in progressivo
+        targetY = baseHeroY - p * 1.3; 
         targetRotX = 0.1 + p * 0.35; // Tilt forward to see top of head, but not too much
         targetRotY = -0.8 - p * 0.3;
       } else if (scroll <= vh * 2.5) {
         // Section 2: Tilt to show chin
         let p = (scroll - vh) / (vh * 1.5);
         p = Math.min(p, 1.0);
-        targetScale = 7.0 + p * 1.5; // up to 8.5
-        targetY = -2.3 + p * 3.5; // Move up to keep chin in view
+        targetScale = (baseHeroScale * 1.9) + p * 1.5;
+        targetY = -2.0 + p * 3.2; // Move up to keep chin in view
         targetRotX = 0.45 - p * 1.0; // Tilt back to show chin
         targetRotY = -1.3 + p * 0.5;
       } else {
-        targetScale = 8.5;
-        targetY = 1.2;
+        targetScale = baseHeroScale * 2.3;
+        targetY = 1.0;
         targetRotX = -1.5;
         targetRotY = -0.8;
       }
@@ -208,9 +211,10 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
   });
 
   if (clonedScene) {
-    const initialY = fixedY !== undefined ? fixedY : (isClean ? -1.4 : -0.8);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const initialY = fixedY !== undefined ? fixedY : (isClean ? -1.4 : (isMobile ? -0.55 : -0.70));
     const initialRotY = fixedScale !== undefined ? (isArticulated ? -0.15 : -0.20) : (isClean ? -0.6 : -0.8);
-    const initialScale = fixedScale !== undefined ? fixedScale : (isClean ? 3.6 : 3.5);
+    const initialScale = fixedScale !== undefined ? fixedScale : (isClean ? 3.6 : (isMobile ? 2.65 : 3.05));
     
     return (
       <group ref={modelRef} position={[0, initialY, 0]} rotation={[0, initialRotY, 0]} scale={initialScale}>
