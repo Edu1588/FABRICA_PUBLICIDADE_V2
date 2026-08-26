@@ -462,7 +462,7 @@ export default function ThreeCanvas(props: any) {
             powerPreference: 'high-performance'
           }}
         >
-          {props.renderClean && <color attach="background" args={[props.bgColor || '#050505']} />}
+          {props.renderClean && !props.transparentBg && <color attach="background" args={[props.bgColor || '#050505']} />}
           
           <React.Suspense fallback={null}>
             <SceneContent {...props} />

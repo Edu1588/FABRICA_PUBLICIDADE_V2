@@ -4,6 +4,7 @@ import ControlSlider from '../components/V2/ControlSlider';
 import PixelArtCanvas from '../components/V2/PixelArtCanvas';
 import PaperBurnCard from '../components/V2/PaperBurnCard';
 import BlurText from '../components/V2/BlurText';
+import SplashCursor from '../components/V2/SplashCursor';
 import { EmBreveGate } from '../components/EmBreveGate';
 import { ArrowUp } from 'lucide-react';
 import gsap from 'gsap';
@@ -723,15 +724,34 @@ export default function HomeV2() {
               </div>
             </div>
 
-            {/* Column 2: Sticky 3D Articulated Hefesto Bust */}
-            <div className="lg:sticky lg:top-20 h-[620px] sm:h-[740px] lg:h-[860px] w-full relative bg-[#050505] z-40">
-              <ThreeCanvas 
-                isEmbedded 
-                renderClean 
-                modelPath="/models/hefestoHD-v1.glb" 
-                fixedScale={4.0}
-                fixedY={-0.08}
+            {/* Column 2: Sticky 3D Articulated Hefesto Bust with Interactive Fluid behind */}
+            <div className="lg:sticky lg:top-20 h-[620px] sm:h-[740px] lg:h-[860px] w-full relative bg-[#050505] rounded-2xl overflow-hidden z-40 border border-white/5 shadow-2xl">
+              {/* Fluid Splash Effect behind the statue */}
+              <SplashCursor
+                isAbsolute={true}
+                DENSITY_DISSIPATION={3.5}
+                VELOCITY_DISSIPATION={2}
+                PRESSURE={0.1}
+                CURL={3}
+                SPLAT_RADIUS={0.2}
+                SPLAT_FORCE={6000}
+                COLOR_UPDATE_SPEED={10}
+                SHADING={true}
+                RAINBOW_MODE={false}
+                COLOR="#ff6800"
               />
+
+              {/* 3D Statue with transparent background layered on top */}
+              <div className="absolute inset-0 z-10 pointer-events-auto">
+                <ThreeCanvas 
+                  isEmbedded 
+                  renderClean 
+                  transparentBg
+                  modelPath="/models/hefestoHD-v1.glb" 
+                  fixedScale={4.0}
+                  fixedY={-0.08}
+                />
+              </div>
             </div>
           </div>
         </section>
