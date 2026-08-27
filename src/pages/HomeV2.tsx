@@ -5,7 +5,6 @@ import PixelArtCanvas from '../components/V2/PixelArtCanvas';
 import PaperBurnCard from '../components/V2/PaperBurnCard';
 import BlurText from '../components/V2/BlurText';
 import SplashCursor from '../components/V2/SplashCursor';
-import { EmBreveGate } from '../components/EmBreveGate';
 import { ArrowUp } from 'lucide-react';
 import gsap from 'gsap';
 import SplitType from 'split-type';
@@ -376,10 +375,6 @@ function InteractiveImage({ src, alt }: { src: string, alt: string }) {
 }
 
 export default function HomeV2() {
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(() => {
-    return sessionStorage.getItem('aforja_home_unlocked') === 'true';
-  });
-
   const [pixelFactor, setPixelFactor] = useState(5.0);
   const [brightness, setBrightness] = useState(1.0);
   const [smearIntensity, setSmearIntensity] = useState(0.3);
@@ -447,10 +442,6 @@ export default function HomeV2() {
     }),
     [pixelFactor, cameraZ, autoRotate, brightness, smearIntensity, roughness, metalness, scrollProgress, scrollY]
   );
-
-  if (!isUnlocked) {
-    return <EmBreveGate onUnlock={() => setIsUnlocked(true)} />;
-  }
 
   return (
     <div className="relative min-h-screen bg-[#050505] text-[#f5f5f7] font-mono selection:bg-[#ff4d16] selection:text-white">
