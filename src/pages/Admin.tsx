@@ -39,11 +39,38 @@ import { AppClient, CarouselSlide } from '../types';
 export default function Admin() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   
   useEffect(() => {
     const savedTheme = localStorage.getItem('admin_theme');
     if (savedTheme) setTheme(savedTheme as 'dark' | 'light');
+
+    // Validar token de sessão existente no servidor
+    const token = sessionStorage.getItem('aforja_admin_token');
+    if (token) {
+      fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.valid) {
+          setIsAuthenticated(true);
+        } else {
+          sessionStorage.removeItem('aforja_admin_token');
+          sessionStorage.removeItem('aforja_admin_authenticated');
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(() => {
+        // Se estiver em modo estático/preview sem servidor, mantém fallback do sessionStorage
+        if (sessionStorage.getItem('aforja_admin_authenticated') === 'true') {
+          setIsAuthenticated(true);
+        }
+      });
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -59,15 +86,41 @@ export default function Admin() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === '1234') {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('aforja_admin_authenticated', 'true');
-      setErrorMsg('');
-    } else {
-      setErrorMsg('PIN INCOMPATÍVEL');
-      setPassword('');
+    if (!password) return;
+    setIsAuthenticating(true);
+    setErrorMsg('');
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: password })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.token) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('aforja_admin_token', data.token);
+        sessionStorage.setItem('aforja_admin_authenticated', 'true');
+        setErrorMsg('');
+      } else {
+        setErrorMsg(data.error || 'PIN INCORRETO');
+        setPassword('');
+      }
+    } catch (err) {
+      // Fallback local se a API estiver inacessível
+      if (password === '1234') {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('aforja_admin_authenticated', 'true');
+        setErrorMsg('');
+      } else {
+        setErrorMsg('PIN INCORRETO');
+        setPassword('');
+      }
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 
@@ -85,6 +138,7 @@ export default function Admin() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    sessionStorage.removeItem('aforja_admin_token');
     sessionStorage.removeItem('aforja_admin_authenticated');
     setPassword('');
   };

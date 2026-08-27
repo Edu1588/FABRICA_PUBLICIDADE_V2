@@ -3,6 +3,10 @@ import * as fs from "fs";
 import path from "path";
 import * as cheerio from "cheerio";
 import { GoogleGenAI, Type } from "@google/genai";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import { z } from "zod";
+import crypto from "crypto";
 
 const isVercel = !!process.env.VERCEL;
 
@@ -29,15 +33,114 @@ function getAI() {
 const app = express();
 const PORT = 3000;
 
-app.use(express.json({ limit: '50mb' }));
+// 1. Security Headers via Helmet
+app.use(helmet({
+  contentSecurityPolicy: false, // Permite carregar fontes e imagens externas com seguranca
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  xFrameOptions: { action: "sameorigin" }
+}));
 
-// API route for scraping vehicle data
+// 2. Protecao contra payloads excessivos
+app.use(express.json({ limit: '15mb' }));
+
+// 3. Rate Limiters (Geral para API & Estrito para Login)
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 60, // máx 60 requisições por minuto por IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Muitas requisições. Aguarde um momento antes de tentar novamente." }
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 10, // máx 10 tentativas incorretas a cada 15 min
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Muitas tentativas de login incorretas. Tente novamente mais tarde." }
+});
+
+app.use("/api/", apiLimiter);
+
+// 4. Autenticação Server-Side Segura com Hash SHA-256 e Assinatura HMAC
+const ADMIN_SECRET = process.env.ADMIN_JWT_SECRET || "fabrica_publicidade_v2_secure_token_secret_key_2026";
+const ADMIN_PIN_HASH = crypto.createHash("sha256").update(process.env.ADMIN_PIN || "1234").digest("hex");
+
+// Endpoint de Login do Admin
+app.post("/api/auth/login", authLimiter, (req, res) => {
+  try {
+    const schema = z.object({
+      pin: z.string().min(1).max(32)
+    });
+    const validation = schema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ success: false, error: "PIN inválido." });
+    }
+
+    const inputHash = crypto.createHash("sha256").update(validation.data.pin).digest("hex");
+    if (inputHash !== ADMIN_PIN_HASH) {
+      return res.status(401).json({ success: false, error: "PIN INCORRETO" });
+    }
+
+    // Gerar token assinado com expiração de 24h
+    const payload = {
+      role: "admin",
+      exp: Date.now() + 24 * 60 * 60 * 1000
+    };
+    const payloadStr = Buffer.from(JSON.stringify(payload)).toString("base64url");
+    const signature = crypto.createHmac("sha256", ADMIN_SECRET).update(payloadStr).digest("base64url");
+    const token = `${payloadStr}.${signature}`;
+
+    return res.json({ success: true, token });
+  } catch (err) {
+    console.error("Auth login error", err);
+    return res.status(500).json({ success: false, error: "Erro interno no servidor." });
+  }
+});
+
+// Endpoint de Validação de Sessão Server-side
+app.post("/api/auth/verify", (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token || typeof token !== "string") {
+      return res.status(401).json({ valid: false });
+    }
+    const parts = token.split(".");
+    if (parts.length !== 2) return res.status(401).json({ valid: false });
+
+    const [payloadStr, signature] = parts;
+    const expectedSig = crypto.createHmac("sha256", ADMIN_SECRET).update(payloadStr).digest("base64url");
+    if (signature !== expectedSig) {
+      return res.status(401).json({ valid: false });
+    }
+
+    const payload = JSON.parse(Buffer.from(payloadStr, "base64url").toString());
+    if (payload.exp < Date.now()) {
+      return res.status(401).json({ valid: false, error: "Sessão expirada." });
+    }
+
+    return res.json({ valid: true });
+  } catch (err) {
+    return res.status(401).json({ valid: false });
+  }
+});
+
+// 5. API route for scraping vehicle data com validação Zod
+const scrapeSchema = z.object({
+  search: z.string().min(1, "Termo de busca é obrigatório").max(50).trim(),
+  client: z.enum(["meta", "azul", "unimais"]).optional()
+});
+
 app.post("/api/scrape-vehicle", async (req, res) => {
   try {
+    const validation = scrapeSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ error: validation.error.issues[0]?.message || "Dados de busca inválidos" });
+    }
     
     // 1. Search for the vehicle
-    const { search, client } = req.body;
-    if (!search) return res.status(400).json({ error: "Search term is required" });
+    const { search, client } = validation.data;
     const normalizedSearch = search.toUpperCase().replace(/[^A-Z0-9]/g, '');
     
     const defaultHeaders = {
