@@ -2830,13 +2830,23 @@ export default function Admin() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="pt-6 border-t border-white/5 mt-6 grid grid-cols-3 gap-2">
+                        <div className="pt-6 border-t border-white/5 mt-6 grid grid-cols-4 gap-2">
                           <a
                             href={`/${pres.slug}`}
-                            className="flex items-center justify-center gap-1.5 bg-[#1B9C4F]/10 hover:bg-[#1B9C4F]/20 border border-[#1B9C4F]/30 text-[#1B9C4F] font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all text-center font-bold"
+                            className="flex items-center justify-center gap-1 bg-[#1B9C4F]/10 hover:bg-[#1B9C4F]/20 border border-[#1B9C4F]/30 text-[#1B9C4F] font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all text-center font-bold"
+                            title="Ver apresentação em tela cheia"
                           >
                             <Play className="w-3 h-3" />
                             Ver
+                          </a>
+
+                          <a
+                            href={`/${pres.slug}?edit=true`}
+                            className="flex items-center justify-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all text-center font-bold"
+                            title="Editar textos, cores e mídias da apresentação"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            Editar
                           </a>
 
                           <button
@@ -2858,7 +2868,7 @@ export default function Admin() {
                               setToast({ message: 'Apresentação duplicada com sucesso!', type: 'success' });
                               setTimeout(() => setToast(null), 3000);
                             }}
-                            className="flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all"
+                            className="flex items-center justify-center gap-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all"
                             title="Duplicar apresentação"
                           >
                             <Copy className="w-3 h-3" />
@@ -2879,7 +2889,7 @@ export default function Admin() {
                                 setTimeout(() => setToast(null), 3000);
                               }
                             }}
-                            className="flex items-center justify-center gap-1.5 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 text-red-400 font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all"
+                            className="flex items-center justify-center gap-1 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 text-red-400 font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all"
                             title="Excluir apresentação"
                           >
                             <Trash2 className="w-3 h-3" />

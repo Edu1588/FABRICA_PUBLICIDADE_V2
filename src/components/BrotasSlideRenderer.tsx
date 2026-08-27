@@ -545,42 +545,183 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
-      // 7. HUB & SPOKE
-      case 'hub_spoke':
+      // 7. HUB & SPOKE (REDE RADIAL INTERCONECTADA COM FLUXO ANIMADO)
+      case 'hub_spoke': {
+        const spokes = slide.hubSpokes || [
+          'CMS de Conteúdo',
+          'Analytics Dashboard',
+          'Chatbot de Atendimento',
+          'App Mobile',
+          'Integração WhatsApp',
+          'Mapa Interativo'
+        ];
+        const numSpokes = spokes.length;
+        const radiusX = 38; // percentage radius on X
+        const radiusY = 36; // percentage radius on Y
+
+        // Calculate positions on an ellipse
+        const nodePositions = spokes.map((_, i) => {
+          const angle = (2 * Math.PI * i) / numSpokes - Math.PI / 2;
+          return {
+            x: 50 + radiusX * Math.cos(angle),
+            y: 50 + radiusY * Math.sin(angle)
+          };
+        });
+
         return (
-          <div className="relative w-full h-full bg-white p-10 md:p-14 flex flex-col items-center justify-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C] rounded-tr-full pointer-events-none"></div>
+          <div className="relative w-full h-full bg-white p-8 md:p-12 flex flex-col justify-between overflow-hidden select-none">
+            {/* Background Corner Decors */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/10 rounded-tr-full pointer-events-none"></div>
 
-            <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 z-10">
-              {slide.categoryLabel || 'Ecossistema'}
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-8 text-center z-10" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-              {slide.title}
-            </h2>
+            {/* Top Title & Category */}
+            <div className="z-10 text-center">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 inline-block">
+                {slide.categoryLabel || 'Tecnologia'}
+              </span>
+              <h2
+                className="text-3xl md:text-5xl font-black text-gray-950 tracking-tight"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
+                {slide.title}
+              </h2>
+            </div>
 
-            <div className="relative w-full max-w-4xl h-[380px] flex items-center justify-center z-10">
-              <div className="z-20 w-40 h-40 rounded-full bg-[#00A859] text-white shadow-2xl flex flex-col items-center justify-center text-center p-4 border-4 border-white">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/80">Sistema</span>
-                <span className="text-lg font-black" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                  {slide.hubCenter || 'BROTAS 360°'}
-                </span>
+            {/* Central Radial Network Stage */}
+            <div className="relative w-full max-w-5xl mx-auto h-[420px] md:h-[480px] my-auto flex items-center justify-center">
+              {/* CSS Animation Keyframes for Energy Beam Flow */}
+              <style>{`
+                @keyframes energyFlow {
+                  from { stroke-dashoffset: 32; }
+                  to { stroke-dashoffset: 0; }
+                }
+                @keyframes glowPulse {
+                  0%, 100% { transform: scale(1); opacity: 0.8; }
+                  50% { transform: scale(1.15); opacity: 0.3; }
+                }
+                .conduit-flow {
+                  animation: energyFlow 1.2s linear infinite;
+                }
+                .hub-glow-ring {
+                  animation: glowPulse 2.5s ease-in-out infinite;
+                }
+              `}</style>
+
+              {/* SVG Canvas for Connecting Conduits & Flow Particles */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                {nodePositions.map((pos, idx) => (
+                  <g key={idx}>
+                    {/* Base Conduit Line */}
+                    <line
+                      x1="50%"
+                      y1="50%"
+                      x2={`${pos.x}%`}
+                      y2={`${pos.y}%`}
+                      stroke="#00A859"
+                      strokeWidth="2"
+                      strokeOpacity="0.25"
+                    />
+                    {/* Animated Energy Flow Beam */}
+                    <line
+                      x1="50%"
+                      y1="50%"
+                      x2={`${pos.x}%`}
+                      y2={`${pos.y}%`}
+                      stroke="#00A859"
+                      strokeWidth="2.5"
+                      strokeDasharray="6 10"
+                      className="conduit-flow"
+                    />
+                    {/* Secondary Accent Beam (Yellow/Gold) */}
+                    <line
+                      x1="50%"
+                      y1="50%"
+                      x2={`${pos.x}%`}
+                      y2={`${pos.y}%`}
+                      stroke="#FFC20E"
+                      strokeWidth="1.5"
+                      strokeDasharray="4 16"
+                      className="conduit-flow"
+                      style={{ animationDuration: '1.8s', animationDirection: 'reverse' }}
+                    />
+                  </g>
+                ))}
+              </svg>
+
+              {/* Central Glowing Hub Orb */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
+                {/* Outer Glow Wave Rings */}
+                <div className="absolute w-44 md:w-52 h-44 md:h-52 rounded-full bg-[#00A859]/20 hub-glow-ring pointer-events-none"></div>
+                <div className="absolute w-36 md:w-44 h-36 md:h-44 rounded-full border-2 border-[#00A859]/40 animate-pulse pointer-events-none"></div>
+
+                {/* Central Core */}
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                  className="w-32 md:w-40 h-32 md:h-40 rounded-full bg-gradient-to-br from-[#00C853] via-[#00A859] to-[#0B4D3C] text-white shadow-2xl flex flex-col items-center justify-center text-center p-3 border-4 border-white z-10 cursor-pointer hover:scale-105 transition-transform"
+                >
+                  <span className="text-[9px] md:text-[10px] font-mono font-black uppercase tracking-widest text-[#FFD000] drop-shadow">
+                    SISTEMA CENTRAL
+                  </span>
+                  <span
+                    className="text-base md:text-xl font-black leading-tight text-white mt-1 drop-shadow-md"
+                    style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                  >
+                    {slide.hubCenter || 'Portal Brotas'}
+                  </span>
+                  <div className="w-2 h-2 rounded-full bg-[#FFD000] mt-1.5 animate-ping"></div>
+                </motion.div>
               </div>
 
-              <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-4 gap-4 items-center justify-items-center">
-                {slide.hubSpokes?.map((spoke, idx) => (
+              {/* Orbiting Surrounding Cards with Floating Animation */}
+              {nodePositions.map((pos, idx) => {
+                const spoke = spokes[idx];
+                return (
                   <motion.div
                     key={idx}
-                    {...getAnim(idx)}
-                    className="bg-white hover:bg-[#00A859]/10 border border-gray-200 hover:border-[#00A859] p-3.5 rounded-2xl shadow-md text-center text-xs font-bold text-gray-800 transition-all max-w-[160px]"
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                      y: [0, -6, 0]
+                    }}
+                    transition={{
+                      opacity: { duration: 0.4, delay: idx * 0.08 },
+                      scale: { duration: 0.4, delay: idx * 0.08 },
+                      y: {
+                        duration: 3.5 + (idx % 3) * 0.6,
+                        repeat: Infinity,
+                        ease: 'easeInOut'
+                      }
+                    }}
+                    className="absolute z-30 -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
+                    style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
                   >
-                    {spoke}
+                    <div className="bg-white/95 backdrop-blur-md border-2 border-gray-100 hover:border-[#00A859] px-4 py-3 rounded-2xl shadow-xl hover:shadow-2xl flex items-center gap-3 transition-all duration-300 group-hover:scale-110">
+                      {/* Active Connection Indicator */}
+                      <div className="w-3 h-3 rounded-full bg-[#00A859] flex items-center justify-center shrink-0 shadow-sm shadow-[#00A859]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></div>
+                      </div>
+
+                      {/* Card Title */}
+                      <span className="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap group-hover:text-[#00A859] transition-colors">
+                        {spoke}
+                      </span>
+                    </div>
                   </motion.div>
-                ))}
-              </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom Tag */}
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
+              <span>Brotas 360° · Ecossistema Integrado em Tempo Real</span>
+              <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
+      }
 
       // 8. CYCLE DIAGRAM
       case 'cycle_diagram':

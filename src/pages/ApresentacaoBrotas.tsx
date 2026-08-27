@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BROTAS_SLIDES, BrotasSlideData } from '../data/brotasSlidesData';
 import BrotasSlideRenderer from '../components/BrotasSlideRenderer';
+import BrotasEditSlideModal from '../components/BrotasEditSlideModal';
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,7 +10,10 @@ import {
   Minimize2,
   Home,
   Grid,
-  Upload
+  Upload,
+  Edit3,
+  Sparkles,
+  RotateCcw
 } from 'lucide-react';
 
 const slideVariants = {
@@ -34,11 +38,24 @@ const fadeVariants = {
 };
 
 export default function ApresentacaoBrotas() {
-  const [slides] = useState<BrotasSlideData[]>(BROTAS_SLIDES);
+  const [slides, setSlides] = useState<BrotasSlideData[]>(() => {
+    try {
+      const saved = localStorage.getItem('brotas360_custom_slides_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('localStorage error', e);
+    }
+    return BROTAS_SLIDES;
+  });
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<Record<string, string>>(() => {
     try {
@@ -49,7 +66,23 @@ export default function ApresentacaoBrotas() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const totalSlides = slides.length;
-  const currentSlide = slides[currentIndex];
+  const currentSlide = slides[currentIndex] || BROTAS_SLIDES[0];
+
+  // Check URL query param ?edit=true to open editor immediately
+  useEffect(() => {
+    if (window.location.search.includes('edit=true')) {
+      setIsEditModalOpen(true);
+    }
+  }, []);
+
+  // Save slides data to localStorage whenever updated
+  useEffect(() => {
+    try {
+      localStorage.setItem('brotas360_custom_slides_v2', JSON.stringify(slides));
+    } catch (e) {
+      console.warn('localStorage not accessible');
+    }
+  }, [slides]);
 
   // Save uploaded images to localStorage
   useEffect(() => {
@@ -60,9 +93,24 @@ export default function ApresentacaoBrotas() {
     }
   }, [uploadedImages]);
 
+  // Save changes from Edit Slide Modal
+  const handleSaveSlideData = (updatedSlide: BrotasSlideData) => {
+    setSlides(prev => prev.map(s => s.id === updatedSlide.id ? updatedSlide : s));
+  };
+
+  // Reset current slide to initial default
+  const handleResetCurrentSlide = () => {
+    const original = BROTAS_SLIDES.find(s => s.id === currentSlide.id);
+    if (original) {
+      handleSaveSlideData(original);
+    }
+  };
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isEditModalOpen) return; // don't navigate while typing in modal
+
       if (e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault();
         goNext();
@@ -76,11 +124,13 @@ export default function ApresentacaoBrotas() {
         toggleFullscreen();
       } else if (e.key === 'g' || e.key === 'G') {
         setShowThumbnails(prev => !prev);
+      } else if (e.key === 'e' || e.key === 'E') {
+        setIsEditModalOpen(prev => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, isFullscreen, showThumbnails]);
+  }, [currentIndex, isFullscreen, showThumbnails, isEditModalOpen]);
 
   // Track fullscreen changes
   useEffect(() => {
@@ -135,7 +185,7 @@ export default function ApresentacaoBrotas() {
       className="relative w-screen h-screen bg-black overflow-hidden select-none"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
-      {/* Slides */}
+      {/* Slides Container */}
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={currentIndex}
@@ -145,7 +195,7 @@ export default function ApresentacaoBrotas() {
           animate="center"
           exit="exit"
           transition={{
-            duration: 0.5,
+            duration: 0.45,
             ease: [0.22, 1, 0.36, 1],
           }}
           className="absolute inset-0"
@@ -159,12 +209,12 @@ export default function ApresentacaoBrotas() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation Controls */}
+      {/* Navigation Controls Bar */}
       <div className="absolute bottom-0 left-0 right-0 z-50">
         {/* Progress bar */}
         <div className="w-full h-1 bg-black/20">
           <motion.div
-            className="h-full bg-[#1B9C4F]"
+            className="h-full bg-[#00A859]"
             initial={false}
             animate={{ width: `${((currentIndex + 1) / totalSlides) * 100}%` }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -172,78 +222,94 @@ export default function ApresentacaoBrotas() {
         </div>
 
         {/* Controls bar */}
-        <div className="flex items-center justify-between px-6 py-3 bg-black/60 backdrop-blur-sm">
-          {/* Left: slide counter */}
+        <div className="flex items-center justify-between px-6 py-3 bg-black/75 backdrop-blur-md border-t border-white/10">
+          {/* Left: Slide counter & Category */}
           <div className="flex items-center gap-3">
-            <span className="text-white/70 text-sm font-mono">
+            <span className="text-white text-sm font-mono font-bold">
               {String(currentIndex + 1).padStart(2, '0')} / {String(totalSlides).padStart(2, '0')}
             </span>
-            <span className="text-white/40 text-xs hidden sm:inline">
-              {currentSlide.categoryLabel}
+            <span className="text-[#FFC20E] text-xs font-bold uppercase tracking-wider hidden sm:inline">
+              {currentSlide.categoryLabel || 'Brotas 360°'}
             </span>
           </div>
 
-          {/* Center: nav arrows */}
+          {/* Center: Navigation Arrows */}
           <div className="flex items-center gap-2">
             <button
               onClick={goPrev}
               disabled={currentIndex === 0}
-              className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-full text-white/80 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
               aria-label="Slide anterior"
+              title="Slide anterior (←)"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={22} />
             </button>
             <button
               onClick={goNext}
               disabled={currentIndex === totalSlides - 1}
-              className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-full text-white/80 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
               aria-label="Próximo slide"
+              title="Próximo slide (→)"
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={22} />
             </button>
           </div>
 
-          {/* Right: actions */}
+          {/* Right: Actions (Edit Slide, Grid, Upload, Fullscreen, Admin) */}
           <div className="flex items-center gap-2">
+            {/* EDIT SLIDE BUTTON */}
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#00A859] hover:bg-[#008f4c] text-white text-xs font-bold transition-all shadow-lg cursor-pointer"
+              title="Editar textos, cores e elementos deste slide (E)"
+            >
+              <Edit3 size={15} />
+              <span className="hidden md:inline">Editar Slide</span>
+            </button>
+
+            {/* Grid Thumbnails */}
             <button
               onClick={() => setShowThumbnails(prev => !prev)}
-              className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors"
               aria-label="Ver todos os slides"
               title="Grid de slides (G)"
             >
               <Grid size={18} />
             </button>
-            <button
-              onClick={() => setIsEditing(prev => !prev)}
-              className={`p-2 rounded-full transition-colors ${
-                isEditing
-                  ? 'text-[#1B9C4F] bg-[#1B9C4F]/20'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-              aria-label="Modo edição"
-              title="Editar imagens"
-            >
-              <Upload size={18} />
-            </button>
+
+            {/* Fullscreen Button */}
             <button
               onClick={toggleFullscreen}
-              className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors"
               aria-label={isFullscreen ? 'Sair da tela cheia' : 'Tela cheia'}
               title="Tela cheia (F)"
             >
               {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
             </button>
+
+            {/* Back to Admin */}
             <a
               href="/admin"
-              className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors"
               aria-label="Voltar ao admin"
-              title="Voltar"
+              title="Voltar ao Painel Admin"
             >
               <Home size={18} />
             </a>
           </div>
         </div>
       </div>
+
+      {/* Slide Edit Modal */}
+      <BrotasEditSlideModal
+        slide={currentSlide}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveSlideData}
+        onReset={handleResetCurrentSlide}
+        onImageUpload={handleImageUpload}
+        uploadedImages={uploadedImages}
+      />
 
       {/* Thumbnail grid overlay */}
       <AnimatePresence>
@@ -257,12 +323,15 @@ export default function ApresentacaoBrotas() {
           >
             <div className="max-w-6xl mx-auto">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-white text-xl font-semibold" style={{ fontFamily: 'Playfair Display, serif' }}>
-                  Brotas 360° — Slides
-                </h2>
+                <div>
+                  <h2 className="text-white text-2xl font-black" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    Brotas 360° — Índice de Lâminas
+                  </h2>
+                  <p className="text-xs text-white/50 font-mono">39 Slides Estruturados</p>
+                </div>
                 <button
                   onClick={() => setShowThumbnails(false)}
-                  className="text-white/70 hover:text-white text-sm px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                  className="text-white/80 hover:text-white text-xs font-bold px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
                 >
                   Fechar (Esc)
                 </button>
@@ -272,24 +341,24 @@ export default function ApresentacaoBrotas() {
                   <button
                     key={slide.id}
                     onClick={() => goToSlide(index)}
-                    className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all group ${
+                    className={`relative aspect-video rounded-xl overflow-hidden border-2 transition-all group ${
                       index === currentIndex
-                        ? 'border-[#1B9C4F] ring-2 ring-[#1B9C4F]/50'
+                        ? 'border-[#00A859] ring-2 ring-[#00A859]/50 shadow-lg'
                         : 'border-white/10 hover:border-white/30'
                     }`}
                   >
-                    <div className={`absolute inset-0 flex items-center justify-center p-2 ${
+                    <div className={`absolute inset-0 flex items-center justify-center p-2.5 ${
                       slide.isDark ? 'bg-[#0A0F1A]' : 'bg-white'
                     }`}>
-                      <span className={`text-[8px] sm:text-[10px] text-center leading-tight font-medium ${
-                        slide.isDark ? 'text-white/70' : 'text-gray-700'
+                      <span className={`text-[9px] sm:text-[11px] text-center leading-tight font-bold ${
+                        slide.isDark ? 'text-white' : 'text-gray-900'
                       }`}>
                         {slide.title}
                       </span>
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1.5 py-0.5 text-[9px] text-white/60 flex items-center justify-between">
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/80 px-2 py-1 text-[9px] text-white/70 flex items-center justify-between font-mono">
                       <span>{String(index + 1).padStart(2, '0')}</span>
-                      <span className="text-[#FFB800]">{slide.categoryLabel}</span>
+                      <span className="text-[#FFC20E] font-bold">{slide.categoryLabel}</span>
                     </div>
                   </button>
                 ))}
@@ -306,8 +375,8 @@ export default function ApresentacaoBrotas() {
       >
         <div className="h-full flex items-center justify-start pl-4">
           {currentIndex > 0 && (
-            <div className="p-3 rounded-full bg-black/30 backdrop-blur-sm text-white/70">
-              <ChevronLeft size={28} />
+            <div className="p-3 rounded-full bg-black/40 backdrop-blur-sm text-white/80">
+              <ChevronLeft size={32} />
             </div>
           )}
         </div>
@@ -318,8 +387,8 @@ export default function ApresentacaoBrotas() {
       >
         <div className="h-full flex items-center justify-end pr-4">
           {currentIndex < totalSlides - 1 && (
-            <div className="p-3 rounded-full bg-black/30 backdrop-blur-sm text-white/70">
-              <ChevronRight size={28} />
+            <div className="p-3 rounded-full bg-black/40 backdrop-blur-sm text-white/80">
+              <ChevronRight size={32} />
             </div>
           )}
         </div>
