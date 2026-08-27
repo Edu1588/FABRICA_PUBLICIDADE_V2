@@ -22,7 +22,8 @@ import {
   Palette,
   Sun,
   Moon,
-  Newspaper
+  Newspaper,
+  Sparkles
 } from 'lucide-react';
 import { AdminDashboard } from '../components/AdminDashboard';
 import { DesignBrandbook } from '../components/DesignBrandbook';
@@ -176,16 +177,16 @@ export default function Admin() {
   }, [selectedClientId, selectedClientData, slides.length]);
   
 
-  const handleAddSlide = (type: 'veiculo' | 'capa' | 'final') => {
+  const handleAddSlide = (type: 'veiculo' | 'capa' | 'final' | 'destaque') => {
     let baseSlide = null;
-    if (type === 'veiculo') {
-      baseSlide = [...slides].reverse().find(s => s.type === 'veiculo');
+    if (type === 'veiculo' || type === 'destaque') {
+      baseSlide = [...slides].reverse().find(s => s.type === 'veiculo' || s.type === 'destaque');
     }
     
     const newSlide: CarouselSlide = {
       id: crypto.randomUUID(),
       type,
-      title: type === 'veiculo' ? 'NOVO VEÍCULO' : type === 'capa' ? 'NOVA CAPA' : 'NOVO FINAL',
+      title: type === 'destaque' ? 'CARRO DESTAQUE' : type === 'veiculo' ? 'NOVO VEÍCULO' : type === 'capa' ? 'NOVA CAPA' : 'NOVO FINAL',
       fabricante: baseSlide ? baseSlide.fabricante : '',
       modelo: baseSlide ? baseSlide.modelo : '',
       descricao: baseSlide ? baseSlide.descricao : '',
@@ -193,12 +194,13 @@ export default function Admin() {
       zoom: 1,
       posX: 0,
       posY: 0,
-      condicao1Label: baseSlide ? baseSlide.condicao1Label : '', condicao1Val: baseSlide ? baseSlide.condicao1Val : '',
-      condicao2Label: baseSlide ? baseSlide.condicao2Label : '', condicao2Val: baseSlide ? baseSlide.condicao2Val : '',
-      condicao3Label: baseSlide ? baseSlide.condicao3Label : '', condicao3Val: baseSlide ? baseSlide.condicao3Val : '',
-      condicao4Label: baseSlide ? baseSlide.condicao4Label : '', condicao4Val: baseSlide ? baseSlide.condicao4Val : '',
-      valorFipe: baseSlide ? baseSlide.valorFipe : '',
+      condicao1Label: 'ANO', condicao1Val: baseSlide ? baseSlide.condicao1Val : '',
+      condicao2Label: 'KM', condicao2Val: baseSlide ? baseSlide.condicao2Val : '',
+      condicao3Label: 'CÂMBIO', condicao3Val: baseSlide ? (baseSlide.cambio || baseSlide.condicao3Val || 'MANUAL') : 'MANUAL',
+      condicao4Label: '', condicao4Val: '',
+      valorFipe: '',
       valorIntegral: baseSlide ? baseSlide.valorIntegral : '',
+      cambio: baseSlide ? (baseSlide.cambio || 'MANUAL') : 'MANUAL',
       lojasCapa: baseSlide ? baseSlide.lojasCapa : '',
       website: baseSlide ? baseSlide.website : ''
     };
@@ -316,11 +318,11 @@ export default function Admin() {
       const data = await res.json();
       if (data.success && data.data) {
         setSlides(prevSlides => {
-          const firstVeiculoIndex = prevSlides.findIndex(s => s.type === 'veiculo');
-          const filteredSlides = prevSlides.filter((s, idx) => s.type !== 'veiculo' || idx === firstVeiculoIndex);
+          const firstCarIndex = prevSlides.findIndex(s => s.type === 'veiculo' || s.type === 'destaque');
+          const filteredSlides = prevSlides.filter((s, idx) => (s.type !== 'veiculo' && s.type !== 'destaque') || idx === firstCarIndex);
           
           const resetSlides = filteredSlides.map(s => {
-            if (s.type === 'veiculo') {
+            if (s.type === 'veiculo' || s.type === 'destaque') {
               return {
                 ...s,
                 fabricante: data.data.montadora || '',
@@ -328,10 +330,11 @@ export default function Admin() {
                 descricao: data.data.descricao || '',
                 valorFipe: '',
                 valorIntegral: formatPriceMask(data.data.valor || ''),
-                title: `${scrapeQuery.toUpperCase().replace(/[^A-Z0-9]/g, '')}_carrossel_${selectedClientData?.name?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") || 'azul'}`,
+                cambio: data.data.cambio || 'MANUAL',
+                title: `${scrapeQuery.toUpperCase().replace(/[^A-Z0-9]/g, '')}_carrossel_${selectedClientData?.name?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") || 'unimais'}`,
                 condicao1Label: 'ANO', condicao1Val: data.data.ano || '',
                 condicao2Label: 'KM', condicao2Val: data.data.km || '',
-                condicao3Label: '', condicao3Val: '',
+                condicao3Label: 'CÂMBIO', condicao3Val: data.data.cambio || 'MANUAL',
                 condicao4Label: '', condicao4Val: '',
                 imageUrl: '',
                 zoom: 1,
@@ -1304,7 +1307,7 @@ export default function Admin() {
                   <ArrowLeft className="w-4 h-4" />
                   Voltar para opções de {selectedClientData?.name || 'Cliente'}
                 </button>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className={`grid grid-cols-1 ${selectedClientData?.name?.toLowerCase().includes('unimais') ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-6`}>
                   <div 
                     onClick={() => setActiveEditor('destaque')}
                     className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
@@ -1319,6 +1322,49 @@ export default function Admin() {
                       Carrossel principal com 3 opções de cards.
                     </p>
                   </div>
+
+                  {selectedClientData?.name?.toLowerCase().includes('unimais') && (
+                    <div 
+                      onClick={() => {
+                        setSlides([
+                          {
+                            id: crypto.randomUUID(),
+                            type: 'destaque',
+                            title: 'DESTAQUE UNIMAIS',
+                            fabricante: 'CHEVROLET',
+                            modelo: 'ONIX',
+                            descricao: '1.0 FLEX LT MANUAL',
+                            imageUrl: '',
+                            zoom: 1,
+                            posX: 0,
+                            posY: 0,
+                            condicao1Label: 'ANO', condicao1Val: '2024',
+                            condicao2Label: 'KM', condicao2Val: '44.802',
+                            condicao3Label: 'CÂMBIO', condicao3Val: 'MANUAL',
+                            cambio: 'MANUAL',
+                            valorIntegral: '72.900',
+                            website: 'UNIMAISVEICULOS.COM.BR'
+                          }
+                        ]);
+                        setActiveSlideIndex(0);
+                        setActiveEditor('destaque');
+                      }}
+                      className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#FFD000]/60 rounded-xl p-6 cursor-pointer transition-all duration-300 group relative overflow-hidden"
+                    >
+                      <div className="absolute top-3 right-3 bg-[#FFD000] text-black text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
+                        NOVO
+                      </div>
+                      <div className="w-10 h-10 rounded-lg bg-[#FFD000]/10 flex items-center justify-center text-[#FFD000] mb-4 group-hover:bg-[#FFD000]/20 transition-colors">
+                        <Sparkles className="w-5 h-5" />
+                      </div>
+                      <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FFD000] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        Carros Destaques
+                      </h4>
+                      <p className="text-xs text-white/50 font-light leading-relaxed mt-2 mb-6">
+                        Lâmina com moldura Destaque Unimais, especificações e preço promocional.
+                      </p>
+                    </div>
+                  )}
 
                   <div 
                     onClick={() => setActiveEditor('ofertas')}
@@ -1513,30 +1559,37 @@ export default function Admin() {
                               </div>
                             )}
                           </div>
-                        ) : activeSlide.type === 'veiculo' ? (
-                          // VEHICLE SLIDE EDITABLES
+                        ) : (activeSlide.type === 'veiculo' || activeSlide.type === 'destaque') ? (
+                          // VEHICLE OR DESTAQUE SLIDE EDITABLES
                           <div className="space-y-4 pt-2 border-t border-white/5">
-
-
-                            <span className="text-[10px] text-[#C46A1A] uppercase tracking-wider block mt-4">Campos do Veículo</span>
+                            <div className="flex items-center justify-between mt-4">
+                              <span className="text-[10px] text-[#C46A1A] uppercase tracking-wider block font-bold">
+                                {activeSlide.type === 'destaque' ? 'Campos do Carro Destaque' : 'Campos do Veículo'}
+                              </span>
+                              {activeSlide.type === 'destaque' && (
+                                <span className="text-[9px] bg-[#FFD000]/10 text-[#FFD000] border border-[#FFD000]/30 px-2 py-0.5 rounded font-black uppercase tracking-wider">
+                                  ★ Destaque Unimais
+                                </span>
+                              )}
+                            </div>
                             
                             <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-1.5">
-                                <label className="text-white/50 text-[9px] tracking-wider block">Fabricante (ex: PEUGEOT)</label>
+                                <label className="text-white/50 text-[9px] tracking-wider block">Fabricante (ex: CHEVROLET)</label>
                                 <input
                                   type="text"
                                   value={activeSlide.fabricante || ''}
                                   onChange={e => updateActiveSlideField('fabricante', e.target.value)}
-                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white"
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white uppercase font-medium"
                                 />
                               </div>
                               <div className="space-y-1.5">
-                                <label className="text-white/50 text-[9px] tracking-wider block">Modelo (ex: 2008)</label>
+                                <label className="text-white/50 text-[9px] tracking-wider block">Modelo (ex: ONIX)</label>
                                 <input
                                   type="text"
                                   value={activeSlide.modelo || ''}
                                   onChange={e => updateActiveSlideField('modelo', e.target.value)}
-                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white"
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white uppercase font-bold"
                                 />
                               </div>
                             </div>
@@ -1547,37 +1600,64 @@ export default function Admin() {
                                 type="text"
                                 value={activeSlide.descricao || ''}
                                 onChange={e => updateActiveSlideField('descricao', e.target.value)}
-                                placeholder="TURBO FLEX AT"
-                                className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                placeholder="1.0 FLEX LT MANUAL"
+                                className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs uppercase"
                               />
                             </div>
 
-                            {/* ANO E KM DO VEÍCULO */}
-                            <div className="grid grid-cols-2 gap-4">
+                            {/* PREÇO (DESTAQUE) */}
+                            {activeSlide.type === 'destaque' && (
+                              <div className="space-y-1.5 pt-1">
+                                <label className="text-[#FFD000] text-[9px] tracking-wider block uppercase font-bold">Preço de Venda / Destaque (R$)</label>
+                                <input
+                                  type="text"
+                                  value={activeSlide.valorIntegral || ''}
+                                  onChange={e => updateActiveSlideField('valorIntegral', formatPriceMask(e.target.value))}
+                                  placeholder="Ex: 72.900"
+                                  className="w-full bg-[#111116] border border-[#FFD000]/40 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#FFD000] text-[#FFD000] text-sm font-bold"
+                                />
+                              </div>
+                            )}
+
+                            {/* ANO, KM E CÂMBIO */}
+                            <div className="grid grid-cols-3 gap-3">
                               <div className="space-y-1.5">
-                                <label className="text-white/50 text-[9px] tracking-wider block">Ano do Veículo</label>
+                                <label className="text-white/50 text-[9px] tracking-wider block">Ano</label>
                                 <input
                                   type="text"
                                   value={activeSlide.condicao1Val || ''}
                                   onChange={e => updateActiveSlideField('condicao1Val', e.target.value)}
-                                  placeholder="Ex: 2023 ou 2023 / 2024"
-                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                  placeholder="Ex: 2024"
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
                                 />
                               </div>
                               <div className="space-y-1.5">
-                                <label className="text-white/50 text-[9px] tracking-wider block">Quilometragem (KM)</label>
+                                <label className="text-white/50 text-[9px] tracking-wider block">KM</label>
                                 <input
                                   type="text"
                                   value={activeSlide.condicao2Val || ''}
                                   onChange={e => updateActiveSlideField('condicao2Val', formatPriceMask(e.target.value))}
-                                  placeholder="Ex: 35.000"
-                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                  placeholder="Ex: 44.802"
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-white/50 text-[9px] tracking-wider block">Câmbio</label>
+                                <input
+                                  type="text"
+                                  value={activeSlide.cambio || activeSlide.condicao3Val || ''}
+                                  onChange={e => {
+                                    updateActiveSlideField('cambio', e.target.value.toUpperCase());
+                                    updateActiveSlideField('condicao3Val', e.target.value.toUpperCase());
+                                  }}
+                                  placeholder="MANUAL"
+                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#C46A1A] text-white text-xs uppercase font-medium"
                                 />
                               </div>
                             </div>
 
-                            {/* PREÇO E FIPE - Apenas para clientes que utilizam FIPE */}
-                            {!selectedClientData?.name?.toLowerCase().includes('unimais') && (
+                            {/* PREÇO E FIPE - Apenas para clientes que utilizam FIPE (Meta e Azul) */}
+                            {activeSlide.type !== 'destaque' && !selectedClientData?.name?.toLowerCase().includes('unimais') && (
                               <div className="pt-3 border-t border-white/5 space-y-3">
                                 <span className="text-[10px] text-[#FFD000] font-bold uppercase tracking-wider block">Precificação Tabela FIPE</span>
                                 
@@ -2142,6 +2222,105 @@ export default function Admin() {
                               )}
                               <div className="flex-1 z-20 pointer-events-none"></div>
 
+                            </div>
+                          ) : activeSlide.type === 'destaque' ? (
+                            // D. CARROS DESTAQUES TEMPLATE (UNIMAIS DESTAQUE BASE)
+                            <div className="flex-1 flex flex-col justify-between relative overflow-hidden bg-[#050505]">
+                              {/* Background Car Photo */}
+                              {activeSlide.imageUrl && (
+                                <img
+                                  src={activeSlide.imageUrl}
+                                  alt="Carro Destaque"
+                                  className="absolute max-w-none origin-center z-0"
+                                  style={{
+                                    transform: `translate(${activeSlide.posX}px, ${activeSlide.posY}px) scale(${activeSlide.zoom})`,
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'contain',
+                                    cursor: 'move'
+                                  }}
+                                  onMouseDown={handleMouseDown}
+                                  onMouseMove={handleMouseMove}
+                                  onMouseUp={handleMouseUp}
+                                  onMouseLeave={handleMouseUp}
+                                  crossOrigin="anonymous"
+                                  referrerPolicy="no-referrer"
+                                />
+                              )}
+
+                              {/* OVERLAY BASE PNG DESTAQUES UNIMAIS */}
+                              <img 
+                                src="https://res.cloudinary.com/ifuatk2z/image/upload/v1787842885/BASE_Destaques_Unimais.png" 
+                                alt="Base Destaques Unimais" 
+                                className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none" 
+                                crossOrigin="anonymous" 
+                              />
+
+                              {/* LADO INFERIOR ESQUERDO: TAG DESTAQUE + FABRICANTE + MODELO + DESCRIÇÃO */}
+                              <div className="absolute bottom-[66px] left-[18px] z-20 pointer-events-none text-left flex flex-col items-start font-sans" style={{ maxWidth: '175px' }}>
+                                <div className="bg-[#FFD000] text-black text-[9px] font-black tracking-wider uppercase px-2 py-0.5 rounded shadow-sm">
+                                  DESTAQUE
+                                </div>
+                                <div className="text-white text-[13px] font-bold tracking-wide uppercase mt-1 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] truncate w-full">
+                                  {activeSlide.fabricante || 'CHEVROLET'}
+                                </div>
+                                <div className="text-white text-[28px] font-black tracking-tight uppercase leading-none mt-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] truncate w-full">
+                                  {activeSlide.modelo || 'ONIX'}
+                                </div>
+                                <div className="text-white text-[9.5px] font-bold tracking-wide uppercase leading-tight mt-1 text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] line-clamp-2">
+                                  {activeSlide.descricao || '1.0 FLEX LT MANUAL'}
+                                </div>
+                              </div>
+
+                              {/* LADO INFERIOR DIREITO: PREÇO + ESPECIFICAÇÕES (KM | ANO | CÂMBIO) */}
+                              <div className="absolute bottom-[66px] right-[18px] z-20 pointer-events-none flex flex-col items-end text-right font-sans">
+                                {/* Preço Amarelo */}
+                                <div className="flex items-baseline gap-0.5 drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
+                                  <span className="text-[#FFD000] text-[13px] font-black tracking-tight mr-0.5">R$</span>
+                                  <span 
+                                    className="text-[#FFD000] font-black leading-none tracking-tight"
+                                    style={{ 
+                                      fontFamily: '"Antonio", "Anton", sans-serif', 
+                                      fontSize: '44px',
+                                      textShadow: '2px 2px 0px rgba(0,0,0,0.7)'
+                                    }}
+                                  >
+                                    {(activeSlide.valorIntegral || '72.900').replace(/^R\$\s*/i, '').replace(/,\d{2}$/, '')}
+                                  </span>
+                                  <span className="text-[#FFD000] text-[11px] font-black tracking-tight self-start mt-1">,00</span>
+                                </div>
+
+                                {/* Especificações com Ícones: KM | ANO | CÂMBIO */}
+                                <div className="flex items-center gap-1.5 text-white text-[8px] font-bold uppercase tracking-wider mt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                                  {/* Ícone Velocímetro + KM */}
+                                  <div className="flex items-center gap-1">
+                                    <svg className="w-2.5 h-2.5 text-white stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>{(activeSlide.condicao2Val || '44.802').includes('KM') ? (activeSlide.condicao2Val || '44.802') : `${activeSlide.condicao2Val || '44.802'} KM`}</span>
+                                  </div>
+
+                                  <span className="text-white/40 font-light">|</span>
+
+                                  {/* Ícone Calendário + Ano */}
+                                  <div className="flex items-center gap-1">
+                                    <svg className="w-2.5 h-2.5 text-white stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span>{activeSlide.condicao1Val || '2024'}</span>
+                                  </div>
+
+                                  <span className="text-white/40 font-light">|</span>
+
+                                  {/* Ícone Câmbio + Câmbio */}
+                                  <div className="flex items-center gap-1">
+                                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                      <path d="M7 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-5 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-5 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-6-4v6h2V7h-2zm-5 0h2v6H6V7zm10 0h2v6h-2V7z"/>
+                                    </svg>
+                                    <span>{activeSlide.cambio || activeSlide.condicao3Val || 'MANUAL'}</span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           ) : (
                             // C. FINAL TEMPLATE (FIXED IMAGE)

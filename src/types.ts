@@ -11,15 +11,16 @@ export interface AppClient {
 
 export interface CarouselSlide {
   id: string;
-  type: 'capa' | 'veiculo' | 'final';
+  type: 'capa' | 'veiculo' | 'final' | 'destaque';
   
   // Header / text fields
   title: string;          // slide display label in menu
-  fabricante?: string;    // manufacturer (VEICULO)
-  modelo?: string;        // model (VEICULO)
-  descricao?: string;     // description / subtitle (VEICULO/CAPA)
+  fabricante?: string;    // manufacturer (VEICULO/DESTAQUE)
+  modelo?: string;        // model (VEICULO/DESTAQUE)
+  descricao?: string;     // description / subtitle (VEICULO/CAPA/DESTAQUE)
   valorFipe?: string;     // FIPE table value (VEICULO)
-  valorIntegral?: string; // Full car price value (VEICULO)
+  valorIntegral?: string; // Full car price value (VEICULO/DESTAQUE)
+  cambio?: string;        // Câmbio do veículo (ex: MANUAL / AUTOMÁTICO)
   
   // Capa exclusive fields
   lojasCapa?: string;     // store locations for cover slide

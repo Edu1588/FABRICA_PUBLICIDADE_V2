@@ -253,7 +253,7 @@ app.post("/api/scrape-vehicle", async (req, res) => {
       }
     }
 
-    // Extrair Ano e KM via Regex
+    // Extrair Ano, KM e Preço via Regex
     const anoMatch = bodyText.match(/\b(20[12]\d(?:\/20[12]\d)?)\b/);
     const ano = anoMatch ? anoMatch[1] : "";
 
@@ -263,12 +263,20 @@ app.post("/api/scrape-vehicle", async (req, res) => {
     const priceMatch = bodyText.match(/R\$\s*([\d\.]+(?:,\d{2})?)/);
     const valor = priceMatch ? priceMatch[1].replace(/,\d{2}$/, '') : "";
 
+    // Extrair Câmbio via Regex
+    const fullText = (rawTitle + " " + bodyText).toUpperCase();
+    let cambio = "MANUAL";
+    if (fullText.includes("AUTOMÁTICO") || fullText.includes("AUTOMATICO") || fullText.includes("AUT.") || fullText.includes(" AT") || fullText.includes("CVT") || fullText.includes("TIPTRONIC") || fullText.includes("DSG")) {
+      cambio = "AUTOMÁTICO";
+    }
+
     const fallbackData = {
       montadora: extractedMontadora || "HONDA",
       modelo: extractedModelo || search.toUpperCase(),
       descricao: extractedDescricao || "",
       ano: ano || "",
       km: km || "",
+      cambio: cambio || "MANUAL",
       fipe: "",
       valor: valor || ""
     };
@@ -285,12 +293,13 @@ Extract the vehicle details from the following text extracted from a car dealers
 Return ONLY a valid JSON object with the following keys:
 {
   "montadora": "String (e.g., Toyota, Honda, Chevrolet)",
-  "modelo": "String (The main car model, e.g., Corolla, Civic, HR-V)",
-  "descricao": "String (The specific version/description, e.g., 1.8 16V FLEX EXL 4P AUTOMÁTICO)",
+  "modelo": "String (The main car model, e.g., Corolla, Civic, HR-V, Onix)",
+  "descricao": "String (The specific version/description, e.g., 1.0 FLEX LT MANUAL)",
   "ano": "String (Year or Year/Model, e.g., 2024 or 2024/2024)",
-  "km": "String (Kilometers, e.g., 76.098)",
+  "km": "String (Kilometers, e.g., 44.802 KM)",
+  "cambio": "String (MANUAL or AUTOMÁTICO)",
   "fipe": "",
-  "valor": "String (Car sale price, e.g. 99.590)"
+  "valor": "String (Car sale price, e.g. 72.900)"
 }
 
 Text to extract from:
