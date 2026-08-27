@@ -1198,9 +1198,9 @@ export default function Admin() {
                         </div>
                       </div>
                     </div>
-                  ) : selectedClientData?.name?.toLowerCase().includes('unimais') || selectedClientData?.name?.toLowerCase().includes('meta') || selectedClientData?.name?.toLowerCase().includes('azul') ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      {/* Option: Card Carrosseis */}
+                  ) : selectedClientData?.name?.toLowerCase().includes('unimais') ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                      {/* Option 1: Cards Instagram */}
                       <div 
                         onClick={() => setShowCarrosseis(true)}
                         className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
@@ -1210,14 +1210,107 @@ export default function Admin() {
                         </div>
                         
                         <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
-                          Card Carrosseis
+                          Cards Instagram
                         </h4>
                         
                         <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
-                          Selecione entre o Carrossel Destaque e o Carrossel Ofertas para realizar as edições.
+                          Selecione entre o Carrossel Carros e o Carrossel Ofertas para realizar as edições.
                         </p>
                         <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
-                          <span>Acessar Carrosseis</span>
+                          <span>Acessar Cards Instagram</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+
+                      {/* Option 2: Carros Destaque (Menu Principal) */}
+                      <div 
+                        onClick={() => {
+                          setSlides([
+                            {
+                              id: crypto.randomUUID(),
+                              type: 'destaque',
+                              title: 'DESTAQUE UNIMAIS',
+                              fabricante: 'CHEVROLET',
+                              modelo: 'ONIX',
+                              descricao: '1.0 FLEX LT MANUAL',
+                              imageUrl: '',
+                              zoom: 1,
+                              posX: 0,
+                              posY: 0,
+                              condicao1Label: 'ANO', condicao1Val: '2024',
+                              condicao2Label: 'KM', condicao2Val: '44.802',
+                              condicao3Label: 'CÂMBIO', condicao3Val: 'MANUAL',
+                              cambio: 'MANUAL',
+                              valorIntegral: '72.900',
+                              website: 'UNIMAISVEICULOS.COM.BR'
+                            }
+                          ]);
+                          setActiveSlideIndex(0);
+                          setShowCarrosseis(true);
+                          setActiveEditor('destaque');
+                        }}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#FFD000]/60 rounded-xl p-6 cursor-pointer transition-all duration-300 group relative overflow-hidden"
+                      >
+                        <div className="absolute top-3 right-3 bg-[#FFD000] text-black text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
+                          NOVO
+                        </div>
+                        <div className="w-10 h-10 rounded-lg bg-[#FFD000]/10 flex items-center justify-center text-[#FFD000] mb-4 group-hover:bg-[#FFD000]/20 transition-colors">
+                          <Sparkles className="w-5 h-5" />
+                        </div>
+                        
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FFD000] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Carros Destaque
+                        </h4>
+                        
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Lâmina com moldura Destaque Unimais, especificações e preço promocional.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FFD000] transition-colors">
+                          <span>Acessar Carros Destaque</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+
+                      {/* Option 3: Design & Brandbook */}
+                      <div 
+                        onClick={() => setShowDesign(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                          <Palette className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Design & Brandbook
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Gerencie a identidade visual, paleta de cores e moodboard do cliente.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                          <span>Acessar Design</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  ) : selectedClientData?.name?.toLowerCase().includes('meta') || selectedClientData?.name?.toLowerCase().includes('azul') ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      {/* Option: Cards Instagram */}
+                      <div 
+                        onClick={() => setShowCarrosseis(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                          <ImageIcon className="w-5 h-5" />
+                        </div>
+                        
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Cards Instagram
+                        </h4>
+                        
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Selecione entre o Carrossel Carros e o Carrossel Ofertas para realizar as edições.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                          <span>Acessar Cards Instagram</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
@@ -1297,7 +1390,7 @@ export default function Admin() {
               </div>
             )}
 
-            {/* STEP 3.1: Carrosseis Menu Options */}
+            {/* STEP 3.1: Cards Instagram Menu Options */}
             {activeTab === 'clientes' && selectedClientId && showCarrosseis && !activeEditor && (
               <div className="space-y-6 animate-fade-in">
                 <button 
@@ -1307,7 +1400,8 @@ export default function Admin() {
                   <ArrowLeft className="w-4 h-4" />
                   Voltar para opções de {selectedClientData?.name || 'Cliente'}
                 </button>
-                <div className={`grid grid-cols-1 ${selectedClientData?.name?.toLowerCase().includes('unimais') ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-6`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Card 1: Carrossel Carros */}
                   <div 
                     onClick={() => setActiveEditor('destaque')}
                     className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
@@ -1316,56 +1410,14 @@ export default function Admin() {
                       <ImageIcon className="w-5 h-5" />
                     </div>
                     <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
-                      Carrossel Destaque
+                      Carrossel Carros
                     </h4>
                     <p className="text-xs text-white/50 font-light leading-relaxed mt-2 mb-6">
-                      Carrossel principal com 3 opções de cards.
+                      Carrossel principal com capa, lâminas de veículos e slide final.
                     </p>
                   </div>
 
-                  {selectedClientData?.name?.toLowerCase().includes('unimais') && (
-                    <div 
-                      onClick={() => {
-                        setSlides([
-                          {
-                            id: crypto.randomUUID(),
-                            type: 'destaque',
-                            title: 'DESTAQUE UNIMAIS',
-                            fabricante: 'CHEVROLET',
-                            modelo: 'ONIX',
-                            descricao: '1.0 FLEX LT MANUAL',
-                            imageUrl: '',
-                            zoom: 1,
-                            posX: 0,
-                            posY: 0,
-                            condicao1Label: 'ANO', condicao1Val: '2024',
-                            condicao2Label: 'KM', condicao2Val: '44.802',
-                            condicao3Label: 'CÂMBIO', condicao3Val: 'MANUAL',
-                            cambio: 'MANUAL',
-                            valorIntegral: '72.900',
-                            website: 'UNIMAISVEICULOS.COM.BR'
-                          }
-                        ]);
-                        setActiveSlideIndex(0);
-                        setActiveEditor('destaque');
-                      }}
-                      className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#FFD000]/60 rounded-xl p-6 cursor-pointer transition-all duration-300 group relative overflow-hidden"
-                    >
-                      <div className="absolute top-3 right-3 bg-[#FFD000] text-black text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
-                        NOVO
-                      </div>
-                      <div className="w-10 h-10 rounded-lg bg-[#FFD000]/10 flex items-center justify-center text-[#FFD000] mb-4 group-hover:bg-[#FFD000]/20 transition-colors">
-                        <Sparkles className="w-5 h-5" />
-                      </div>
-                      <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FFD000] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
-                        Carros Destaques
-                      </h4>
-                      <p className="text-xs text-white/50 font-light leading-relaxed mt-2 mb-6">
-                        Lâmina com moldura Destaque Unimais, especificações e preço promocional.
-                      </p>
-                    </div>
-                  )}
-
+                  {/* Card 2: Carrossel de Ofertas */}
                   <div 
                     onClick={() => setActiveEditor('ofertas')}
                     className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group opacity-50"
