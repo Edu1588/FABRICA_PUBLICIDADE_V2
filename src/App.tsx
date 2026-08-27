@@ -7,7 +7,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomeV2 from './pages/HomeV2';
 import Admin from './pages/Admin';
-import Outgrid from './pages/Outgrid';
 import ApresentacaoFabricaAzul from './pages/ApresentacaoFabricaAzul';
 import { LanguageProvider } from './contexts/LanguageContext';
 
@@ -32,7 +31,6 @@ export default function App() {
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomeV2 />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/outgrid" element={<Outgrid />} />
           <Route path="/apresentacao-azul" element={<ApresentacaoFabricaAzul />} />
         </Routes>
       </BrowserRouter>
