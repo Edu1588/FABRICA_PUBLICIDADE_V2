@@ -86,6 +86,54 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
   Globe
 };
 
+// Official Brotas Pinwheel Logo Component
+function BrotasLogoBadge({ className = '' }: { className?: string }) {
+  return (
+    <div className={`bg-white rounded-2xl shadow-xl px-5 py-3 flex flex-col items-center justify-center border border-black/5 ${className}`}>
+      <svg viewBox="0 0 100 70" className="w-14 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Top-Left: Blue */}
+        <path d="M42 22C35 14 24 16 28 8C32 0 46 10 42 22Z" fill="#0074BC" />
+        <circle cx="27" cy="10" r="3.5" fill="#0074BC" />
+        {/* Top-Right: Red */}
+        <path d="M58 22C65 14 76 16 72 8C68 0 54 10 58 22Z" fill="#ED1C24" />
+        <circle cx="73" cy="10" r="3.5" fill="#ED1C24" />
+        {/* Bottom-Left: Green */}
+        <path d="M42 36C35 44 24 42 28 50C32 58 46 48 42 36Z" fill="#00A651" />
+        <circle cx="27" cy="48" r="3.5" fill="#00A651" />
+        {/* Bottom-Right: Yellow */}
+        <path d="M58 36C65 44 76 42 72 50C68 58 54 48 58 36Z" fill="#FFC20E" />
+        <circle cx="73" cy="48" r="3.5" fill="#FFC20E" />
+        {/* Center core */}
+        <circle cx="50" cy="29" r="3" fill="#0074BC" />
+      </svg>
+      <span className="text-[#0074BC] font-black text-sm tracking-tight -mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+        Brotas
+      </span>
+    </div>
+  );
+}
+
+// 360° Circular Sweeping Arrow SVG
+function CircularArrow360() {
+  return (
+    <svg viewBox="0 0 340 90" className="w-full max-w-[340px] md:max-w-[400px] h-14 md:h-16 mx-auto -mt-6 md:-mt-8" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Outer sweeping curved path */}
+      <path
+        d="M 50 25 C 20 58, 80 82, 170 82 C 260 82, 320 58, 290 25"
+        stroke="white"
+        strokeWidth="4.5"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Arrowhead pointing right */}
+      <path
+        d="M 155 74 L 180 82 L 155 90 Z"
+        fill="white"
+      />
+    </svg>
+  );
+}
+
 interface BrotasSlideRendererProps {
   slide: BrotasSlideData;
   isEditing?: boolean;
@@ -117,7 +165,7 @@ export default function BrotasSlideRenderer({
     label?: string;
   }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const imageUrl = uploadedImages[slotId] || defaultUrl;
+    const imageUrl = uploadedImages[slotId] || defaultUrl || '/images/brotas/brotas_cover.jpg';
 
     return (
       <div className={`relative group overflow-hidden ${className}`}>
@@ -131,10 +179,10 @@ export default function BrotasSlideRenderer({
         )}
 
         {isEditing && (
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 z-30">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="bg-[#1B9C4F] hover:bg-[#15803D] text-white px-3 py-1.5 rounded-lg shadow-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="bg-[#00A859] hover:bg-[#008f4c] text-white px-3 py-1.5 rounded-lg shadow-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
               title="Trocar Imagem"
             >
               <Upload className="w-4 h-4" />
@@ -161,271 +209,288 @@ export default function BrotasSlideRenderer({
 
   const renderLayout = () => {
     switch (slide.layoutType) {
+      // 1. EXACT COVER SLIDE MATCHING USER REFERENCE
       case 'hero_cover':
         return (
-          <div className="relative w-full h-full flex flex-col justify-between p-12 md:p-20 bg-[#0A0F1A]">
-            {/* Background */}
+          <div className="relative w-full h-full flex flex-col justify-between p-8 md:p-12 bg-black overflow-hidden select-none">
+            {/* Background Photography with Warm Sunset Lighting */}
             <div className="absolute inset-0 z-0">
-              {slide.imageSlots && slide.imageSlots.length > 0 && (
-                <ImageSlot
-                  slotId={slide.imageSlots[0].id}
-                  defaultUrl={slide.imageSlots[0].defaultUrl}
-                  label={slide.imageSlots[0].label}
-                  className="w-full h-full"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1A] via-[#0A0F1A]/75 to-black/30"></div>
+              <ImageSlot
+                slotId={slide.imageSlots?.[0]?.id || 'cover-bg'}
+                defaultUrl={slide.imageSlots?.[0]?.defaultUrl || '/images/brotas/brotas_cover.jpg'}
+                label="Foto Territorial Brotas"
+                className="w-full h-full brightness-[0.95]"
+              />
+              {/* Subtle dark bottom vignette for crisp text contrast */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/70 pointer-events-none"></div>
             </div>
 
-            {/* Top Logo / Label */}
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="bg-white px-4 py-2 rounded-xl shadow-lg flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#1B9C4F]"></div>
-                <span className="font-bold text-gray-900 tracking-wider text-sm" style={{ fontFamily: 'Playfair Display, serif' }}>
-                  Brotas
-                </span>
-              </div>
-              {slide.categoryLabel && (
-                <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono">
-                  {slide.categoryLabel}
-                </span>
-              )}
-            </div>
+            {/* Top Bar: Floating Brotas Logo on Left + Glass Nav Capsule in Center */}
+            <div className="relative z-20 flex items-start justify-between w-full">
+              {/* Top Left Brotas Logo Badge */}
+              <motion.div {...getAnim(0)}>
+                <BrotasLogoBadge />
+              </motion.div>
 
-            {/* Main Center Title */}
-            <div className="relative z-10 max-w-4xl my-auto">
-              <motion.h1
+              {/* Top Center Frosted Glass Navigation Pill */}
+              <motion.div
                 {...getAnim(1)}
-                className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight leading-none"
-                style={{ fontFamily: 'Playfair Display, serif' }}
+                className="hidden md:flex items-center gap-8 px-8 py-2.5 rounded-full border border-white/25 bg-white/10 backdrop-blur-md text-white text-xs font-semibold tracking-wide shadow-lg mx-auto"
               >
-                {slide.title}
-              </motion.h1>
-              {slide.subtitle && (
-                <motion.p
-                  {...getAnim(2)}
-                  className="text-xl md:text-2xl text-gray-300 font-light max-w-2xl leading-relaxed"
-                >
-                  {slide.subtitle}
-                </motion.p>
-              )}
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Home</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">About Us</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Team</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Service</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Portfolio</span>
+              </motion.div>
+
+              {/* Top Right Spacer for symmetry */}
+              <div className="w-24 hidden md:block"></div>
             </div>
 
-            {/* Bottom Texts */}
-            <div className="relative z-10 border-t border-white/15 pt-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="space-y-1">
-                {slide.texts?.map((t, idx) => (
-                  <p key={idx} className="text-xs md:text-sm text-gray-400 font-light">
-                    {t}
-                  </p>
-                ))}
-              </div>
-              <div className="flex items-center gap-2 text-white/40 text-xs font-mono">
-                <span>{slide.slideNumber}</span>
-              </div>
+            {/* Center Area: BROTAS 360° Wordmark + Circular Arrow + 4 Colors + Yellow Text */}
+            <div className="relative z-20 my-auto text-center flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
+              {/* BROTAS serif wordmark */}
+              <motion.h1
+                {...getAnim(2)}
+                className="text-7xl sm:text-8xl md:text-9xl font-black text-white uppercase tracking-tight leading-none drop-shadow-2xl"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
+                BROTAS
+              </motion.h1>
+
+              {/* 360° text with sweeping circular arrow */}
+              <motion.div {...getAnim(3)} className="relative flex flex-col items-center justify-center -mt-2 md:-mt-4">
+                <span
+                  className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight drop-shadow-2xl"
+                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                >
+                  360°
+                </span>
+                {/* Sweeping 360 arrow icon */}
+                <CircularArrow360 />
+              </motion.div>
+
+              {/* 4-Color Segment Bar (Google/Brotas palette) */}
+              <motion.div {...getAnim(4)} className="flex items-center justify-center gap-2 my-2">
+                <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#0074BC] shadow-sm"></div>
+                <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#FFC20E] shadow-sm"></div>
+                <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#00A651] shadow-sm"></div>
+                <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#ED1C24] shadow-sm"></div>
+              </motion.div>
+
+              {/* Yellow / Golden Slogan with Leading Dots */}
+              <motion.div
+                {...getAnim(5)}
+                className="text-[#FFD000] text-sm sm:text-base md:text-lg font-bold tracking-wide text-center space-y-1 drop-shadow-md mt-1"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                <p>.Conectar a gestão. Organizar a informação</p>
+                <p>.Comunicar as entregas. Aproximar a população</p>
+              </motion.div>
+            </div>
+
+            {/* Bottom Area: Social Icons + Green Corner Protruding Tabs */}
+            <div className="relative z-20 flex flex-col items-center justify-end w-full">
+              {/* Social links f, in, X */}
+              <motion.div {...getAnim(6)} className="flex items-center justify-center gap-6 text-white text-xs font-bold opacity-80 mb-2">
+                <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">f</span>
+                <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">in</span>
+                <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">𝕏</span>
+              </motion.div>
+
+              {/* Bottom-Left Protruding Green Pill Tab */}
+              <div className="absolute -bottom-8 md:-bottom-12 left-0 w-40 md:w-56 h-10 md:h-14 bg-[#00A859] rounded-t-3xl pointer-events-none"></div>
+
+              {/* Bottom-Right Protruding Green Pill Tab */}
+              <div className="absolute -bottom-8 md:-bottom-12 right-0 w-40 md:w-56 h-10 md:h-14 bg-[#00A859] rounded-t-3xl pointer-events-none"></div>
             </div>
           </div>
         );
 
+      // 2. SPLIT LAYOUT (TEXT LEFT, PHOTO RIGHT) MATCHING REFERENCE
+      case 'split_text_photo':
       case 'dark_centered':
         return (
-          <div className="relative w-full h-full bg-[#0A0F1A] flex flex-col items-center justify-center p-12 md:p-24 text-center">
-            {/* Corner Decorative Elements */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#1B9C4F]/10 rounded-bl-[100px] pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#1B9C4F]/10 rounded-tr-[100px] pointer-events-none"></div>
+          <div className="relative w-full h-full bg-white flex flex-col md:flex-row p-10 md:p-16 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
+            {/* Far-Left Dark Vertical Accent Border */}
+            <div className="absolute left-0 top-0 bottom-0 w-2 bg-[#1A1A24] z-10 pointer-events-none"></div>
 
-            {slide.categoryLabel && (
-              <motion.span
-                {...getAnim(0)}
-                className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-8 block"
-              >
-                {slide.categoryLabel}
-              </motion.span>
-            )}
+            {/* Bottom-Left Deep Forest Green Corner Curve (#0B4D3C) */}
+            <div className="absolute bottom-0 left-0 w-44 md:w-56 h-44 md:h-56 bg-[#0B4D3C] rounded-tr-full z-0 pointer-events-none"></div>
 
-            <motion.h2
-              {...getAnim(1)}
-              className="text-4xl md:text-6xl lg:text-7xl font-bold italic text-white max-w-5xl leading-tight mb-8"
-              style={{ fontFamily: 'Playfair Display, serif' }}
-            >
-              {slide.title}
-            </motion.h2>
+            {/* Top-Right Bright Vibrant Green Corner Curve (#00A859) */}
+            <div className="absolute top-0 right-0 w-52 md:w-72 h-52 md:h-72 bg-[#00A859] rounded-bl-full z-0 pointer-events-none"></div>
 
-            {slide.subtitle && (
-              <motion.p
-                {...getAnim(2)}
-                className="text-[#FFB800] text-xl md:text-2xl font-light max-w-3xl mb-6"
-              >
-                {slide.subtitle}
-              </motion.p>
-            )}
-
-            {slide.texts && slide.texts.length > 0 && (
-              <div className="space-y-2 max-w-2xl">
-                {slide.texts.map((t, idx) => (
-                  <motion.p
-                    key={idx}
-                    {...getAnim(3 + idx)}
-                    className="text-gray-400 text-base md:text-lg font-light leading-relaxed"
-                  >
-                    {t}
-                  </motion.p>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-
-      case 'split_text_photo':
-        return (
-          <div className="relative w-full h-full bg-white flex flex-col md:flex-row p-10 md:p-16 gap-8 md:gap-12 items-center justify-between overflow-hidden">
-            {/* Top-Right Decorative Shape */}
-            <div className="absolute -top-12 -right-12 w-64 h-64 bg-[#1B9C4F] rounded-bl-[140px] pointer-events-none z-0"></div>
-            {/* Bottom-Left Decorative Shape */}
-            <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-[#0D6B3F] rounded-tr-[140px] pointer-events-none z-0"></div>
-
-            {/* Left 50%: Text */}
-            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl">
-              {slide.categoryLabel && (
-                <motion.span
-                  {...getAnim(0)}
-                  className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-3 block"
-                >
-                  {slide.categoryLabel}
-                </motion.span>
-              )}
-
+            {/* Left Column: Heading + Amber Label + Body */}
+            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl pl-4">
+              {/* Big Bold Headline in Playfair Serif */}
               <motion.h2
-                {...getAnim(1)}
-                className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-6"
-                style={{ fontFamily: 'Playfair Display, serif' }}
+                {...getAnim(0)}
+                className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-950 leading-[1.15] mb-5 tracking-tight"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
                 {slide.title}
               </motion.h2>
 
-              {slide.subtitle && (
-                <motion.p {...getAnim(2)} className="text-gray-600 font-medium mb-4 text-base">
-                  {slide.subtitle}
-                </motion.p>
-              )}
+              {/* Amber / Yellow Category Label */}
+              <motion.div
+                {...getAnim(1)}
+                className="text-[#FFB800] text-sm md:text-base font-bold tracking-wide mb-5"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                {slide.categoryLabel || 'Problema'}
+              </motion.div>
 
-              {/* Bullet / Text points */}
-              <div className="space-y-3.5 mt-2">
+              {/* Body Texts / Paragraphs */}
+              <div className="space-y-4 text-gray-600 text-sm md:text-base font-normal leading-relaxed">
                 {slide.texts?.map((item, idx) => (
-                  <motion.div
-                    key={idx}
-                    {...getAnim(3 + idx)}
-                    className="flex items-start gap-3 text-gray-700 leading-relaxed text-sm md:text-base"
-                  >
-                    <div className="w-2 h-2 rounded-full bg-[#1B9C4F] mt-2 shrink-0"></div>
-                    <span>{item}</span>
-                  </motion.div>
+                  <motion.p key={idx} {...getAnim(2 + idx)}>
+                    {item}
+                  </motion.p>
                 ))}
               </div>
             </div>
 
-            {/* Right 50%: Photo Container */}
-            <div className="w-full md:w-1/2 h-[320px] md:h-[480px] z-10 relative">
-              <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
-                {slide.imageSlots && slide.imageSlots.length > 0 ? (
-                  <ImageSlot
-                    slotId={slide.imageSlots[0].id}
-                    defaultUrl={slide.imageSlots[0].defaultUrl}
-                    label={slide.imageSlots[0].label}
-                    className="w-full h-full"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
-                    <span className="text-sm font-mono">Espaço para Imagem</span>
-                  </div>
-                )}
+            {/* Right Column: Square / Rectangular Photo Frame with Green Background Shape */}
+            <div className="w-full md:w-1/2 h-[340px] md:h-[480px] z-10 relative flex items-center justify-center">
+              <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
+                <ImageSlot
+                  slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
+                  defaultUrl={slide.imageSlots?.[0]?.defaultUrl || '/images/brotas/brotas_cover.jpg'}
+                  label={slide.imageSlots?.[0]?.label || 'Fotografia'}
+                  className="w-full h-full"
+                />
               </div>
-
-              {/* Small color accents */}
-              <div className="absolute -bottom-3 -right-3 w-16 h-4 bg-[#E53935] rounded-full"></div>
-              <div className="absolute -top-3 -left-3 w-16 h-4 bg-[#1565C0] rounded-full"></div>
             </div>
           </div>
         );
 
+      // 3. SPLIT PHOTO LEFT, TEXT RIGHT (WITH BLUE & RED ACCENTS AS IN REFERENCE)
+      case 'before_after':
+        return (
+          <div className="relative w-full h-full bg-white flex flex-col md:flex-row p-10 md:p-16 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
+            {/* Left Green Curve behind Photo */}
+            <div className="absolute top-12 left-0 w-44 md:w-56 h-80 bg-[#00A859] rounded-r-3xl z-0 pointer-events-none"></div>
+
+            {/* Top-Right Blue Accent Shape */}
+            <div className="absolute top-0 right-0 w-40 md:w-52 h-14 bg-[#1E88E5] rounded-bl-3xl z-0 pointer-events-none"></div>
+
+            {/* Bottom-Right Red Accent Shape */}
+            <div className="absolute bottom-0 right-0 w-48 md:w-64 h-14 bg-[#D32F2F] rounded-tl-3xl z-0 pointer-events-none"></div>
+
+            {/* Left Column: Photo Frame */}
+            <div className="w-full md:w-1/2 h-[340px] md:h-[480px] z-10 relative flex items-center justify-center">
+              <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
+                <ImageSlot
+                  slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
+                  defaultUrl={slide.imageSlots?.[0]?.defaultUrl || '/images/brotas/brotas_cover.jpg'}
+                  label="Foto"
+                  className="w-full h-full"
+                />
+              </div>
+            </div>
+
+            {/* Right Column: Heading + Yellow Label + Text */}
+            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl">
+              <motion.h2
+                {...getAnim(0)}
+                className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-950 leading-[1.15] mb-5 tracking-tight"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
+                {slide.title}
+              </motion.h2>
+
+              <motion.div
+                {...getAnim(1)}
+                className="text-[#FFB800] text-sm md:text-base font-bold tracking-wide mb-4"
+              >
+                {slide.categoryLabel || 'Visão'}
+              </motion.div>
+
+              <div className="space-y-4 text-gray-600 text-sm md:text-base leading-relaxed">
+                {slide.texts?.map((item, idx) => (
+                  <motion.p key={idx} {...getAnim(2 + idx)}>
+                    {item}
+                  </motion.p>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      // 4. FUNNEL LAYOUT
       case 'funnel_vertical':
         return (
           <div className="relative w-full h-full bg-white p-10 md:p-16 flex flex-col items-center justify-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#1B9C4F]/10 rounded-bl-[100px]"></div>
+            {/* Corner Decorative Elements */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C] rounded-tr-full pointer-events-none"></div>
 
-            {slide.categoryLabel && (
-              <motion.span
-                {...getAnim(0)}
-                className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-2"
-              >
-                {slide.categoryLabel}
-              </motion.span>
-            )}
+            <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-2">
+              {slide.categoryLabel || 'Diagnóstico'}
+            </motion.span>
 
             <motion.h2
               {...getAnim(1)}
-              className="text-3xl md:text-5xl font-bold text-gray-900 text-center mb-10"
-              style={{ fontFamily: 'Playfair Display, serif' }}
+              className="text-3xl md:text-5xl font-black text-gray-950 text-center mb-10"
+              style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
               {slide.title}
             </motion.h2>
 
-            <div className="w-full max-w-3xl flex flex-col items-center gap-4">
+            <div className="w-full max-w-3xl flex flex-col items-center gap-4 z-10">
               {slide.funnelItems?.map((item, idx) => (
                 <motion.div
                   key={idx}
                   {...getAnim(2 + idx)}
                   style={{ width: item.width, backgroundColor: item.color }}
-                  className="py-4 px-6 rounded-xl text-white font-medium text-center shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                  className="py-4 px-6 rounded-2xl text-white font-semibold text-center shadow-lg transition-all duration-300 hover:scale-[1.02]"
                 >
-                  <span className="text-sm md:text-base tracking-wide font-semibold">{item.label}</span>
+                  <span className="text-sm md:text-base tracking-wide font-bold">{item.label}</span>
                 </motion.div>
               ))}
             </div>
 
             {slide.texts && slide.texts.length > 0 && (
-              <div className="mt-8 text-center text-gray-500 text-sm max-w-xl">
+              <div className="mt-8 text-center text-gray-600 text-sm max-w-xl z-10">
                 {slide.texts.join(' ')}
               </div>
             )}
           </div>
         );
 
+      // 5. FLOW & HORIZONTAL STEPS
       case 'flow_horizontal':
         return (
           <div className="relative w-full h-full bg-white p-10 md:p-16 flex flex-col justify-center overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-48 h-48 bg-[#1B9C4F] rounded-bl-[100px]"></div>
+            <div className="absolute top-0 right-0 w-52 h-52 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C] rounded-tr-full pointer-events-none"></div>
 
-            <div className="max-w-5xl mx-auto w-full">
-              {slide.categoryLabel && (
-                <motion.span
-                  {...getAnim(0)}
-                  className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-2 block"
-                >
-                  {slide.categoryLabel}
-                </motion.span>
-              )}
+            <div className="max-w-5xl mx-auto w-full z-10">
+              <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-2 block">
+                {slide.categoryLabel || 'Metodologia'}
+              </motion.span>
 
               <motion.h2
                 {...getAnim(1)}
-                className="text-3xl md:text-5xl font-bold text-gray-900 mb-8"
-                style={{ fontFamily: 'Playfair Display, serif' }}
+                className="text-3xl md:text-5xl font-black text-gray-950 mb-8"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
                 {slide.title}
               </motion.h2>
 
-              {/* Horizontal steps */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-8">
                 {(slide.diagramData?.flowItems || slide.diagramData?.steps || []).map((step: string, idx: number) => (
                   <motion.div
                     key={idx}
                     {...getAnim(2 + idx)}
-                    className="bg-white border-t-4 border-[#1B9C4F] p-4 rounded-xl shadow-md flex flex-col items-center justify-center text-center group hover:shadow-xl transition-all"
+                    className="bg-white border-t-4 border-[#00A859] p-4 rounded-xl shadow-md flex flex-col items-center justify-center text-center group hover:shadow-xl transition-all"
                   >
-                    <span className="text-[10px] font-mono text-[#1B9C4F] font-bold mb-1">
+                    <span className="text-[10px] font-mono text-[#00A859] font-bold mb-1">
                       ETAPA {String(idx + 1).padStart(2, '0')}
                     </span>
-                    <span className="text-xs md:text-sm font-semibold text-gray-800 whitespace-pre-line">
+                    <span className="text-xs md:text-sm font-bold text-gray-800 whitespace-pre-line">
                       {step}
                     </span>
                   </motion.div>
@@ -433,7 +498,7 @@ export default function BrotasSlideRenderer({
               </div>
 
               {slide.texts && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-600 text-sm leading-relaxed">
+                <div className="mt-4 p-5 bg-gray-50 rounded-2xl border border-gray-100 text-gray-700 text-sm leading-relaxed">
                   {slide.texts.join(' ')}
                 </div>
               )}
@@ -441,16 +506,17 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
+      // 6. PHOTO GRID (TERRITORIAL)
       case 'photo_grid':
         return (
           <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div>
-              {slide.categoryLabel && (
-                <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                  {slide.categoryLabel}
-                </span>
-              )}
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <div className="absolute top-0 right-0 w-44 h-44 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+
+            <div className="z-10">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+                {slide.categoryLabel || 'Território'}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 {slide.title}
               </h2>
               {slide.texts && (
@@ -458,59 +524,55 @@ export default function BrotasSlideRenderer({
               )}
             </div>
 
-            {/* 5 Photos Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 my-auto h-[320px]">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 my-auto h-[320px] z-10">
               {(slide.imageSlots || [
                 { id: 'grid-1', label: 'Brotas 1' },
                 { id: 'grid-2', label: 'Brotas 2' },
                 { id: 'grid-3', label: 'Brotas 3' },
                 { id: 'grid-4', label: 'Brotas 4' },
                 { id: 'grid-5', label: 'Brotas 5' }
-              ]).map((slot, idx) => (
-                <div key={slot.id} className="rounded-xl overflow-hidden shadow-lg border border-gray-100">
+              ]).map((slot) => (
+                <div key={slot.id} className="rounded-2xl overflow-hidden shadow-xl border-2 border-white">
                   <ImageSlot slotId={slot.id} label={slot.label} className="w-full h-full" />
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
               <span>Brotas 360° · Presença Territorial</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
 
+      // 7. HUB & SPOKE
       case 'hub_spoke':
         return (
           <div className="relative w-full h-full bg-white p-10 md:p-14 flex flex-col items-center justify-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#1B9C4F]/10 rounded-bl-[100px]"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C] rounded-tr-full pointer-events-none"></div>
 
-            {slide.categoryLabel && (
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1">
-                {slide.categoryLabel}
-              </span>
-            )}
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 z-10">
+              {slide.categoryLabel || 'Ecossistema'}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-8 text-center z-10" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
               {slide.title}
             </h2>
 
-            {/* Hub Radial Diagram */}
-            <div className="relative w-full max-w-4xl h-[380px] flex items-center justify-center">
-              {/* Central Hub */}
-              <div className="z-20 w-36 h-36 rounded-full bg-[#1B9C4F] text-white shadow-2xl flex flex-col items-center justify-center text-center p-4 border-4 border-white">
-                <span className="text-xs font-bold uppercase tracking-wider">Centro</span>
-                <span className="text-base font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <div className="relative w-full max-w-4xl h-[380px] flex items-center justify-center z-10">
+              <div className="z-20 w-40 h-40 rounded-full bg-[#00A859] text-white shadow-2xl flex flex-col items-center justify-center text-center p-4 border-4 border-white">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/80">Sistema</span>
+                <span className="text-lg font-black" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                   {slide.hubCenter || 'BROTAS 360°'}
                 </span>
               </div>
 
-              {/* Spokes grid around hub */}
               <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-4 gap-4 items-center justify-items-center">
                 {slide.hubSpokes?.map((spoke, idx) => (
                   <motion.div
                     key={idx}
                     {...getAnim(idx)}
-                    className="bg-gray-50 hover:bg-[#1B9C4F]/10 border border-gray-200 hover:border-[#1B9C4F] p-3 rounded-xl shadow-sm text-center text-xs font-semibold text-gray-800 transition-all max-w-[160px]"
+                    className="bg-white hover:bg-[#00A859]/10 border border-gray-200 hover:border-[#00A859] p-3.5 rounded-2xl shadow-md text-center text-xs font-bold text-gray-800 transition-all max-w-[160px]"
                   >
                     {spoke}
                   </motion.div>
@@ -520,68 +582,64 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
+      // 8. CYCLE DIAGRAM
       case 'cycle_diagram':
         return (
           <div className="relative w-full h-full bg-white p-10 md:p-14 flex flex-col items-center justify-center overflow-hidden">
-            <div className="absolute -top-10 -left-10 w-48 h-48 bg-[#1B9C4F] rounded-br-[100px]"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
 
-            {slide.categoryLabel && (
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1">
-                {slide.categoryLabel}
-              </span>
-            )}
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 z-10">
+              {slide.categoryLabel || 'Processo'}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-8 text-center z-10" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
               {slide.title}
             </h2>
 
-            {/* 9 Cycle Items Grid */}
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-4 max-w-3xl w-full">
+            <div className="grid grid-cols-3 gap-4 max-w-3xl w-full z-10">
               {slide.cycleItems?.map((item, idx) => (
                 <motion.div
                   key={idx}
                   {...getAnim(idx)}
-                  className="bg-gray-50 border-l-4 border-[#1B9C4F] p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-3"
+                  className="bg-white border-l-4 border-[#00A859] p-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-3"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#1B9C4F] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#00A859] text-white flex items-center justify-center text-xs font-bold shrink-0">
                     {idx + 1}
                   </div>
-                  <span className="text-xs md:text-sm font-semibold text-gray-800">{item}</span>
+                  <span className="text-xs md:text-sm font-bold text-gray-800">{item}</span>
                 </motion.div>
               ))}
             </div>
           </div>
         );
 
+      // 9. GRID CARDS
       case 'grid_cards':
         return (
           <div className="relative w-full h-full bg-white p-10 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#1B9C4F]/10 rounded-bl-[100px]"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
 
-            <div>
-              {slide.categoryLabel && (
-                <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                  {slide.categoryLabel}
-                </span>
-              )}
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <div className="z-10">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+                {slide.categoryLabel || 'Entregas'}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-1" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 {slide.title}
               </h2>
               {slide.subtitle && <p className="text-gray-600 text-sm mb-4">{slide.subtitle}</p>}
             </div>
 
-            {/* 2x3 Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 my-auto max-w-5xl mx-auto w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 my-auto max-w-5xl mx-auto w-full z-10">
               {slide.gridCards?.map((card, idx) => {
                 const IconComponent = (card.icon && ICON_MAP[card.icon]) || Star;
                 return (
                   <motion.div
                     key={idx}
                     {...getAnim(idx)}
-                    className="bg-white border border-gray-100 hover:border-[#1B9C4F]/40 p-5 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group"
+                    className="bg-white border border-gray-100 hover:border-[#00A859]/50 p-5 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group"
                   >
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"
-                      style={{ backgroundColor: card.color ? `${card.color}15` : '#1B9C4F15', color: card.color || '#1B9C4F' }}
+                      style={{ backgroundColor: card.color ? `${card.color}15` : '#00A85915', color: card.color || '#00A859' }}
                     >
                       <IconComponent className="w-5 h-5" />
                     </div>
@@ -592,42 +650,41 @@ export default function BrotasSlideRenderer({
               })}
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
               <span>Brotas 360° · Metodologia Estruturada</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
 
+      // 10. LEVELS BAR
       case 'levels_bar':
         return (
           <div className="relative w-full h-full bg-white p-10 md:p-16 flex flex-col justify-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#1B9C4F] rounded-bl-[100px]"></div>
+            <div className="absolute top-0 right-0 w-52 h-52 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
 
-            <div className="max-w-4xl mx-auto w-full">
-              {slide.categoryLabel && (
-                <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                  {slide.categoryLabel}
-                </span>
-              )}
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-10" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <div className="max-w-4xl mx-auto w-full z-10">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+                {slide.categoryLabel || 'Estrutura'}
+              </span>
+              <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-10" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 {slide.title}
               </h2>
 
               <div className="space-y-6">
                 {[
-                  { level: 'Nível 1 · Informativo', desc: 'O que foi feito — obras, serviços, editais, horários', color: '#1B9C4F' },
+                  { level: 'Nível 1 · Informativo', desc: 'O que foi feito — obras, serviços, editais, horários', color: '#00A859' },
                   { level: 'Nível 2 · Educativo', desc: 'Por que importa — benefícios coletivos, economia, sustentabilidade', color: '#FFB800' },
-                  { level: 'Nível 3 · Emocional', desc: 'Como impacta a vida — histórias de moradores, transformação e orgulho de Brotas', color: '#E53E3E' }
+                  { level: 'Nível 3 · Emocional', desc: 'Como impacta a vida — histórias de moradores, transformação e orgulho de Brotas', color: '#ED1C24' }
                 ].map((item, idx) => (
                   <motion.div
                     key={idx}
                     {...getAnim(idx)}
-                    className="p-6 rounded-2xl shadow-md text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="p-6 rounded-2xl shadow-lg text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     style={{ backgroundColor: item.color }}
                   >
                     <span className="text-lg font-bold tracking-wide">{item.level}</span>
-                    <span className="text-sm text-white/90 font-medium">{item.desc}</span>
+                    <span className="text-sm text-white/95 font-semibold">{item.desc}</span>
                   </motion.div>
                 ))}
               </div>
@@ -635,16 +692,17 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
+      // 11. FAN OUT
       case 'fan_out':
         return (
           <div className="relative w-full h-full bg-white p-10 md:p-16 flex flex-col justify-center overflow-hidden">
-            <div className="max-w-5xl mx-auto w-full">
-              {slide.categoryLabel && (
-                <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                  {slide.categoryLabel}
-                </span>
-              )}
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-8" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+
+            <div className="max-w-5xl mx-auto w-full z-10">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+                {slide.categoryLabel || 'Canais'}
+              </span>
+              <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-8" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 {slide.title}
               </h2>
 
@@ -654,20 +712,20 @@ export default function BrotasSlideRenderer({
                   { name: 'Facebook', icon: 'Users', color: '#1877F2' },
                   { name: 'TikTok', icon: 'Play', color: '#000000' },
                   { name: 'YouTube', icon: 'Film', color: '#FF0000' },
-                  { name: 'Site Prefeitura', icon: 'Globe', color: '#1B9C4F' },
+                  { name: 'Site Prefeitura', icon: 'Globe', color: '#00A859' },
                   { name: 'WhatsApp', icon: 'MessageCircle', color: '#25D366' },
                   { name: 'Rádio Local', icon: 'Zap', color: '#FF7A00' },
-                  { name: 'Imprensa & Clipping', icon: 'Newspaper', color: '#3388FF' }
+                  { name: 'Imprensa & Clipping', icon: 'Newspaper', color: '#0074BC' }
                 ].map((channel, idx) => {
                   const Icon = ICON_MAP[channel.icon] || Globe;
                   return (
                     <motion.div
                       key={idx}
                       {...getAnim(idx)}
-                      className="p-5 rounded-2xl border border-gray-100 shadow-md flex items-center gap-3 hover:shadow-xl transition-all"
+                      className="p-5 rounded-2xl border border-gray-100 shadow-md flex items-center gap-3 hover:shadow-xl transition-all bg-white"
                     >
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
                         style={{ backgroundColor: channel.color }}
                       >
                         <Icon className="w-5 h-5" />
@@ -681,28 +739,28 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
+      // 12. MOCKUP TRIPLE / SYSTEM
       case 'mockup_triple':
       case 'mockup_system':
         return (
           <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div>
-              {slide.categoryLabel && (
-                <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                  {slide.categoryLabel}
-                </span>
-              )}
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+
+            <div className="z-10">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+                {slide.categoryLabel || 'Tecnologia'}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 {slide.title}
               </h2>
               {slide.texts && <p className="text-gray-600 text-sm">{slide.texts.join(' · ')}</p>}
             </div>
 
-            {/* 3 Mockup screens */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 my-auto max-w-5xl mx-auto w-full h-[320px]">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 my-auto max-w-5xl mx-auto w-full h-[320px] z-10">
               {(slide.imageSlots || [
-                { id: 'mockup-1', label: 'Tela 1 / Dashboard' },
-                { id: 'mockup-2', label: 'Tela 2 / Mobile App' },
-                { id: 'mockup-3', label: 'Tela 3 / Portal Web' }
+                { id: 'mockup-1', label: 'Dashboard' },
+                { id: 'mockup-2', label: 'App Mobile' },
+                { id: 'mockup-3', label: 'Portal Web' }
               ]).map((slot, idx) => (
                 <motion.div
                   key={slot.id}
@@ -721,32 +779,32 @@ export default function BrotasSlideRenderer({
               ))}
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
               <span>Plataforma Integrada de Gestão</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
 
+      // 13. COMPARATIVE TABLE
       case 'comparative_table':
         return (
           <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div>
-              {slide.categoryLabel && (
-                <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                  {slide.categoryLabel}
-                </span>
-              )}
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+
+            <div className="z-10">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+                {slide.categoryLabel || 'Comparativo'}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-4" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 {slide.title}
               </h2>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto my-auto max-w-5xl mx-auto w-full shadow-lg rounded-2xl border border-gray-200">
+            <div className="overflow-x-auto my-auto max-w-5xl mx-auto w-full shadow-xl rounded-2xl border border-gray-200 z-10">
               <table className="w-full text-left border-collapse text-xs md:text-sm">
                 <thead>
-                  <tr className="bg-[#1B9C4F] text-white font-semibold">
+                  <tr className="bg-[#00A859] text-white font-bold">
                     {slide.tableHeaders?.map((header, idx) => (
                       <th key={idx} className="p-3.5 md:p-4 uppercase tracking-wider font-mono text-xs">
                         {header}
@@ -757,57 +815,59 @@ export default function BrotasSlideRenderer({
                 <tbody className="divide-y divide-gray-100">
                   {slide.tableRows?.map((row, idx) => (
                     <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="p-3 md:p-3.5 font-medium text-gray-900">{row.col1}</td>
+                      <td className="p-3 md:p-3.5 font-bold text-gray-900">{row.col1}</td>
                       <td className="p-3 md:p-3.5 text-gray-600">{row.col2}</td>
                       {row.col3 && <td className="p-3 md:p-3.5 text-gray-800 font-semibold">{row.col3}</td>}
-                      {row.col4 && <td className="p-3 md:p-3.5 text-[#1B9C4F] font-bold">{row.col4}</td>}
+                      {row.col4 && <td className="p-3 md:p-3.5 text-[#00A859] font-black">{row.col4}</td>}
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100">
-              <span>Brotas 360° · Comparativo Estruturado</span>
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
+              <span>Brotas 360° · Solução Completa</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
 
+      // 14. DASHBOARD
       case 'dashboard':
         return (
           <div className="relative w-full h-full bg-[#0A0F1A] p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/20 rounded-bl-full pointer-events-none"></div>
+
+            <div className="z-10">
               <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
                 {slide.categoryLabel || 'Inteligência & Métricas'}
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 {slide.title}
               </h2>
             </div>
 
-            {/* Metric Cards Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 my-auto max-w-5xl mx-auto w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 my-auto max-w-5xl mx-auto w-full z-10">
               {slide.gridCards?.map((card, idx) => {
                 const IconComponent = (card.icon && ICON_MAP[card.icon]) || TrendingUp;
                 return (
                   <motion.div
                     key={idx}
                     {...getAnim(idx)}
-                    className="bg-[#111827] border border-white/10 p-6 rounded-2xl shadow-xl flex flex-col justify-between group hover:border-[#1B9C4F] transition-all"
+                    className="bg-[#111827] border border-white/10 p-6 rounded-2xl shadow-xl flex flex-col justify-between group hover:border-[#00A859] transition-all"
                   >
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-xs text-gray-400 font-medium">{card.title}</span>
                       <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: card.color ? `${card.color}20` : '#1B9C4F20', color: card.color || '#1B9C4F' }}
+                        style={{ backgroundColor: card.color ? `${card.color}20` : '#00A85920', color: card.color || '#00A859' }}
                       >
                         <IconComponent className="w-4 h-4" />
                       </div>
                     </div>
                     <span
-                      className="text-2xl md:text-3xl font-bold tracking-tight mb-1"
-                      style={{ color: card.color || '#1B9C4F' }}
+                      className="text-2xl md:text-3xl font-black tracking-tight mb-1"
+                      style={{ color: card.color || '#00A859' }}
                     >
                       {card.description}
                     </span>
@@ -816,33 +876,33 @@ export default function BrotasSlideRenderer({
               })}
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-500 font-mono pt-2 border-t border-white/10">
+            <div className="flex items-center justify-between text-xs text-gray-500 font-mono pt-2 border-t border-white/10 z-10">
               <span>Resultados Estimados · 1° Ano</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
 
+      // 15. ORGANOGRAM
       case 'organogram':
         return (
           <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div>
-              {slide.categoryLabel && (
-                <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                  {slide.categoryLabel}
-                </span>
-              )}
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+
+            <div className="z-10">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+                {slide.categoryLabel || 'Equipe'}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 {slide.title}
               </h2>
             </div>
 
-            {/* 3 Organogram Levels */}
-            <div className="space-y-6 my-auto max-w-5xl mx-auto w-full">
+            <div className="space-y-6 my-auto max-w-5xl mx-auto w-full z-10">
               {slide.orgLevels?.map((level, idx) => (
                 <motion.div key={idx} {...getAnim(idx)} className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold font-mono uppercase bg-[#1B9C4F] text-white px-2.5 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold font-mono uppercase bg-[#00A859] text-white px-3 py-1 rounded-full">
                       {level.level}
                     </span>
                   </div>
@@ -850,7 +910,7 @@ export default function BrotasSlideRenderer({
                     {level.items.map((item, itemIdx) => (
                       <div
                         key={itemIdx}
-                        className="bg-gray-50 border border-gray-200 p-3 rounded-xl text-center text-xs font-semibold text-gray-800 shadow-sm"
+                        className="bg-gray-50 border border-gray-200 p-3.5 rounded-xl text-center text-xs font-bold text-gray-800 shadow-sm"
                       >
                         {item}
                       </div>
@@ -860,13 +920,14 @@ export default function BrotasSlideRenderer({
               ))}
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
               <span>Equipe Multidisciplinar Dedicada</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
 
+      // 16. BIG NUMBER
       case 'big_number':
         return (
           <div
@@ -874,12 +935,13 @@ export default function BrotasSlideRenderer({
               slide.isDark ? 'bg-[#0A0F1A]' : 'bg-white'
             }`}
           >
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#1B9C4F]/10 rounded-bl-[100px]"></div>
+            <div className="absolute top-0 right-0 w-52 h-52 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C] rounded-tr-full pointer-events-none"></div>
 
             {slide.categoryLabel && (
               <motion.span
                 {...getAnim(0)}
-                className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-4 block"
+                className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-4 block z-10"
               >
                 {slide.categoryLabel}
               </motion.span>
@@ -887,16 +949,16 @@ export default function BrotasSlideRenderer({
 
             <motion.h3
               {...getAnim(1)}
-              className={`text-2xl md:text-3xl font-light mb-6 ${slide.isDark ? 'text-gray-300' : 'text-gray-700'}`}
-              style={{ fontFamily: 'Playfair Display, serif' }}
+              className={`text-2xl md:text-3xl font-light mb-6 z-10 ${slide.isDark ? 'text-gray-300' : 'text-gray-700'}`}
+              style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
               {slide.title}
             </motion.h3>
 
             <motion.h1
               {...getAnim(2)}
-              className="text-7xl md:text-9xl font-extrabold text-[#1B9C4F] mb-4 tracking-tighter"
-              style={{ fontFamily: 'Playfair Display, serif' }}
+              className="text-7xl md:text-9xl font-black text-[#00A859] mb-4 tracking-tighter z-10"
+              style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
               {slide.bigNumber || slide.title}
             </motion.h1>
@@ -904,14 +966,14 @@ export default function BrotasSlideRenderer({
             {slide.bigNumberLabel && (
               <motion.p
                 {...getAnim(3)}
-                className="text-[#FFB800] text-xl md:text-2xl font-semibold uppercase tracking-wider mb-6"
+                className="text-[#FFB800] text-xl md:text-2xl font-bold uppercase tracking-wider mb-6 z-10"
               >
                 {slide.bigNumberLabel}
               </motion.p>
             )}
 
             {slide.texts && (
-              <div className="space-y-1 max-w-xl">
+              <div className="space-y-1 max-w-xl z-10">
                 {slide.texts.map((t, idx) => (
                   <motion.p
                     key={idx}

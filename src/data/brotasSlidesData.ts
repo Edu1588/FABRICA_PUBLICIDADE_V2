@@ -50,25 +50,33 @@ export const BROTAS_SLIDES: BrotasSlideData[] = [
     id: 1,
     slideNumber: '01 / 39',
     category: 'institucional',
-    categoryLabel: '',
-    title: 'BROTAS 360°',
-    subtitle: 'Sistema Integrado de Comunicação e Inteligência da Gestão Municipal',
+    categoryLabel: 'Institucional',
+    title: 'BROTAS',
+    subtitle: '360°',
     layoutType: 'hero_cover',
     isDark: true,
-    texts: ['Conectar a gestão. Organizar a informação.', 'Comunicar as entregas. Aproximar a população.', 'Prefeitura Municipal de Brotas · Fábrica Publicidade & Digital'],
-    imageSlots: [{ id: 'capa-bg', label: 'Full-bleed Brotas landscape photo' }],
+    texts: [
+      '.Conectar a gestão. Organizar a informação',
+      '.Comunicar as entregas. Aproximar a população',
+      'Prefeitura Municipal de Brotas · Fábrica Publicidade & Digital'
+    ],
+    imageSlots: [{ id: 'capa-bg', label: 'Foto Territorial Brotas', defaultUrl: '/images/brotas/brotas_cover.jpg' }],
     animationType: 'fade'
   },
   {
     id: 2,
     slideNumber: '02 / 39',
-    category: 'provocacao',
-    categoryLabel: '',
-    title: 'Quanto do que a Prefeitura faz a população realmente conhece?',
-    layoutType: 'dark_centered',
-    isDark: true,
-    texts: ['Entregas acontecem todos os dias — mas sem comunicação estruturada, a percepção pública não acompanha a realidade da gestão.'],
-    animationType: 'fade'
+    category: 'problema',
+    categoryLabel: 'Problema',
+    title: 'Quanto do que a Prefeitura faz a população conhece?',
+    layoutType: 'split_text_photo',
+    isDark: false,
+    texts: [
+      'Entregas acontecem todos os dias — mas sem comunicação estruturada, a percepção pública não acompanha a realidade da gestão.',
+      'Obras, melhorias na saúde, valorização da educação e eventos muitas vezes passam despercebidos pela maioria dos cidadãos.'
+    ],
+    imageSlots: [{ id: 'img-slide2', label: 'Brotas Lagoa / Paisagem', defaultUrl: '/images/brotas/brotas_cover.jpg' }],
+    animationType: 'slide'
   },
   {
     id: 3,
@@ -77,8 +85,14 @@ export const BROTAS_SLIDES: BrotasSlideData[] = [
     categoryLabel: 'Problema',
     title: 'A comunicação pública hoje',
     layoutType: 'split_text_photo',
-    texts: ['Sem diagnóstico de imagem', 'Publicações esporádicas e sem planejamento', 'Redes sociais sem gestão profissional', 'Ausência de identidade visual e tom de voz unificados', 'Equipe de comunicação sobrecarregada e sem ferramentas'],
-    imageSlots: [{ id: 'img-problema', label: 'Photo illustrating problem' }],
+    texts: [
+      'Sem diagnóstico contínuo de imagem e percepção pública',
+      'Publicações esporádicas e sem planejamento editorial integrado',
+      'Redes sociais sem gestão profissional e métricas de desempenho',
+      'Ausência de identidade visual e tom de voz unificados para o município',
+      'Equipe interna sobrecarregada e sem ferramentas tecnológicas modernas'
+    ],
+    imageSlots: [{ id: 'img-problema', label: 'Comunicação Pública', defaultUrl: '/images/brotas/brotas_cover.jpg' }],
     animationType: 'slide'
   },
   {
