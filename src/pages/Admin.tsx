@@ -1484,32 +1484,34 @@ export default function Admin() {
                               </div>
                             </div>
 
-                            {/* PRECIFICAÇÃO NA CAPA (AZUL VEÍCULOS) */}
-                            <div className="pt-3 border-t border-white/5 space-y-3">
-                              <span className="text-[10px] text-[#FFD000] font-bold uppercase tracking-wider block">Precificação do Veículo</span>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                  <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Tabela FIPE (Riscado)</label>
-                                  <input
-                                    type="text"
-                                    value={activeSlide.valorFipe || ''}
-                                    onChange={e => updateActiveSlideField('valorFipe', formatPriceMask(e.target.value))}
-                                    placeholder="Ex: 119.990"
-                                    className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
-                                  />
-                                </div>
-                                <div className="space-y-1.5">
-                                  <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Oferta (Amarelo)</label>
-                                  <input
-                                    type="text"
-                                    value={activeSlide.valorIntegral || ''}
-                                    onChange={e => updateActiveSlideField('valorIntegral', formatPriceMask(e.target.value))}
-                                    placeholder="Ex: 99.590"
-                                    className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
-                                  />
+                            {/* PRECIFICAÇÃO NA CAPA (AZUL VEÍCULOS APENAS) */}
+                            {selectedClientData?.name?.toLowerCase().includes('azul') && (
+                              <div className="pt-3 border-t border-white/5 space-y-3">
+                                <span className="text-[10px] text-[#FFD000] font-bold uppercase tracking-wider block">Precificação do Veículo</span>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-1.5">
+                                    <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Tabela FIPE (Riscado)</label>
+                                    <input
+                                      type="text"
+                                      value={activeSlide.valorFipe || ''}
+                                      onChange={e => updateActiveSlideField('valorFipe', formatPriceMask(e.target.value))}
+                                      placeholder="Ex: 119.990"
+                                      className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
+                                    />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <label className="text-white/60 text-[9px] tracking-wider block uppercase font-bold">Valor Oferta (Amarelo)</label>
+                                    <input
+                                      type="text"
+                                      value={activeSlide.valorIntegral || ''}
+                                      onChange={e => updateActiveSlideField('valorIntegral', formatPriceMask(e.target.value))}
+                                      placeholder="Ex: 99.590"
+                                      className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-[#FFD000] text-white text-xs font-medium"
+                                    />
+                                  </div>
                                 </div>
                               </div>
-                            </div>
+                            )}
                           </div>
                         ) : activeSlide.type === 'veiculo' ? (
                           // VEHICLE SLIDE EDITABLES
