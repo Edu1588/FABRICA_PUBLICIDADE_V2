@@ -213,52 +213,115 @@ app.post("/api/scrape-vehicle", async (req, res) => {
       productHtml = await productResponse.text();
     }
     
-    // Clean up HTML to reduce tokens before sending to Gemini
+    // Clean up HTML to reduce tokens
     const $product = cheerio.load(productHtml);
-    $product("script, style, noscript, iframe, img, svg").remove();
-    const cleanHtml = $product("body").text().replace(/\s+/g, " ").trim().substring(0, 8000); // Send up to 8000 chars
+    
+    // Extrator Nativo com Cheerio para Unimais
+    const rawTitle = ($product("h1.product_title").text() || $product("h1").first().text() || $product('meta[property="og:title"]').attr('content') || '').trim();
+    const bodyText = $product("body").text().replace(/\s+/g, " ");
 
-    // 3. Ask Gemini to extract details
-    const prompt = `
+    const BRANDS = [
+      'CAOA CHERY', 'MERCEDES-BENZ', 'LAND ROVER', 'ALFA ROMEO', 'CHEVROLET', 'VOLKSWAGEN', 
+      'HYUNDAI', 'MITSUBISHI', 'PEUGEOT', 'CITROEN', 'PORSCHE', 'SUZUKI', 'SUBARU', 'TOYOTA', 
+      'HONDA', 'NISSAN', 'RENAULT', 'CHERY', 'VOLVO', 'AUDI', 'BMW', 'FIAT', 'FORD', 'JEEP', 
+      'KIA', 'MINI', 'RAM', 'BYD', 'GWM', 'JAC'
+    ];
+
+    let extractedMontadora = "";
+    let extractedModelo = "";
+    let extractedDescricao = "";
+
+    if (rawTitle) {
+      const upperTitle = rawTitle.toUpperCase();
+      for (const brand of BRANDS) {
+        if (upperTitle.startsWith(brand)) {
+          extractedMontadora = brand;
+          const rest = rawTitle.substring(brand.length).trim();
+          const parts = rest.split(/\s+/);
+          if (parts.length > 0) {
+            extractedModelo = parts[0];
+            extractedDescricao = parts.slice(1).join(" ") || "";
+          }
+          break;
+        }
+      }
+      if (!extractedMontadora) {
+        const parts = rawTitle.split(/\s+/);
+        extractedMontadora = parts[0]?.toUpperCase() || "";
+        extractedModelo = parts[1]?.toUpperCase() || "";
+        extractedDescricao = parts.slice(2).join(" ") || "";
+      }
+    }
+
+    // Extrair Ano e KM via Regex
+    const anoMatch = bodyText.match(/\b(20[12]\d(?:\/20[12]\d)?)\b/);
+    const ano = anoMatch ? anoMatch[1] : "";
+
+    const kmMatch = bodyText.match(/(\d{1,3}\.\d{3})\s*(?:km|KM)?/);
+    const km = kmMatch ? kmMatch[1] : "";
+
+    const priceMatch = bodyText.match(/R\$\s*([\d\.]+(?:,\d{2})?)/);
+    const valor = priceMatch ? priceMatch[1].replace(/,\d{2}$/, '') : "";
+
+    const fallbackData = {
+      montadora: extractedMontadora || "HONDA",
+      modelo: extractedModelo || search.toUpperCase(),
+      descricao: extractedDescricao || "",
+      ano: ano || "",
+      km: km || "",
+      fipe: "",
+      valor: valor || ""
+    };
+
+    // Tenta enriquecer com Gemini se a chave de API estiver disponivel
+    try {
+      const ai = getAI();
+      if (ai) {
+        $product("script, style, noscript, iframe, img, svg").remove();
+        const cleanHtml = $product("body").text().replace(/\s+/g, " ").trim().substring(0, 6000);
+
+        const prompt = `
 Extract the vehicle details from the following text extracted from a car dealership website.
-Return ONLY a valid JSON object with the following keys, with NO markdown formatting:
+Return ONLY a valid JSON object with the following keys:
 {
   "montadora": "String (e.g., Toyota, Honda, Chevrolet)",
-  "modelo": "String (The main car model, e.g., Corolla, Civic)",
-  "descricao": "String (The specific version/description, e.g., 2.0 VVT-IE FLEX XEI DIRECT SHIFT)",
+  "modelo": "String (The main car model, e.g., Corolla, Civic, HR-V)",
+  "descricao": "String (The specific version/description, e.g., 1.8 16V FLEX EXL 4P AUTOMÁTICO)",
   "ano": "String (Year or Year/Model, e.g., 2024 or 2024/2024)",
   "km": "String (Kilometers, e.g., 76.098)",
-  "fipe": "String (Tabela FIPE price if present, e.g. 99.590 or R$ 99.590)",
-  "valor": "String (Car sale price / full value if present, e.g. 99.590 or R$ 99.590)"
+  "fipe": "",
+  "valor": "String (Car sale price, e.g. 99.590)"
 }
 
 Text to extract from:
 ${cleanHtml}
 `;
 
-    const response = await getAI().models.generateContent({
-      model: 'gemini-3.6-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            montadora: { type: Type.STRING, description: "A marca ou fabricante do veículo (ex: JEEP, TOYOTA, VOLKSWAGEN)" },
-            modelo: { type: Type.STRING, description: "O modelo principal do veículo (ex: COMPASS, COROLLA, POLO)" },
-            descricao: { type: Type.STRING, description: "A versão completa ou descrição do modelo do veículo (ex: 2.0 TD350 TURBO DIESEL LIMITED AWD AUTOMÁTICO)" },
-            fipe: { type: Type.STRING, description: "Valor da Tabela FIPE do veículo (ex: 99.590)" },
-            valor: { type: Type.STRING, description: "Valor integral de venda do veículo (ex: 99.590)" }
-          },
-          required: ["montadora", "modelo", "descricao"]
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json'
+          }
+        });
+
+        if (response.text) {
+          const vehicleData = JSON.parse(response.text);
+          return res.json({
+            success: true,
+            data: {
+              ...fallbackData,
+              ...vehicleData,
+              fipe: ""
+            }
+          });
         }
       }
-    });
+    } catch (aiErr) {
+      console.warn("AI enrichment skipped or failed, using native extracted data:", aiErr);
+    }
 
-    let jsonResponse = response.text || "{}";
-    const vehicleData = JSON.parse(jsonResponse);
-    
-    return res.json({ success: true, data: vehicleData });
+    return res.json({ success: true, data: fallbackData });
 
   } catch (error) {
     console.error("Error scraping vehicle:", error);
