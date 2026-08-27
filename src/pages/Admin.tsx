@@ -2308,24 +2308,21 @@ export default function Admin() {
                                 crossOrigin="anonymous" 
                               />
 
-                              {/* LADO INFERIOR ESQUERDO: TAG DESTAQUE + FABRICANTE + MODELO + DESCRIÇÃO */}
-                              <div className="absolute bottom-[66px] left-[18px] z-20 pointer-events-none text-left flex flex-col items-start font-sans" style={{ maxWidth: '175px' }}>
-                                <div className="bg-[#FFD000] text-black text-[9px] font-black tracking-wider uppercase px-2 py-0.5 rounded shadow-sm">
-                                  DESTAQUE
-                                </div>
-                                <div className="text-white text-[13px] font-bold tracking-wide uppercase mt-1 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] truncate w-full">
+                              {/* LADO INFERIOR ESQUERDO: FABRICANTE + MODELO + DESCRIÇÃO (Fonte Ruda / Descrição fina em itálico) */}
+                              <div className="absolute bottom-[58px] left-[18px] z-20 pointer-events-none text-left flex flex-col items-start" style={{ maxWidth: '175px', fontFamily: '"Ruda", sans-serif' }}>
+                                <div className="text-white text-[13px] font-bold tracking-wide uppercase leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] truncate w-full">
                                   {activeSlide.fabricante || 'CHEVROLET'}
                                 </div>
                                 <div className="text-white text-[28px] font-black tracking-tight uppercase leading-none mt-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] truncate w-full">
                                   {activeSlide.modelo || 'ONIX'}
                                 </div>
-                                <div className="text-white text-[9.5px] font-bold tracking-wide uppercase leading-tight mt-1 text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] line-clamp-2">
+                                <div className="text-white/95 text-[9.5px] font-normal italic tracking-wide uppercase leading-tight mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] line-clamp-2">
                                   {activeSlide.descricao || '1.0 FLEX LT MANUAL'}
                                 </div>
                               </div>
 
-                              {/* LADO INFERIOR DIREITO: PREÇO + ESPECIFICAÇÕES (KM | ANO | CÂMBIO) */}
-                              <div className="absolute bottom-[66px] right-[18px] z-20 pointer-events-none flex flex-col items-end text-right font-sans">
+                              {/* LADO INFERIOR DIREITO: PREÇO + ESPECIFICAÇÕES (KM, ANO, CÂMBIO) */}
+                              <div className="absolute bottom-[58px] right-[18px] z-20 pointer-events-none flex flex-col items-end text-right">
                                 {/* Preço Amarelo */}
                                 <div className="flex items-baseline gap-0.5 drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
                                   <span className="text-[#FFD000] text-[13px] font-black tracking-tight mr-0.5">R$</span>
@@ -2342,35 +2339,11 @@ export default function Admin() {
                                   <span className="text-[#FFD000] text-[11px] font-black tracking-tight self-start mt-1">,00</span>
                                 </div>
 
-                                {/* Especificações com Ícones: KM | ANO | CÂMBIO */}
-                                <div className="flex items-center gap-1.5 text-white text-[8px] font-bold uppercase tracking-wider mt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-                                  {/* Ícone Velocímetro + KM */}
-                                  <div className="flex items-center gap-1">
-                                    <svg className="w-2.5 h-2.5 text-white stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span>{(activeSlide.condicao2Val || '44.802').includes('KM') ? (activeSlide.condicao2Val || '44.802') : `${activeSlide.condicao2Val || '44.802'} KM`}</span>
-                                  </div>
-
-                                  <span className="text-white/40 font-light">|</span>
-
-                                  {/* Ícone Calendário + Ano */}
-                                  <div className="flex items-center gap-1">
-                                    <svg className="w-2.5 h-2.5 text-white stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>{activeSlide.condicao1Val || '2024'}</span>
-                                  </div>
-
-                                  <span className="text-white/40 font-light">|</span>
-
-                                  {/* Ícone Câmbio + Câmbio */}
-                                  <div className="flex items-center gap-1">
-                                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                      <path d="M7 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-5 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-5 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-6-4v6h2V7h-2zm-5 0h2v6H6V7zm10 0h2v6h-2V7z"/>
-                                    </svg>
-                                    <span>{activeSlide.cambio || activeSlide.condicao3Val || 'MANUAL'}</span>
-                                  </div>
+                                {/* Especificações: Textos alinhados aos ícones originais da base PNG */}
+                                <div className="flex items-center gap-3 text-white text-[8.5px] font-bold uppercase tracking-wider mt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]" style={{ fontFamily: '"Ruda", sans-serif' }}>
+                                  <span>{(activeSlide.condicao2Val || '44.802').includes('KM') ? (activeSlide.condicao2Val || '44.802') : `${activeSlide.condicao2Val || '44.802'} KM`}</span>
+                                  <span>{activeSlide.condicao1Val || '2024'}</span>
+                                  <span>{activeSlide.cambio || activeSlide.condicao3Val || 'MANUAL'}</span>
                                 </div>
                               </div>
                             </div>
