@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomeV2 from './pages/HomeV2';
 import Admin from './pages/Admin';
 import ApresentacaoFabricaAzul from './pages/ApresentacaoFabricaAzul';
+import ApresentacaoBrotas from './pages/ApresentacaoBrotas';
 import { LanguageProvider } from './contexts/LanguageContext';
 
 function Construction() {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/home" element={<HomeV2 />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/apresentacao-azul" element={<ApresentacaoFabricaAzul />} />
+          <Route path="/apresentacao-brotas" element={<ApresentacaoBrotas />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>

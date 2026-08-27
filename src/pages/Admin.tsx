@@ -23,7 +23,12 @@ import {
   Sun,
   Moon,
   Newspaper,
-  Sparkles
+  Sparkles,
+  Presentation,
+  Play,
+  Copy,
+  ExternalLink,
+  Edit3
 } from 'lucide-react';
 import { AdminDashboard } from '../components/AdminDashboard';
 import { DesignBrandbook } from '../components/DesignBrandbook';
@@ -144,13 +149,55 @@ export default function Admin() {
   };
 
   // Unified Workflow
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'clientes' | 'config'>('clientes');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'clientes' | 'apresentacoes' | 'config'>('clientes');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showCarrosseis, setShowCarrosseis] = useState(false);
   const [showDesign, setShowDesign] = useState(false);
   const [showJornal, setShowJornal] = useState(false);
   const [activeEditor, setActiveEditor] = useState<'destaque' | 'ofertas' | null>(null);
   const [showEditClient, setShowEditClient] = useState(false);
+
+  // Presentations State
+  interface PresentationItem {
+    id: string;
+    name: string;
+    slug: string;
+    clientName: string;
+    slideCount: number;
+    updatedAt: string;
+  }
+
+  const [presentations, setPresentations] = useState<PresentationItem[]>(() => {
+    const defaultList: PresentationItem[] = [
+      {
+        id: 'brotas-360',
+        name: 'Brotas 360° — Sistema Integrado de Comunicação',
+        slug: 'apresentacao-brotas',
+        clientName: 'Prefeitura Municipal de Brotas',
+        slideCount: 39,
+        updatedAt: new Date().toLocaleDateString('pt-BR')
+      },
+      {
+        id: 'fabrica-azul',
+        name: 'Fábrica Azul — Apresentação Institucional',
+        slug: 'apresentacao-azul',
+        clientName: 'Azul Veículos',
+        slideCount: 20,
+        updatedAt: new Date().toLocaleDateString('pt-BR')
+      }
+    ];
+    try {
+      const saved = localStorage.getItem('fabrica_presentations_list');
+      return saved ? JSON.parse(saved) : defaultList;
+    } catch {
+      return defaultList;
+    }
+  });
+
+  const [newPresName, setNewPresName] = useState('');
+  const [newPresSlug, setNewPresSlug] = useState('');
+  const [newPresClient, setNewPresClient] = useState('');
+  const [showNewPresModal, setShowNewPresModal] = useState(false);
   
   // Clients List State
   const [clients, setClients] = useState<AppClient[]>([]);
@@ -1010,6 +1057,24 @@ export default function Admin() {
                 </button>
                 <button
                   onClick={() => {
+                    setActiveTab('apresentacoes');
+                    setSelectedClientId(null);
+                    setShowCarrosseis(false);
+                    setShowDesign(false);
+                    setShowJornal(false);
+                    setActiveEditor(null);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
+                    activeTab === 'apresentacoes' 
+                      ? 'bg-[#18120e] text-[#FF7A00] border-l-2 border-[#C46A1A]' 
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Presentation className="w-4 h-4" />
+                  Apresentações
+                </button>
+                <button
+                  onClick={() => {
                     setActiveTab('config');
                     setSelectedClientId(null);
                     setShowCarrosseis(false);
@@ -1061,7 +1126,7 @@ export default function Admin() {
                   Central de Ativos / Gestão de Carrosséis
                 </span>
                 <h1 className="text-2xl md:text-3xl font-light tracking-wide uppercase mt-1" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  {activeTab === 'config' ? 'Configurações' : showCarrosseis ? (activeEditor === 'destaque' ? `Carrossel Destaque ${selectedClientData?.name || ''}` : activeEditor === 'ofertas' ? `Carrossel de Ofertas ${selectedClientData?.name || ''}` : `Gestão de Carrosséis - ${selectedClientData?.name || ''}`) : 'Gerenciamento de Clientes'}
+                  {activeTab === 'config' ? 'Configurações' : activeTab === 'apresentacoes' ? 'Apresentações Interativas' : showCarrosseis ? (activeEditor === 'destaque' ? `Carrossel Destaque ${selectedClientData?.name || ''}` : activeEditor === 'ofertas' ? `Carrossel de Ofertas ${selectedClientData?.name || ''}` : `Gestão de Carrosséis - ${selectedClientData?.name || ''}`) : 'Gerenciamento de Clientes'}
                 </h1>
               </div>
               
@@ -2594,6 +2659,239 @@ export default function Admin() {
 
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* STEP 4: APRESENTAÇÕES VIEW */}
+            {activeTab === 'apresentacoes' && (
+              <div className="space-y-6 animate-fade-in max-w-5xl">
+                
+                {/* Header & Actions */}
+                <div className="bg-[#0c0c10] border border-white/5 rounded-2xl p-8">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6 mb-8">
+                    <div>
+                      <span className="text-[9px] font-outfit text-[#C46A1A] uppercase tracking-widest">
+                        Apresentações Institucionais & Projetos
+                      </span>
+                      <h3 className="text-xl font-light uppercase text-white mt-0.5" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        Apresentações Interativas
+                      </h3>
+                      <p className="text-xs text-white/50 font-light mt-1">
+                        Apresentações interativas em tela cheia com transições fluidas e controle de slides.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => setShowNewPresModal(true)}
+                      className="flex items-center gap-2 bg-[#18120e] border border-[#C46A1A] hover:bg-[#C46A1A] text-[#FF7A00] hover:text-black font-outfit text-[10px] uppercase tracking-widest px-5 py-3 rounded-xl transition-all cursor-pointer font-bold shrink-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Criar Nova Apresentação
+                    </button>
+                  </div>
+
+                  {/* New Presentation Modal / Inline Form */}
+                  {showNewPresModal && (
+                    <div className="mb-8 p-6 bg-[#111116] border border-[#C46A1A]/40 rounded-xl space-y-4 animate-fade-in">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-outfit uppercase tracking-wider text-white">Nova Apresentação</h4>
+                        <button
+                          onClick={() => setShowNewPresModal(false)}
+                          className="text-white/40 hover:text-white text-xs"
+                        >
+                          ✕ Fechar
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-[9px] font-outfit uppercase tracking-widest text-white/60 block mb-1">Título</label>
+                          <input
+                            type="text"
+                            value={newPresName}
+                            onChange={(e) => setNewPresName(e.target.value)}
+                            placeholder="Ex: Brotas 360°"
+                            className="w-full bg-[#0c0c10] border border-white/10 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-[#C46A1A]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-outfit uppercase tracking-widest text-white/60 block mb-1">Cliente</label>
+                          <input
+                            type="text"
+                            value={newPresClient}
+                            onChange={(e) => setNewPresClient(e.target.value)}
+                            placeholder="Ex: Prefeitura de Brotas"
+                            className="w-full bg-[#0c0c10] border border-white/10 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-[#C46A1A]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-outfit uppercase tracking-widest text-white/60 block mb-1">Link / Slug</label>
+                          <input
+                            type="text"
+                            value={newPresSlug}
+                            onChange={(e) => setNewPresSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
+                            placeholder="Ex: apresentacao-brotas"
+                            className="w-full bg-[#0c0c10] border border-white/10 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-[#C46A1A]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end gap-3 pt-2">
+                        <button
+                          onClick={() => setShowNewPresModal(false)}
+                          className="text-[10px] font-outfit uppercase tracking-widest px-4 py-2 rounded-lg border border-white/10 text-white/60 hover:text-white"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (!newPresName.trim() || !newPresSlug.trim()) {
+                              setToast({ message: 'Preencha o título e o link da apresentação', type: 'error' });
+                              setTimeout(() => setToast(null), 3000);
+                              return;
+                            }
+                            const cleanSlug = newPresSlug.startsWith('apresentacao-') ? newPresSlug : `apresentacao-${newPresSlug}`;
+                            const newP: PresentationItem = {
+                              id: crypto.randomUUID(),
+                              name: newPresName.trim(),
+                              clientName: newPresClient.trim() || 'Cliente Geral',
+                              slug: cleanSlug,
+                              slideCount: 1,
+                              updatedAt: new Date().toLocaleDateString('pt-BR')
+                            };
+                            const updated = [newP, ...presentations];
+                            setPresentations(updated);
+                            try {
+                              localStorage.setItem('fabrica_presentations_list', JSON.stringify(updated));
+                            } catch (e) {
+                              console.warn('localStorage error', e);
+                            }
+                            setNewPresName('');
+                            setNewPresClient('');
+                            setNewPresSlug('');
+                            setShowNewPresModal(false);
+                            setToast({ message: 'Apresentação criada!', type: 'success' });
+                            setTimeout(() => setToast(null), 3000);
+                          }}
+                          className="bg-[#18120e] border border-[#C46A1A] hover:bg-[#C46A1A] text-[#FF7A00] hover:text-black font-outfit text-[10px] uppercase tracking-widest px-6 py-2 rounded-lg font-bold"
+                        >
+                          Salvar Apresentação
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Presentations Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {presentations.map((pres) => (
+                      <div
+                        key={pres.id}
+                        className="bg-[#111116] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 transition-all duration-300 group flex flex-col justify-between"
+                      >
+                        <div>
+                          {/* Top Tag & Slide Count */}
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="text-[9px] font-outfit bg-[#1B9C4F]/20 text-[#1B9C4F] border border-[#1B9C4F]/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider font-semibold">
+                              {pres.slideCount} Slides
+                            </span>
+                            <span className="text-[9px] font-mono text-white/40">
+                              Atualizado: {pres.updatedAt}
+                            </span>
+                          </div>
+
+                          {/* Presentation Title */}
+                          <h4
+                            className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors"
+                            style={{ fontFamily: 'var(--font-outfit)' }}
+                          >
+                            {pres.name}
+                          </h4>
+
+                          {/* Client */}
+                          <p className="text-xs text-white/50 font-light mt-1">
+                            {pres.clientName}
+                          </p>
+
+                          {/* URL Badge */}
+                          <div className="mt-4 p-2 bg-[#0c0c10] border border-white/5 rounded-lg flex items-center justify-between">
+                            <span className="text-[10px] font-mono text-[#3388FF] truncate">
+                              /{pres.slug}
+                            </span>
+                            <a
+                              href={`/${pres.slug}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-white/40 hover:text-white transition-colors"
+                              title="Abrir em nova aba"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="pt-6 border-t border-white/5 mt-6 grid grid-cols-3 gap-2">
+                          <a
+                            href={`/${pres.slug}`}
+                            className="flex items-center justify-center gap-1.5 bg-[#1B9C4F]/10 hover:bg-[#1B9C4F]/20 border border-[#1B9C4F]/30 text-[#1B9C4F] font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all text-center font-bold"
+                          >
+                            <Play className="w-3 h-3" />
+                            Ver
+                          </a>
+
+                          <button
+                            onClick={() => {
+                              const duplicated: PresentationItem = {
+                                ...pres,
+                                id: crypto.randomUUID(),
+                                name: `${pres.name} (Cópia)`,
+                                slug: `${pres.slug}-copia`,
+                                updatedAt: new Date().toLocaleDateString('pt-BR')
+                              };
+                              const updated = [duplicated, ...presentations];
+                              setPresentations(updated);
+                              try {
+                                localStorage.setItem('fabrica_presentations_list', JSON.stringify(updated));
+                              } catch (e) {
+                                console.warn('localStorage error', e);
+                              }
+                              setToast({ message: 'Apresentação duplicada com sucesso!', type: 'success' });
+                              setTimeout(() => setToast(null), 3000);
+                            }}
+                            className="flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all"
+                            title="Duplicar apresentação"
+                          >
+                            <Copy className="w-3 h-3" />
+                            Duplicar
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              if (confirm(`Tem certeza que deseja excluir "${pres.name}"?`)) {
+                                const updated = presentations.filter(p => p.id !== pres.id);
+                                setPresentations(updated);
+                                try {
+                                  localStorage.setItem('fabrica_presentations_list', JSON.stringify(updated));
+                                } catch (e) {
+                                  console.warn('localStorage error', e);
+                                }
+                                setToast({ message: 'Apresentação excluída!', type: 'success' });
+                                setTimeout(() => setToast(null), 3000);
+                              }
+                            }}
+                            className="flex items-center justify-center gap-1.5 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 text-red-400 font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all"
+                            title="Excluir apresentação"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            Excluir
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+
               </div>
             )}
 
