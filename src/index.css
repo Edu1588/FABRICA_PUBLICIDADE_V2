@@ -382,3 +382,24 @@ body {
   animation: slowVerticalScroll 32s ease-in-out infinite;
 }
 
+@keyframes teamMarquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-team-marquee {
+  display: flex;
+  width: max-content;
+  animation: teamMarquee 34s linear infinite;
+  will-change: transform;
+}
+
+.animate-team-marquee:hover,
+.group:hover .animate-team-marquee {
+  animation-play-state: paused;
+}
+

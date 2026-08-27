@@ -802,31 +802,46 @@ export default function HomeV2() {
         </section>
 
         {/* Section 05: Nosso Time */}
-        <section id="clientes" className="mx-auto max-w-[1400px] px-6">
-          <SectionLabel n="05">Nosso time</SectionLabel>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-[1400px] mx-auto">
-            {TEAM.map((m) => (
-              <PaperBurnCard
-                key={m.name}
-                name={m.name}
-                role={m.role}
-                img={m.img}
-                onClick={() => setSelectedMember(m)}
-              />
-            ))}
+        <section id="clientes" className="w-full relative py-8 overflow-hidden">
+          <div className="mx-auto max-w-[1400px] px-6">
+            <SectionLabel n="05">Nosso time</SectionLabel>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-10 gap-y-1 py-14 md:grid-cols-4 border-t border-white/10 mt-12">
-            {PEOPLE.map(([name, role]) => (
-              <div
-                key={name}
-                className="flex items-baseline justify-between border-b border-white/10 py-3 font-mono"
-              >
-                <span className="text-xs text-stone-300">{name}</span>
-                <span className="label-xs text-stone-400">{role}</span>
-              </div>
-            ))}
+          {/* Automatic Infinite Carousel of Team Members */}
+          <div 
+            className="w-full overflow-hidden py-6 select-none relative group mt-4"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
+            }}
+          >
+            <div className="animate-team-marquee flex gap-6 items-center">
+              {/* Seamless double loop for infinite marquee */}
+              {[...TEAM, ...TEAM].map((m, idx) => (
+                <div key={`${m.name}-${idx}`} className="w-[300px] sm:w-[340px] shrink-0">
+                  <PaperBurnCard
+                    name={m.name}
+                    role={m.role}
+                    img={m.img}
+                    onClick={() => setSelectedMember(m)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mx-auto max-w-[1400px] px-6">
+            <div className="grid grid-cols-2 gap-x-10 gap-y-1 py-14 md:grid-cols-4 border-t border-white/10 mt-6">
+              {PEOPLE.map(([name, role]) => (
+                <div
+                  key={name}
+                  className="flex items-baseline justify-between border-b border-white/10 py-3 font-mono"
+                >
+                  <span className="text-xs text-stone-300">{name}</span>
+                  <span className="label-xs text-stone-400">{role}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -845,36 +860,43 @@ export default function HomeV2() {
             </span>
           </div>
 
-          <ul className="pb-24 border-t border-white/10">
-            {SPOTLIGHT.map(([name, year]) => (
-              <li key={name} className="group flex items-baseline justify-between gap-4 border-b border-white/10 py-4 px-2 hover:bg-[#ff4d16] hover:border-[#ff4d16] transition-all">
-                <span 
-                  className="font-display text-[7vw] leading-[1.05] font-light text-stone-300/80 transition-colors duration-300 group-hover:text-black md:text-[4.5rem] uppercase select-none"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
-                  {name.toUpperCase()}
-                </span>
-                <span className="label-xs text-stone-400 border border-white/10 px-2 py-0.5 rounded">{year}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Section 07: Jornada da forja */}
-        <section className="mx-auto max-w-[1400px] px-6">
-          <SectionLabel n="07">Jornada da forja</SectionLabel>
-
-          <ul className="grid grid-cols-2 gap-x-8 gap-y-2 pb-24 sm:grid-cols-3 md:grid-cols-4 font-mono">
-            {INDEX.map((c) => (
-              <li
-                key={c}
-                className="border-b border-white/10 py-2.5 text-xs text-stone-400 transition-colors hover:text-[#ff4d16] hover:border-[#ff4d16]/30 flex items-center gap-2"
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 pt-6">
+            {SPOTLIGHT.map(([brand, cat]) => (
+              <div
+                key={brand}
+                className="group relative border border-white/10 p-6 transition-all hover:border-[#ff4d16]/50 hover:bg-[#ff4d16]/5 flex flex-col justify-between h-40"
               >
-                <span className="text-[#ff4d16]/60 text-[10px]">✦</span>
-                <span>{c}</span>
-              </li>
+                <div>
+                  <span className="label-xs text-[#ff4d16] font-bold">{cat}</span>
+                  <h4 className="font-mono text-base text-stone-200 mt-2 font-bold group-hover:text-white transition-colors">{brand}</h4>
+                </div>
+                <div className="flex items-center justify-between text-xs text-stone-300 font-mono pt-4 border-t border-white/5">
+                  <span>Status</span>
+                  <span className="text-[#ff4d16] flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff4d16] animate-pulse"></span>
+                    Ativo
+                  </span>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          {/* Section 06.5: Index de Serviços */}
+          <div className="pt-24 pb-12">
+            <span className="text-xs text-stone-300 font-mono uppercase tracking-widest block mb-8 font-bold border-b border-white/10 pb-4">
+              [ ÍNDICE DE CAPACIDADES ]
+            </span>
+            <div className="flex flex-wrap gap-2 text-xs font-mono text-stone-300">
+              {INDEX.map((item) => (
+                <span
+                  key={item}
+                  className="border border-white/10 px-3 py-1.5 hover:border-[#ff4d16] hover:text-[#ff4d16] transition-colors cursor-default"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* Small 3D Anvil before Contato */}
@@ -898,60 +920,45 @@ export default function HomeV2() {
           </div>
         </div>
 
-        {/* Section 08: Contato */}
-        <section id="contato" className="mx-auto max-w-[1400px] px-6">
-          <SectionLabel n="08">Contato</SectionLabel>
+        {/* Section 07: Contato / Footer */}
+        <footer id="contato" className="border-t border-white/10 bg-[#050505] text-stone-300 font-mono pt-16">
+          <div className="mx-auto max-w-[1400px] px-6 pb-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <div>
+              <span className="label-xs text-[#ff4d16] font-bold tracking-widest block mb-2">FORJAMENTO & BRIEFING</span>
+              <h2 className="text-4xl sm:text-5xl font-light text-white font-sans tracking-tight uppercase leading-tight">
+                Pronto para dar têmpera à sua marca?
+              </h2>
+              <p className="text-sm text-stone-400 font-mono mt-6 max-w-md leading-relaxed">
+                Transforme sua presença digital em uma máquina de conversão blindada. Fale direto com nossos fundadores.
+              </p>
+            </div>
 
-          <p className="mx-auto max-w-2xl pb-14 text-center text-sm leading-relaxed text-stone-400 font-mono">
-            A forja está acesa. Fale diretamente com os mestres da Fábrica — preferimos contato
-            direto para alinhamentos rápidos ou orçamentos customizados com urgência comercial.
-          </p>
-
-          <div className="grid gap-4 md:grid-cols-3 pb-12">
-            {JOBS.map(([title, loc, type]) => (
-              <a
-                key={title}
-                href={
-                  title.includes("WhatsApp")
-                    ? "https://api.whatsapp.com/send?1=pt_BR&phone=5519982646492&text=Ol%C3%A1%20vim%20atrav%C3%A9s%20do%20site"
-                    : title.includes("Instagram")
-                    ? "https://instagram.com/fabricapublicidadedigital"
-                    : "mailto:lucas@fabricapublicidade.com.br"
-                }
-                target="_blank"
-                rel="noreferrer"
-                className="group flex min-h-44 flex-col justify-between rounded-none bg-white/[0.02] border border-white/10 p-6 transition-all hover:border-[#ff4d16] hover:bg-[#ff4d16]"
-              >
-                <span 
-                  className="font-display text-2xl font-light text-white group-hover:text-black transition-colors"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
-                  {title}
-                </span>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm font-mono text-stone-200">{loc}</span>
-                  <span className="label-xs text-stone-400">{type} ↗</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="mt-24 bg-[#0a0a0c]">
-          <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-6 py-12 md:flex-row md:items-end md:justify-between">
-            <p className="max-w-md text-xs leading-relaxed text-stone-400 font-mono border-l border-[#ff4d16] pl-4">
-              Forjando marcas com estratégia, criatividade e performance desde o primeiro martelo.
-              A sua marca moldada sob medida com fogo, consistência e força de ferro.
-            </p>
-
-            <div className="flex gap-8 font-mono">
-              {["Jornada", "Forjamos", "Clientes", "Contato"].map((l) => (
+            <div className="space-y-4">
+              {JOBS.map(([label, val, desc]) => (
                 <a
-                  key={l}
-                  href={`#${l.toLowerCase()}`}
-                  className="label-xs text-stone-400 transition-colors hover:text-[#ff4d16]"
+                  key={label}
+                  href={label.includes("WhatsApp") ? "https://wa.me/5519982646492" : label.includes("Instagram") ? "https://instagram.com/fabricapublicidadedigital" : "mailto:lucas@fabricapublicidade.com.br"}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group block border border-white/10 p-5 hover:border-[#ff4d16] hover:bg-[#ff4d16]/5 transition-all"
                 >
+                  <div className="flex justify-between items-center">
+                    <span className="label-xs text-[#ff4d16] font-bold">{label}</span>
+                    <span className="label-xs text-stone-400 group-hover:text-white transition-colors">{desc}</span>
+                  </div>
+                  <span className="block text-lg font-bold text-white mt-2 group-hover:text-[#ff4d16] transition-colors">{val}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-white/5 mx-auto max-w-[1400px] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span className="label-xs text-stone-400 uppercase font-mono">
+              FÁBRICA — PUBLICIDADE &amp; DIGITAL
+            </span>
+            <div className="flex gap-6 text-xs text-stone-400 font-mono">
+              {NAV.map((l) => (
+                <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-[#ff4d16] transition-colors uppercase">
                   {l}
                 </a>
               ))}
@@ -960,7 +967,7 @@ export default function HomeV2() {
 
           <div className="mx-auto max-w-[1400px] px-6 pb-12 flex flex-col sm:flex-row items-center justify-between border-t border-white/5 pt-6">
             <span className="label-xs text-stone-400">
-              © 2026 Fábrica Publicidade & Digital — Campinas / SP
+              © 2026 Fábrica Publicidade &amp; Digital — Campinas / SP
             </span>
             <span className="label-xs text-[#ff4d16]/80 mt-2 sm:mt-0">
               &gt;| FÁBRICA |&lt;
@@ -994,7 +1001,7 @@ export default function HomeV2() {
 
               <button
                 onClick={() => setSelectedMember(null)}
-                className="text-xs text-stone-400 hover:text-white font-mono tracking-widest uppercase transition-colors"
+                className="text-xs text-stone-400 hover:text-white font-mono tracking-widest uppercase transition-colors cursor-pointer"
               >
                 CLOSE
               </button>
@@ -1013,7 +1020,7 @@ export default function HomeV2() {
               />
             </div>
 
-            {/* Modal Details Section */}
+            {/* Modal Details Section - Clean without duplicate fields */}
             <div className="p-6 space-y-4 bg-[#050505]">
               <div>
                 <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase block mb-1">NOME</span>
@@ -1029,24 +1036,15 @@ export default function HomeV2() {
                 </p>
               </div>
 
-              {selectedMember.quote && (
-                <div>
-                  <span className="text-[10px] text-[#ff4d16] font-mono tracking-widest uppercase block mb-1 font-bold">
-                    FRASE ASSINATURA
-                  </span>
-                  <blockquote 
-                    className="text-sm sm:text-base text-stone-100 font-serif italic border-l-2 border-[#ff4d16] pl-3.5 py-2 bg-white/[0.03] font-light leading-relaxed my-1"
-                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                  >
-                    "{selectedMember.quote}"
-                  </blockquote>
-                </div>
-              )}
-
               <div>
-                <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase block mb-1">TRAJETÓRIA & BIO</span>
-                <p className="text-xs sm:text-sm text-stone-300 leading-relaxed font-mono pt-1">
-                  {selectedMember.bio}
+                <span className="text-[10px] text-[#ff4d16] font-mono tracking-widest uppercase block mb-1 font-bold">
+                  ATUAÇÃO &amp; IMPACTO
+                </span>
+                <p 
+                  className="text-sm sm:text-base text-stone-100 font-serif italic border-l-2 border-[#ff4d16] pl-3.5 py-2.5 bg-white/[0.03] font-light leading-relaxed my-1"
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                >
+                  "{selectedMember.bio}"
                 </p>
               </div>
             </div>
