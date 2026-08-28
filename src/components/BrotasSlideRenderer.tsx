@@ -45,6 +45,7 @@ import {
 } from 'lucide-react';
 import { BrotasSlideData } from '../data/brotasSlidesData';
 import { generateSeoAltText } from '../lib/imageOptimizer';
+import SplitText from './SplitText';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number; style?: React.CSSProperties }>> = {
   Calendar,
@@ -276,50 +277,69 @@ export default function BrotasSlideRenderer({
 
             {/* Center Area: BROTAS 360° Wordmark + Circular Arrow + 4 Colors + Yellow Text */}
             <div className="relative z-20 my-auto text-center flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
-              {/* BROTAS serif wordmark */}
-              <motion.h1
-                {...getAnim(2)}
+              {/* BROTAS serif wordmark with SplitText */}
+              <h1
                 className="text-7xl sm:text-8xl md:text-9xl font-black text-white uppercase tracking-tight leading-none drop-shadow-2xl"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
-                BROTAS
-              </motion.h1>
+                <SplitText
+                  text={slide.title || 'BROTAS'}
+                  splitType="chars"
+                  delay={45}
+                  duration={0.8}
+                  from={{ opacity: 0, y: 40 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
+              </h1>
 
               {/* 360° text with sweeping circular arrow */}
-              <motion.div {...getAnim(3)} className="relative flex flex-col items-center justify-center -mt-2 md:-mt-4">
+              <motion.div {...getAnim(2)} className="relative flex flex-col items-center justify-center -mt-2 md:-mt-4">
                 <span
                   className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight drop-shadow-2xl"
                   style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
                 >
-                  360°
+                  {slide.subtitle || '360°'}
                 </span>
                 {/* Sweeping 360 arrow icon */}
                 <CircularArrow360 />
               </motion.div>
 
               {/* 4-Color Segment Bar (Google/Brotas palette) */}
-              <motion.div {...getAnim(4)} className="flex items-center justify-center gap-2 my-2">
+              <motion.div {...getAnim(3)} className="flex items-center justify-center gap-2 my-2">
                 <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#0074BC] shadow-sm"></div>
                 <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#FFC20E] shadow-sm"></div>
                 <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#00A651] shadow-sm"></div>
                 <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#ED1C24] shadow-sm"></div>
               </motion.div>
 
-              {/* Yellow / Golden Slogan with Leading Dots */}
-              <motion.div
-                {...getAnim(5)}
+              {/* Yellow / Golden Slogan with Leading Dots and SplitText */}
+              <div
                 className="text-[#FFD000] text-sm sm:text-base md:text-lg font-bold tracking-wide text-center space-y-1 drop-shadow-md mt-1"
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
-                <p>.Conectar a gestão. Organizar a informação</p>
-                <p>.Comunicar as entregas. Aproximar a população</p>
-              </motion.div>
+                <p>
+                  <SplitText
+                    text=".Conectar a gestão. Organizar a informação"
+                    splitType="words"
+                    delay={40}
+                    duration={0.65}
+                  />
+                </p>
+                <p>
+                  <SplitText
+                    text=".Comunicar as entregas. Aproximar a população"
+                    splitType="words"
+                    delay={40}
+                    duration={0.65}
+                  />
+                </p>
+              </div>
             </div>
 
             {/* Bottom Area: Social Icons + Green Corner Protruding Tabs */}
             <div className="relative z-20 flex flex-col items-center justify-end w-full">
               {/* Social links f, in, X */}
-              <motion.div {...getAnim(6)} className="flex items-center justify-center gap-6 text-white text-xs font-bold opacity-80 mb-2">
+              <motion.div {...getAnim(4)} className="flex items-center justify-center gap-6 text-white text-xs font-bold opacity-80 mb-2">
                 <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">f</span>
                 <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">in</span>
                 <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">𝕏</span>
@@ -350,14 +370,20 @@ export default function BrotasSlideRenderer({
 
             {/* Left Column: Heading + Amber Label + Body */}
             <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl pl-4">
-              {/* Big Bold Headline in Playfair Serif */}
-              <motion.h2
-                {...getAnim(0)}
+              {/* Big Bold Headline in Playfair Serif with SplitText */}
+              <h2
                 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-950 leading-[1.15] mb-5 tracking-tight"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
-                {slide.title}
-              </motion.h2>
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
+              </h2>
 
               {/* Amber / Yellow Category Label */}
               <motion.div
@@ -419,13 +445,19 @@ export default function BrotasSlideRenderer({
 
             {/* Right Column: Heading + Yellow Label + Text */}
             <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl">
-              <motion.h2
-                {...getAnim(0)}
+              <h2
                 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-950 leading-[1.15] mb-5 tracking-tight"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
-                {slide.title}
-              </motion.h2>
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
+              </h2>
 
               <motion.div
                 {...getAnim(1)}
@@ -457,13 +489,19 @@ export default function BrotasSlideRenderer({
               {slide.categoryLabel || 'Diagnóstico'}
             </motion.span>
 
-            <motion.h2
-              {...getAnim(1)}
+            <h2
               className="text-3xl md:text-5xl font-black text-gray-950 text-center mb-10"
               style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
-              {slide.title}
-            </motion.h2>
+              <SplitText
+                text={slide.title}
+                splitType="words"
+                delay={35}
+                duration={0.7}
+                from={{ opacity: 0, y: 30 }}
+                to={{ opacity: 1, y: 0 }}
+              />
+            </h2>
 
             <div className="w-full max-w-3xl flex flex-col items-center gap-4 z-10">
               {slide.funnelItems?.map((item, idx) => (
@@ -498,13 +536,19 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Metodologia'}
               </motion.span>
 
-              <motion.h2
-                {...getAnim(1)}
+              <h2
                 className="text-3xl md:text-5xl font-black text-gray-950 mb-8"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
-                {slide.title}
-              </motion.h2>
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
+              </h2>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-8">
                 {(slide.diagramData?.flowItems || slide.diagramData?.steps || []).map((step: string, idx: number) => (
@@ -543,7 +587,14 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Território'}
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
               {slide.texts && (
                 <p className="text-gray-600 text-sm max-w-3xl">{slide.texts.join(' ')}</p>
@@ -609,7 +660,14 @@ export default function BrotasSlideRenderer({
                 className="text-3xl md:text-5xl font-black text-gray-950 tracking-tight"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
             </div>
 
@@ -759,7 +817,14 @@ export default function BrotasSlideRenderer({
               {slide.categoryLabel || 'Processo'}
             </span>
             <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-8 text-center z-10" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-              {slide.title}
+              <SplitText
+                text={slide.title}
+                splitType="words"
+                delay={35}
+                duration={0.7}
+                from={{ opacity: 0, y: 30 }}
+                to={{ opacity: 1, y: 0 }}
+              />
             </h2>
 
             <div className="grid grid-cols-3 gap-4 max-w-3xl w-full z-10">
@@ -790,7 +855,14 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Entregas'}
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-1" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
               {slide.subtitle && <p className="text-gray-600 text-sm mb-4">{slide.subtitle}</p>}
             </div>
@@ -835,7 +907,14 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Estrutura'}
               </span>
               <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-10" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
 
               <div className="space-y-6">
@@ -870,7 +949,14 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Canais'}
               </span>
               <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-8" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -918,7 +1004,14 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Tecnologia'}
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
               {slide.texts && <p className="text-gray-600 text-sm">{slide.texts.join(' · ')}</p>}
             </div>
@@ -964,7 +1057,14 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Comparativo'}
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-4" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
             </div>
 
@@ -1010,7 +1110,14 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Inteligência & Métricas'}
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-white mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
             </div>
 
@@ -1061,7 +1168,14 @@ export default function BrotasSlideRenderer({
                 {slide.categoryLabel || 'Equipe'}
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                {slide.title}
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
               </h2>
             </div>
 
@@ -1114,13 +1228,19 @@ export default function BrotasSlideRenderer({
               </motion.span>
             )}
 
-            <motion.h3
-              {...getAnim(1)}
+            <h3
               className={`text-2xl md:text-3xl font-light mb-6 z-10 ${slide.isDark ? 'text-gray-300' : 'text-gray-700'}`}
               style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
-              {slide.title}
-            </motion.h3>
+              <SplitText
+                text={slide.title}
+                splitType="words"
+                delay={35}
+                duration={0.7}
+                from={{ opacity: 0, y: 30 }}
+                to={{ opacity: 1, y: 0 }}
+              />
+            </h3>
 
             <motion.h1
               {...getAnim(2)}
