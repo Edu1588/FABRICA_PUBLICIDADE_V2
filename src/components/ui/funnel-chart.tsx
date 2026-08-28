@@ -729,6 +729,16 @@ export function FunnelChart({
   const segW = (W - (horiz ? totalGap : 0)) / n;
   const segH = (H - (horiz ? 0 : totalGap)) / n;
 
+  // Grid config
+  const gridEnabled = gridProp !== false;
+  const gridCfg = typeof gridProp === "object" ? gridProp : {};
+  const showBands = gridEnabled && (gridCfg.bands ?? true);
+  const bandColor = gridCfg.bandColor ?? "rgba(0,0,0,0.03)";
+  const showGridLines = gridEnabled && (gridCfg.lines ?? true);
+  const gridLineColor = gridCfg.lineColor ?? "rgba(0,0,0,0.08)";
+  const gridLineOpacity = gridCfg.lineOpacity ?? 1;
+  const gridLineWidth = gridCfg.lineWidth ?? 1;
+
   return (
     <div
       className={cn("relative w-full select-none overflow-visible", className)}
