@@ -228,7 +228,7 @@ export default function ApresentacaoBrotas() {
             duration: 0.45,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="absolute inset-0"
+          className="absolute inset-x-0 top-0 bottom-14 overflow-hidden"
         >
           <BrotasSlideRenderer
             slide={currentSlide}

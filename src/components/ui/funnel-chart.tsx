@@ -548,17 +548,17 @@ function SegmentLabel({
   const display = stage.displayValue ?? formatValue(stage.value);
 
   const valueEl = showValues && (
-    <span className="whitespace-nowrap font-bold text-gray-900 text-sm">
+    <span className="whitespace-nowrap font-bold text-white text-xs md:text-sm drop-shadow-md font-mono">
       {display}
     </span>
   );
   const pctEl = showPercentage && (
-    <span className="rounded-full bg-black/80 px-3 py-0.5 font-bold text-white text-xs shadow-md">
+    <span className="rounded-full bg-white text-gray-900 px-2.5 py-0.5 font-black text-xs shadow-md">
       {formatPercentage(pct)}
     </span>
   );
   const labelEl = showLabels && (
-    <span className="whitespace-nowrap font-bold text-gray-800 text-xs">
+    <span className="whitespace-nowrap font-bold text-white text-xs md:text-sm drop-shadow-md tracking-wide">
       {stage.label}
     </span>
   );
@@ -644,7 +644,7 @@ function SegmentLabel({
     >
       <div
         className={cn(
-          "flex gap-2 items-center justify-center bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg border border-gray-100",
+          "flex gap-3 items-center justify-center bg-black/60 backdrop-blur-md px-5 py-2 rounded-full shadow-2xl border border-white/30 text-white",
           isVerticalStack
             ? cn("flex-col", itemsMap[isHorizontal ? "center" : align])
             : cn("flex-row", itemsMap.center)
@@ -652,7 +652,6 @@ function SegmentLabel({
       >
         {labelEl}
         {pctEl}
-        {valueEl}
       </div>
     </motion.div>
   );
@@ -730,22 +729,13 @@ export function FunnelChart({
   const segW = (W - (horiz ? totalGap : 0)) / n;
   const segH = (H - (horiz ? 0 : totalGap)) / n;
 
-  // Grid config
-  const gridEnabled = gridProp !== false;
-  const gridCfg = typeof gridProp === "object" ? gridProp : {};
-  const showBands = gridEnabled && (gridCfg.bands ?? true);
-  const bandColor = gridCfg.bandColor ?? "rgba(0,0,0,0.03)";
-  const showGridLines = gridEnabled && (gridCfg.lines ?? true);
-  const gridLineColor = gridCfg.lineColor ?? "rgba(0,0,0,0.08)";
-  const gridLineOpacity = gridCfg.lineOpacity ?? 1;
-  const gridLineWidth = gridCfg.lineWidth ?? 1;
-
   return (
     <div
       className={cn("relative w-full select-none overflow-visible", className)}
       ref={ref}
       style={{
-        aspectRatio: horiz ? "2.2 / 1" : "1.4 / 1",
+        aspectRatio: horiz ? "2.2 / 1" : undefined,
+        height: !horiz ? "100%" : undefined,
         ...style,
       }}
     >
