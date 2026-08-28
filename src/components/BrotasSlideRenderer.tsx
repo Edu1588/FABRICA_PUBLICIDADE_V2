@@ -47,6 +47,7 @@ import { BrotasSlideData } from '../data/brotasSlidesData';
 import { generateSeoAltText } from '../lib/imageOptimizer';
 import SplitText from './SplitText';
 import RadialOrbitalTimeline, { TimelineItem } from './ui/radial-orbital-timeline';
+import FunnelChart, { FunnelStage } from './ui/funnel-chart';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number; style?: React.CSSProperties }>> = {
   Calendar,
@@ -478,50 +479,60 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
-      // 4. FUNNEL LAYOUT
+      // 4. FUNNEL LAYOUT WITH MULTI-COLOR GRADIENTS & PILLS
       case 'funnel_vertical':
         return (
-          <div className="relative w-full h-full bg-white p-10 md:p-16 flex flex-col items-center justify-center overflow-hidden">
+          <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col items-center justify-between overflow-hidden select-none">
             {/* Corner Decorative Elements */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C] rounded-tr-full pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/10 rounded-tr-full pointer-events-none"></div>
 
-            <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-2">
-              {slide.categoryLabel || 'Diagnóstico'}
-            </motion.span>
+            <div className="z-10 text-center flex flex-col items-center max-w-4xl mx-auto">
+              <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1">
+                {slide.categoryLabel || 'Diagnóstico'}
+              </motion.span>
 
-            <h2
-              className="text-3xl md:text-5xl font-black text-gray-950 text-center mb-10"
-              style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-            >
-              <SplitText
-                text={slide.title}
-                splitType="words"
-                delay={35}
-                duration={0.7}
-                from={{ opacity: 0, y: 30 }}
-                to={{ opacity: 1, y: 0 }}
-              />
-            </h2>
+              <h2
+                className="text-3xl md:text-5xl font-black text-gray-950 text-center mb-4 tracking-tight"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
+              </h2>
+            </div>
 
-            <div className="w-full max-w-3xl flex flex-col items-center gap-4 z-10">
+            {/* Funnel Distinct Colored Pill Bars Matching Reference */}
+            <div className="w-full max-w-2xl flex flex-col items-center gap-3.5 my-auto z-10">
               {slide.funnelItems?.map((item, idx) => (
                 <motion.div
                   key={idx}
-                  {...getAnim(2 + idx)}
-                  style={{ width: item.width, backgroundColor: item.color }}
-                  className="py-4 px-6 rounded-2xl text-white font-semibold text-center shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                  {...getAnim(1 + idx)}
+                  style={{
+                    width: item.width,
+                    backgroundColor: item.color,
+                    boxShadow: `0 10px 25px -3px ${item.color}45, 0 4px 10px -2px ${item.color}25`
+                  }}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  transition={{ type: "spring", stiffness: 350, damping: 22 }}
+                  className="py-4 px-6 rounded-full text-white font-bold text-center transition-transform cursor-pointer border border-white/25"
                 >
-                  <span className="text-sm md:text-base tracking-wide font-bold">{item.label}</span>
+                  <span className="text-sm md:text-base tracking-wide drop-shadow-sm font-semibold">
+                    {item.label}
+                  </span>
                 </motion.div>
               ))}
             </div>
 
-            {slide.texts && slide.texts.length > 0 && (
-              <div className="mt-8 text-center text-gray-600 text-sm max-w-xl z-10">
-                {slide.texts.join(' ')}
-              </div>
-            )}
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 w-full z-10">
+              <span>{slide.texts?.[0] || 'Diagnóstico de Percepção e Fixação de Marca'}</span>
+              <span>{slide.slideNumber}</span>
+            </div>
           </div>
         );
 
