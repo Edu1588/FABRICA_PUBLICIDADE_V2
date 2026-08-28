@@ -114,25 +114,34 @@ export async function fetchPresentationSlides(
   let loadedSlides: BrotasSlideData[] = fallbackSlides;
   let loadedImages: Record<string, string> = {};
 
-  // 1. Try Supabase database
+  // 1. Try Supabase database first
   try {
     const { data, error } = await supabase
       .from('presentation_slides')
       .select('*')
       .eq('presentation_id', presentationId)
-      .single();
+      .maybeSingle();
 
-    if (!error && data && data.slides_payload) {
-      const parsed = typeof data.slides_payload === 'string' ? JSON.parse(data.slides_payload) : data.slides_payload;
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        loadedSlides = parsed;
+    if (!error && data) {
+      if (data.slides_payload) {
+        const parsed = typeof data.slides_payload === 'string' ? JSON.parse(data.slides_payload) : data.slides_payload;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          loadedSlides = parsed;
+        }
       }
       if (data.images_payload) {
-        loadedImages = typeof data.images_payload === 'string' ? JSON.parse(data.images_payload) : data.images_payload;
+        const parsedImgs = typeof data.images_payload === 'string' ? JSON.parse(data.images_payload) : data.images_payload;
+        if (parsedImgs && typeof parsedImgs === 'object') {
+          loadedImages = parsedImgs;
+        }
       }
-      // Update local cache
-      localStorage.setItem(`pres_slides_${presentationId}`, JSON.stringify(loadedSlides));
-      localStorage.setItem(`pres_images_${presentationId}`, JSON.stringify(loadedImages));
+      // Update local cache with remote source of truth
+      try {
+        localStorage.setItem(`pres_slides_${presentationId}`, JSON.stringify(loadedSlides));
+        localStorage.setItem(`pres_images_${presentationId}`, JSON.stringify(loadedImages));
+      } catch (cacheErr) {
+        console.warn('LocalStorage quota limit reached for presentation cache:', cacheErr);
+      }
       return { slides: loadedSlides, images: loadedImages };
     }
   } catch (err) {
@@ -175,15 +184,15 @@ export async function syncPresentationSlides(
     localStorage.setItem(`pres_images_${presentationId}`, JSON.stringify(images));
     localStorage.setItem('brotas360_images', JSON.stringify(images));
   } catch (e) {
-    console.warn('localStorage cache save error:', e);
+    console.warn('localStorage cache save notice (safe to continue):', e);
   }
 
   // 2. Sync to Supabase database
   try {
     const payload = {
       presentation_id: presentationId,
-      slides_payload: JSON.stringify(slides),
-      images_payload: JSON.stringify(images),
+      slides_payload: slides,
+      images_payload: images,
       updated_at: new Date().toISOString()
     };
 
@@ -192,11 +201,12 @@ export async function syncPresentationSlides(
       .upsert(payload, { onConflict: 'presentation_id' });
 
     if (error) {
-      console.warn('Supabase presentation_slides upsert notice (table may need schema):', error.message);
+      console.error('Supabase presentation_slides upsert error:', error);
+      return false;
     }
-    return !error;
+    return true;
   } catch (err) {
-    console.warn('Supabase syncPresentationSlides error:', err);
+    console.error('Supabase syncPresentationSlides network error:', err);
     return false;
   }
 }

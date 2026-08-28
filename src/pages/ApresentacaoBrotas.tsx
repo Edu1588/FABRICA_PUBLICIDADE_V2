@@ -180,15 +180,31 @@ export default function ApresentacaoBrotas() {
       });
 
       const finalUrl = optimized.publicUrl || optimized.dataUrl;
+
       setUploadedImages(prev => {
-        const updated = { ...prev, [slotId]: finalUrl };
-        syncPresentationSlides('brotas-360', slides, updated);
-        return updated;
+        const updatedImages = { ...prev, [slotId]: finalUrl };
+        setSlides(prevSlides => {
+          const updatedSlides = prevSlides.map(s => {
+            if (s.id === currentSlide.id && s.imageSlots) {
+              return {
+                ...s,
+                imageSlots: s.imageSlots.map(slot =>
+                  slot.id === slotId ? { ...slot, defaultUrl: finalUrl } : slot
+                )
+              };
+            }
+            return s;
+          });
+          // Persist both images map and slides array to Supabase & localStorage
+          syncPresentationSlides('brotas-360', updatedSlides, updatedImages);
+          return updatedSlides;
+        });
+        return updatedImages;
       });
     } catch (err) {
       console.error('Erro ao otimizar e comprimir imagem:', err);
     }
-  }, [currentSlide, slides]);
+  }, [currentSlide]);
 
   const useSlideAnimation = currentSlide.animationType === 'zoom' || currentSlide.animationType === 'fade';
   const variants = useSlideAnimation ? fadeVariants : slideVariants;
