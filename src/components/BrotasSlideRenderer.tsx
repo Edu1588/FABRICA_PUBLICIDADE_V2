@@ -44,6 +44,7 @@ import {
   Globe
 } from 'lucide-react';
 import { BrotasSlideData } from '../data/brotasSlidesData';
+import { generateSeoAltText } from '../lib/imageOptimizer';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number; style?: React.CSSProperties }>> = {
   Calendar,
@@ -157,24 +158,49 @@ export default function BrotasSlideRenderer({
     slotId,
     defaultUrl,
     className = '',
-    label
+    label,
+    alt
   }: {
     slotId: string;
     defaultUrl?: string;
     className?: string;
     label?: string;
+    alt?: string;
   }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const imageUrl = uploadedImages[slotId] || defaultUrl || '/images/brotas/brotas_cover.jpg';
+    const imageUrl = uploadedImages[slotId] || defaultUrl;
+    const seoAlt = alt || generateSeoAltText(slide.categoryLabel, slide.title, 'Brotas 360 - Prefeitura de Brotas');
 
     return (
       <div className={`relative group overflow-hidden ${className}`}>
         {imageUrl ? (
-          <img src={imageUrl} alt="" className="w-full h-full object-cover" />
+          <img
+            src={imageUrl}
+            alt={seoAlt}
+            title={seoAlt}
+            loading="lazy"
+            className="w-full h-full object-cover"
+          />
         ) : (
-          <div className="w-full h-full bg-[#111827] border-2 border-dashed border-white/20 flex flex-col items-center justify-center p-4 text-white/50 text-center">
-            <Upload className="w-8 h-8 mb-2 opacity-50" />
-            <span className="text-xs font-mono">{label || 'Upload de Foto'}</span>
+          <div
+            onClick={() => isEditing && fileInputRef.current?.click()}
+            className={`w-full h-full border-2 border-dashed flex flex-col items-center justify-center p-6 text-center transition-all ${
+              isEditing ? 'cursor-pointer hover:bg-[#00A859]/10 hover:border-[#00A859]' : ''
+            } ${
+              slide.isDark
+                ? 'bg-[#111827]/70 border-white/20 text-white/40'
+                : 'bg-gray-50/90 border-gray-300 text-gray-400'
+            }`}
+          >
+            <Upload className="w-8 h-8 mb-2 opacity-40" />
+            <span className="text-xs font-mono font-medium tracking-wide">
+              {label || 'Espaço para Fotografia'}
+            </span>
+            {isEditing && (
+              <span className="text-[10px] text-[#00A859] font-bold mt-1">
+                + Clique para carregar
+              </span>
+            )}
           </div>
         )}
 
@@ -182,11 +208,11 @@ export default function BrotasSlideRenderer({
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 z-30">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="bg-[#00A859] hover:bg-[#008f4c] text-white px-3 py-1.5 rounded-lg shadow-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="bg-[#00A859] hover:bg-[#008f4c] text-white px-3.5 py-2 rounded-xl shadow-xl text-xs font-bold flex items-center gap-1.5 transition-transform hover:scale-105"
               title="Trocar Imagem"
             >
               <Upload className="w-4 h-4" />
-              Trocar Imagem
+              {imageUrl ? 'Trocar Imagem' : 'Carregar Imagem'}
             </button>
             <input
               type="file"
@@ -357,7 +383,7 @@ export default function BrotasSlideRenderer({
               <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
                 <ImageSlot
                   slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
-                  defaultUrl={slide.imageSlots?.[0]?.defaultUrl || '/images/brotas/brotas_cover.jpg'}
+                  defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
                   label={slide.imageSlots?.[0]?.label || 'Fotografia'}
                   className="w-full h-full"
                 />
@@ -384,8 +410,8 @@ export default function BrotasSlideRenderer({
               <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
                 <ImageSlot
                   slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
-                  defaultUrl={slide.imageSlots?.[0]?.defaultUrl || '/images/brotas/brotas_cover.jpg'}
-                  label="Foto"
+                  defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
+                  label={slide.imageSlots?.[0]?.label || 'Foto'}
                   className="w-full h-full"
                 />
               </div>

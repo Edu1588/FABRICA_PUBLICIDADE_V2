@@ -385,7 +385,7 @@ export default function BrotasEditSlideModal({
           {activeTab === 'imagens' && (
             <div className="space-y-6">
               <p className="text-xs text-white/60">
-                Substitua ou adicione fotos personalizadas para esta lâmina. As fotos são salvas instantaneamente no navegador.
+                Substitua ou adicione fotos personalizadas para esta lâmina. As imagens são automaticamente otimizadas (SEO, &lt; 1MB) e salvas no banco de dados.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -393,7 +393,7 @@ export default function BrotasEditSlideModal({
                   ? formData.imageSlots
                   : [{ id: `img-${formData.id}`, label: 'Foto Principal' }]
                 ).map((slot) => {
-                  const currentImg = uploadedImages[slot.id] || slot.defaultUrl || '/images/brotas/brotas_cover.jpg';
+                  const currentImg = uploadedImages[slot.id] || slot.defaultUrl;
                   return (
                     <div key={slot.id} className="bg-[#161c28] border border-white/10 rounded-2xl p-4 space-y-3">
                       <div className="flex items-center justify-between">
@@ -401,18 +401,34 @@ export default function BrotasEditSlideModal({
                         <span className="text-[10px] font-mono text-white/40">{slot.id}</span>
                       </div>
 
-                      <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 bg-black/50 group">
-                        <img src={currentImg} alt="" className="w-full h-full object-cover" />
-                        <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 cursor-pointer text-white">
-                          <Upload className="w-6 h-6 text-[#00A859]" />
-                          <span className="text-xs font-semibold">Carregar Nova Foto</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleFileInput(slot.id, e)}
-                          />
-                        </label>
+                      <div className="relative aspect-video rounded-xl overflow-hidden border border-dashed border-white/20 bg-black/40 group flex items-center justify-center">
+                        {currentImg ? (
+                          <>
+                            <img src={currentImg} alt="" className="w-full h-full object-cover" />
+                            <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 cursor-pointer text-white">
+                              <Upload className="w-6 h-6 text-[#00A859]" />
+                              <span className="text-xs font-semibold">Substituir Foto</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleFileInput(slot.id, e)}
+                              />
+                            </label>
+                          </>
+                        ) : (
+                          <label className="w-full h-full flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#00A859]/10 transition-colors p-4 text-center">
+                            <Upload className="w-8 h-8 text-[#00A859]/60" />
+                            <span className="text-xs text-white/70 font-semibold">Clique para Carregar Imagem</span>
+                            <span className="text-[10px] text-white/40 font-mono">Otimização automática &lt; 1MB WebP</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleFileInput(slot.id, e)}
+                            />
+                          </label>
+                        )}
                       </div>
                     </div>
                   );

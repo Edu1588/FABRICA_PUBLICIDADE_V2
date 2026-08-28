@@ -75,7 +75,7 @@ export const BROTAS_SLIDES: BrotasSlideData[] = [
       'Entregas acontecem todos os dias — mas sem comunicação estruturada, a percepção pública não acompanha a realidade da gestão.',
       'Obras, melhorias na saúde, valorização da educação e eventos muitas vezes passam despercebidos pela maioria dos cidadãos.'
     ],
-    imageSlots: [{ id: 'img-slide2', label: 'Brotas Lagoa / Paisagem', defaultUrl: '/images/brotas/brotas_cover.jpg' }],
+    imageSlots: [{ id: 'img-slide2', label: 'Fotografia Territorial Brotas' }],
     animationType: 'slide'
   },
   {
@@ -92,7 +92,7 @@ export const BROTAS_SLIDES: BrotasSlideData[] = [
       'Ausência de identidade visual e tom de voz unificados para o município',
       'Equipe interna sobrecarregada e sem ferramentas tecnológicas modernas'
     ],
-    imageSlots: [{ id: 'img-problema', label: 'Comunicação Pública', defaultUrl: '/images/brotas/brotas_cover.jpg' }],
+    imageSlots: [{ id: 'img-problema', label: 'Comunicação Pública' }],
     animationType: 'slide'
   },
   {

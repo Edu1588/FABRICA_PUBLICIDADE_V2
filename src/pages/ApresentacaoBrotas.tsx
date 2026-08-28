@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { BROTAS_SLIDES, BrotasSlideData } from '../data/brotasSlidesData';
 import BrotasSlideRenderer from '../components/BrotasSlideRenderer';
 import BrotasEditSlideModal from '../components/BrotasEditSlideModal';
+import { optimizeAndCompressImage } from '../lib/imageOptimizer';
+import { fetchPresentationSlides, syncPresentationSlides } from '../lib/presentationService';
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,7 +15,9 @@ import {
   Upload,
   Edit3,
   Sparkles,
-  RotateCcw
+  RotateCcw,
+  CloudCheck,
+  CheckCircle2
 } from 'lucide-react';
 
 const slideVariants = {
@@ -40,7 +44,7 @@ const fadeVariants = {
 export default function ApresentacaoBrotas() {
   const [slides, setSlides] = useState<BrotasSlideData[]>(() => {
     try {
-      const saved = localStorage.getItem('brotas360_custom_slides_v2');
+      const saved = localStorage.getItem('pres_slides_brotas-360') || localStorage.getItem('brotas360_custom_slides_v2');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -59,7 +63,7 @@ export default function ApresentacaoBrotas() {
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<Record<string, string>>(() => {
     try {
-      const saved = localStorage.getItem('brotas360_images');
+      const saved = localStorage.getItem('pres_images_brotas-360') || localStorage.getItem('brotas360_images');
       return saved ? JSON.parse(saved) : {};
     } catch { return {}; }
   });
@@ -68,6 +72,18 @@ export default function ApresentacaoBrotas() {
   const totalSlides = slides.length;
   const currentSlide = slides[currentIndex] || BROTAS_SLIDES[0];
 
+  // Load from Supabase Database on mount
+  useEffect(() => {
+    fetchPresentationSlides('brotas-360', BROTAS_SLIDES).then(({ slides: loadedSlides, images: loadedImages }) => {
+      if (loadedSlides && loadedSlides.length > 0) {
+        setSlides(loadedSlides);
+      }
+      if (loadedImages && Object.keys(loadedImages).length > 0) {
+        setUploadedImages(loadedImages);
+      }
+    });
+  }, []);
+
   // Check URL query param ?edit=true to open editor immediately
   useEffect(() => {
     if (window.location.search.includes('edit=true')) {
@@ -75,27 +91,13 @@ export default function ApresentacaoBrotas() {
     }
   }, []);
 
-  // Save slides data to localStorage whenever updated
-  useEffect(() => {
-    try {
-      localStorage.setItem('brotas360_custom_slides_v2', JSON.stringify(slides));
-    } catch (e) {
-      console.warn('localStorage not accessible');
-    }
-  }, [slides]);
-
-  // Save uploaded images to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('brotas360_images', JSON.stringify(uploadedImages));
-    } catch (e) {
-      console.warn('localStorage not accessible');
-    }
-  }, [uploadedImages]);
-
-  // Save changes from Edit Slide Modal
+  // Save changes from Edit Slide Modal (persisting to Supabase & localStorage)
   const handleSaveSlideData = (updatedSlide: BrotasSlideData) => {
-    setSlides(prev => prev.map(s => s.id === updatedSlide.id ? updatedSlide : s));
+    setSlides(prev => {
+      const updated = prev.map(s => s.id === updatedSlide.id ? updatedSlide : s);
+      syncPresentationSlides('brotas-360', updated, uploadedImages);
+      return updated;
+    });
   };
 
   // Reset current slide to initial default
@@ -167,14 +169,26 @@ export default function ApresentacaoBrotas() {
     }
   }, []);
 
-  const handleImageUpload = useCallback((slotId: string, file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setUploadedImages(prev => ({ ...prev, [slotId]: result }));
-    };
-    reader.readAsDataURL(file);
-  }, []);
+  // Image Upload with SEO optimization, < 1MB compression & Supabase sync
+  const handleImageUpload = useCallback(async (slotId: string, file: File) => {
+    try {
+      const optimized = await optimizeAndCompressImage(file, {
+        categoryLabel: currentSlide.categoryLabel,
+        slideTitle: currentSlide.title,
+        clientName: 'brotas-360',
+        maxSizeBytes: 1024 * 1024 // Strictly under 1MB
+      });
+
+      const finalUrl = optimized.publicUrl || optimized.dataUrl;
+      setUploadedImages(prev => {
+        const updated = { ...prev, [slotId]: finalUrl };
+        syncPresentationSlides('brotas-360', slides, updated);
+        return updated;
+      });
+    } catch (err) {
+      console.error('Erro ao otimizar e comprimir imagem:', err);
+    }
+  }, [currentSlide, slides]);
 
   const useSlideAnimation = currentSlide.animationType === 'zoom' || currentSlide.animationType === 'fade';
   const variants = useSlideAnimation ? fadeVariants : slideVariants;

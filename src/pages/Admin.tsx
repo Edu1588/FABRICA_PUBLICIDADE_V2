@@ -33,6 +33,7 @@ import {
 import { AdminDashboard } from '../components/AdminDashboard';
 import { DesignBrandbook } from '../components/DesignBrandbook';
 import { JornalManager } from '../components/JornalManager';
+import { fetchPresentationsList, syncPresentationsList, PresentationMeta } from '../lib/presentationService';
 
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
@@ -682,6 +683,13 @@ export default function Admin() {
       if (loadedSlides.length > 1) {
         setActiveSlideIndex(0);
       }
+
+      // Load Presentations List from Supabase database
+      fetchPresentationsList().then(presList => {
+        if (presList && presList.length > 0) {
+          setPresentations(presList);
+        }
+      });
     };
     loadData();
   }, []);
@@ -2761,16 +2769,12 @@ export default function Admin() {
                             };
                             const updated = [newP, ...presentations];
                             setPresentations(updated);
-                            try {
-                              localStorage.setItem('fabrica_presentations_list', JSON.stringify(updated));
-                            } catch (e) {
-                              console.warn('localStorage error', e);
-                            }
+                            syncPresentationsList(updated);
                             setNewPresName('');
                             setNewPresClient('');
                             setNewPresSlug('');
                             setShowNewPresModal(false);
-                            setToast({ message: 'Apresentação criada!', type: 'success' });
+                            setToast({ message: 'Apresentação salva no banco de dados!', type: 'success' });
                             setTimeout(() => setToast(null), 3000);
                           }}
                           className="bg-[#18120e] border border-[#C46A1A] hover:bg-[#C46A1A] text-[#FF7A00] hover:text-black font-outfit text-[10px] uppercase tracking-widest px-6 py-2 rounded-lg font-bold"
@@ -2860,12 +2864,8 @@ export default function Admin() {
                               };
                               const updated = [duplicated, ...presentations];
                               setPresentations(updated);
-                              try {
-                                localStorage.setItem('fabrica_presentations_list', JSON.stringify(updated));
-                              } catch (e) {
-                                console.warn('localStorage error', e);
-                              }
-                              setToast({ message: 'Apresentação duplicada com sucesso!', type: 'success' });
+                              syncPresentationsList(updated);
+                              setToast({ message: 'Apresentação duplicada e salva no banco!', type: 'success' });
                               setTimeout(() => setToast(null), 3000);
                             }}
                             className="flex items-center justify-center gap-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all"
@@ -2880,12 +2880,8 @@ export default function Admin() {
                               if (confirm(`Tem certeza que deseja excluir "${pres.name}"?`)) {
                                 const updated = presentations.filter(p => p.id !== pres.id);
                                 setPresentations(updated);
-                                try {
-                                  localStorage.setItem('fabrica_presentations_list', JSON.stringify(updated));
-                                } catch (e) {
-                                  console.warn('localStorage error', e);
-                                }
-                                setToast({ message: 'Apresentação excluída!', type: 'success' });
+                                syncPresentationsList(updated);
+                                setToast({ message: 'Apresentação excluída do banco!', type: 'success' });
                                 setTimeout(() => setToast(null), 3000);
                               }
                             }}
