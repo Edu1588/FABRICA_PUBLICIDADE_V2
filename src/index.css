@@ -403,3 +403,25 @@ body {
   animation-play-state: paused;
 }
 
+/* Custom animations for the orbital timeline */
+@keyframes orbitalPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-orbital-pulse {
+  animation: orbitalPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.bg-gradient-orbital {
+  background: linear-gradient(to bottom right, #00A859, #0074BC, #FFB800);
+}
+
+.shadow-orbital {
+  box-shadow: 0 0 20px rgba(0, 168, 89, 0.25);
+}
+

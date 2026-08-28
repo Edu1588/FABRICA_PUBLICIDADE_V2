@@ -46,6 +46,7 @@ import {
 import { BrotasSlideData } from '../data/brotasSlidesData';
 import { generateSeoAltText } from '../lib/imageOptimizer';
 import SplitText from './SplitText';
+import RadialOrbitalTimeline, { TimelineItem } from './ui/radial-orbital-timeline';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number; style?: React.CSSProperties }>> = {
   Calendar,
@@ -524,20 +525,39 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
-      // 5. FLOW & HORIZONTAL STEPS
-      case 'flow_horizontal':
-        return (
-          <div className="relative w-full h-full bg-white p-10 md:p-16 flex flex-col justify-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-52 h-52 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C] rounded-tr-full pointer-events-none"></div>
+      // 5. FLOW & HORIZONTAL STEPS / RADIAL ORBITAL TIMELINE
+      case 'flow_horizontal': {
+        const flowSteps = slide.diagramData?.flowItems || slide.diagramData?.steps || [];
+        const iconsList = [Calendar, Search, Palette, Play, Rocket, Award, Zap, CheckCircle, Target, TrendingUp];
+        const timelineData: TimelineItem[] = flowSteps.map((step: string, idx: number) => {
+          const stepLines = step.split('\n');
+          const stepName = stepLines[0].replace(/^\d+\.\s*/, '');
+          const stepDesc = stepLines.length > 1 ? stepLines.slice(1).join(' ') : (slide.texts?.[idx] || `Fase estratégica de execução da comunicação.`);
+          return {
+            id: idx + 1,
+            title: stepName,
+            date: `Etapa ${String(idx + 1).padStart(2, '0')}`,
+            content: stepDesc,
+            category: slide.categoryLabel || 'Metodologia',
+            icon: iconsList[idx % iconsList.length],
+            relatedIds: idx < flowSteps.length - 1 ? [idx + 2] : [1],
+            status: (idx === 0 ? 'completed' : idx === 1 ? 'in-progress' : 'pending') as TimelineItem['status'],
+            energy: Math.max(25, 100 - idx * 12)
+          };
+        });
 
-            <div className="max-w-5xl mx-auto w-full z-10">
-              <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-2 block">
+        return (
+          <div className="relative w-full h-full bg-white p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none">
+            <div className="absolute top-0 right-0 w-52 h-52 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/10 rounded-tr-full pointer-events-none"></div>
+
+            <div className="max-w-5xl mx-auto w-full z-10 text-center flex flex-col items-center">
+              <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
                 {slide.categoryLabel || 'Metodologia'}
               </motion.span>
 
               <h2
-                className="text-3xl md:text-5xl font-black text-gray-950 mb-8"
+                className="text-2xl md:text-4xl font-black text-gray-950 mb-1"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
                 <SplitText
@@ -549,32 +569,24 @@ export default function BrotasSlideRenderer({
                   to={{ opacity: 1, y: 0 }}
                 />
               </h2>
+            </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-8">
-                {(slide.diagramData?.flowItems || slide.diagramData?.steps || []).map((step: string, idx: number) => (
-                  <motion.div
-                    key={idx}
-                    {...getAnim(2 + idx)}
-                    className="bg-white border-t-4 border-[#00A859] p-4 rounded-xl shadow-md flex flex-col items-center justify-center text-center group hover:shadow-xl transition-all"
-                  >
-                    <span className="text-[10px] font-mono text-[#00A859] font-bold mb-1">
-                      ETAPA {String(idx + 1).padStart(2, '0')}
-                    </span>
-                    <span className="text-xs md:text-sm font-bold text-gray-800 whitespace-pre-line">
-                      {step}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
+            {/* Radial Orbital Flow Presentation */}
+            <div className="flex-1 w-full max-w-5xl mx-auto relative flex items-center justify-center my-auto min-h-[360px] z-10">
+              <RadialOrbitalTimeline
+                timelineData={timelineData}
+                centerTitle="FLUXO 360°"
+                theme="light"
+              />
+            </div>
 
-              {slide.texts && (
-                <div className="mt-4 p-5 bg-gray-50 rounded-2xl border border-gray-100 text-gray-700 text-sm leading-relaxed">
-                  {slide.texts.join(' ')}
-                </div>
-              )}
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
+              <span>{slide.texts?.join(' · ') || 'Fluxo Integrado Brotas 360°'}</span>
+              <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
+      }
 
       // 6. PHOTO GRID (TERRITORIAL)
       case 'photo_grid':
@@ -807,42 +819,71 @@ export default function BrotasSlideRenderer({
         );
       }
 
-      // 8. CYCLE DIAGRAM
-      case 'cycle_diagram':
+      // 8. CYCLE DIAGRAM / RADIAL ORBITAL TIMELINE
+      case 'cycle_diagram': {
+        const cycleItems = slide.cycleItems || [
+          '1. Diagnóstico',
+          '2. Planejamento',
+          '3. Criação',
+          '4. Produção',
+          '5. Distribuição',
+          '6. Monitoramento',
+          '7. Análise',
+          '8. Otimização',
+          '9. Relatório'
+        ];
+        const iconsList = [Search, Calendar, Palette, Film, Globe, TrendingUp, BarChart, Rocket, FileText];
+        const timelineData: TimelineItem[] = cycleItems.map((item: string, idx: number) => {
+          const cleanTitle = item.replace(/^\d+\.\s*/, '');
+          return {
+            id: idx + 1,
+            title: cleanTitle,
+            date: `Fase 0${idx + 1}`,
+            content: `Ciclo contínuo de ${cleanTitle} integrado à comunicação e inteligência do município de Brotas.`,
+            category: slide.categoryLabel || 'Ciclo de Trabalho',
+            icon: iconsList[idx % iconsList.length],
+            relatedIds: idx < cycleItems.length - 1 ? [idx + 2] : [1],
+            status: (idx < 3 ? 'completed' : idx === 3 ? 'in-progress' : 'pending') as TimelineItem['status'],
+            energy: Math.max(30, 100 - idx * 8)
+          };
+        });
+
         return (
-          <div className="relative w-full h-full bg-white p-10 md:p-14 flex flex-col items-center justify-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+          <div className="relative w-full h-full bg-white p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/10 rounded-tr-full pointer-events-none"></div>
 
-            <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 z-10">
-              {slide.categoryLabel || 'Processo'}
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-8 text-center z-10" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-              <SplitText
-                text={slide.title}
-                splitType="words"
-                delay={35}
-                duration={0.7}
-                from={{ opacity: 0, y: 30 }}
-                to={{ opacity: 1, y: 0 }}
+            <div className="z-10 text-center flex flex-col items-center">
+              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1">
+                {slide.categoryLabel || 'Processo Contínuo'}
+              </span>
+              <h2 className="text-2xl md:text-4xl font-black text-gray-950 mb-1 text-center" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+                <SplitText
+                  text={slide.title}
+                  splitType="words"
+                  delay={35}
+                  duration={0.7}
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                />
+              </h2>
+            </div>
+
+            <div className="flex-1 w-full max-w-5xl mx-auto relative flex items-center justify-center my-auto min-h-[360px] z-10">
+              <RadialOrbitalTimeline
+                timelineData={timelineData}
+                centerTitle="CICLO 360°"
+                theme="light"
               />
-            </h2>
+            </div>
 
-            <div className="grid grid-cols-3 gap-4 max-w-3xl w-full z-10">
-              {slide.cycleItems?.map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  {...getAnim(idx)}
-                  className="bg-white border-l-4 border-[#00A859] p-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-3"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#00A859] text-white flex items-center justify-center text-xs font-bold shrink-0">
-                    {idx + 1}
-                  </div>
-                  <span className="text-xs md:text-sm font-bold text-gray-800">{item}</span>
-                </motion.div>
-              ))}
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
+              <span>Metodologia Cíclica Interativa de 9 Etapas</span>
+              <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
+      }
 
       // 9. GRID CARDS
       case 'grid_cards':
