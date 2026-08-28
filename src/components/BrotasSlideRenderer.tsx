@@ -599,17 +599,38 @@ export default function BrotasSlideRenderer({
         );
       }
 
-      // 6. PHOTO GRID (TERRITORIAL)
-      case 'photo_grid':
-        return (
-          <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div className="absolute top-0 right-0 w-44 h-44 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+      // 6. PHOTO GRID (CURVED 3D OVERLAPPING CAROUSEL / FAN-OUT)
+      case 'photo_grid': {
+        const slots = slide.imageSlots || [
+          { id: 'grid-1', label: 'Photo of Brotas 1' },
+          { id: 'grid-2', label: 'Photo of Brotas 2' },
+          { id: 'grid-3', label: 'Photo of Brotas 3' },
+          { id: 'grid-4', label: 'Photo of Brotas 4' },
+          { id: 'grid-5', label: 'Photo of Brotas 5' }
+        ];
 
-            <div className="z-10">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                {slide.categoryLabel || 'Território'}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+        // 3D Arc layout parameters matching the reference image
+        const cardConfigs = [
+          { rotate: -13, translateY: 36, translateX: -8, scale: 0.88, zIndex: 10 },
+          { rotate: -6, translateY: 14, translateX: -4, scale: 0.96, zIndex: 20 },
+          { rotate: 0, translateY: -14, translateX: 0, scale: 1.16, zIndex: 30 },
+          { rotate: 6, translateY: 14, translateX: 4, scale: 0.96, zIndex: 20 },
+          { rotate: 13, translateY: 36, translateX: 8, scale: 0.88, zIndex: 10 }
+        ];
+
+        return (
+          <div className="relative w-full h-full bg-[#0A0F1A] p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none text-white">
+            {/* Cinematic Background Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-r from-[#00A859]/20 via-[#0074BC]/20 to-[#FFB800]/15 blur-3xl pointer-events-none rounded-full"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/15 rounded-tr-full pointer-events-none"></div>
+
+            {/* Top Header & Category */}
+            <div className="z-10 text-center max-w-4xl mx-auto">
+              <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 inline-block">
+                {slide.categoryLabel || 'Território & Presença'}
+              </motion.span>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                 <SplitText
                   text={slide.title}
                   splitType="words"
@@ -620,30 +641,71 @@ export default function BrotasSlideRenderer({
                 />
               </h2>
               {slide.texts && (
-                <p className="text-gray-600 text-sm max-w-3xl">{slide.texts.join(' ')}</p>
+                <p className="text-gray-300 text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">
+                  {slide.texts.join(' ')}
+                </p>
               )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 my-auto h-[320px] z-10">
-              {(slide.imageSlots || [
-                { id: 'grid-1', label: 'Brotas 1' },
-                { id: 'grid-2', label: 'Brotas 2' },
-                { id: 'grid-3', label: 'Brotas 3' },
-                { id: 'grid-4', label: 'Brotas 4' },
-                { id: 'grid-5', label: 'Brotas 5' }
-              ]).map((slot) => (
-                <div key={slot.id} className="rounded-2xl overflow-hidden shadow-xl border-2 border-white">
-                  <ImageSlot slotId={slot.id} label={slot.label} className="w-full h-full" />
-                </div>
-              ))}
+            {/* 3D Overlapping Curved Card Carousel */}
+            <div className="relative w-full max-w-6xl mx-auto my-auto h-[320px] sm:h-[360px] md:h-[400px] flex items-center justify-center z-10 px-4">
+              <div className="flex items-center justify-center -space-x-8 sm:-space-x-12 md:-space-x-16 perspective-[1200px] w-full">
+                {slots.map((slot, idx) => {
+                  const cfg = cardConfigs[idx % cardConfigs.length];
+                  return (
+                    <motion.div
+                      key={slot.id}
+                      initial={{ opacity: 0, y: 60, scale: 0.8 }}
+                      animate={{
+                        opacity: 1,
+                        y: cfg.translateY,
+                        x: cfg.translateX,
+                        rotate: cfg.rotate,
+                        scale: cfg.scale,
+                        zIndex: cfg.zIndex
+                      }}
+                      whileHover={{
+                        scale: 1.22,
+                        zIndex: 50,
+                        rotate: 0,
+                        y: -28,
+                        transition: { type: "spring", stiffness: 400, damping: 22 }
+                      }}
+                      transition={{
+                        delay: 0.15 + idx * 0.08,
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 24
+                      }}
+                      className="relative w-44 sm:w-56 md:w-64 h-56 sm:h-72 md:h-80 rounded-[28px] md:rounded-[36px] overflow-hidden shadow-2xl border-2 border-white/20 bg-gray-900 flex-shrink-0 cursor-pointer backdrop-blur-sm"
+                      style={{
+                        boxShadow: idx === 2
+                          ? "0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 168, 89, 0.35)"
+                          : "0 20px 40px -12px rgba(0, 0, 0, 0.6)"
+                      }}
+                    >
+                      <ImageSlot
+                        slotId={slot.id}
+                        label={slot.label}
+                        defaultUrl={slot.defaultUrl}
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Subtle Glass Gradient Overlay on Card Bottom */}
+                      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
-              <span>Brotas 360° · Presença Territorial</span>
+            {/* Bottom Footer */}
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-white/10 z-10 w-full">
+              <span>Brotas 360° · Presença Territorial e Audiovisual</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
+      }
 
       // 7. HUB & SPOKE (REDE RADIAL INTERCONECTADA COM FLUXO ANIMADO)
       case 'hub_spoke': {
