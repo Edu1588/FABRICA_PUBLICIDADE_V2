@@ -583,7 +583,7 @@ export default function BrotasSlideRenderer({
             </div>
 
             {/* Radial Orbital Flow Presentation */}
-            <div className="flex-1 w-full max-w-5xl mx-auto relative flex items-center justify-center my-auto min-h-[360px] z-10">
+            <div className="flex-1 w-full max-w-6xl mx-auto relative flex items-center justify-center my-auto min-h-[480px] md:min-h-[520px] z-10">
               <RadialOrbitalTimeline
                 timelineData={timelineData}
                 centerTitle="FLUXO 360°"
@@ -695,7 +695,7 @@ export default function BrotasSlideRenderer({
             </div>
 
             {/* Central Radial Network Stage */}
-            <div className="relative w-full max-w-5xl mx-auto h-[420px] md:h-[480px] my-auto flex items-center justify-center">
+            <div className="relative w-full max-w-6xl mx-auto h-[460px] md:h-[530px] my-auto flex items-center justify-center">
               {/* CSS Animation Keyframes for Energy Beam Flow */}
               <style>{`
                 @keyframes energyFlow {
@@ -709,47 +709,60 @@ export default function BrotasSlideRenderer({
                 .conduit-flow {
                   animation: energyFlow 1.2s linear infinite;
                 }
-                .hub-glow-ring {
+                .glow-pulse {
                   animation: glowPulse 2.5s ease-in-out infinite;
                 }
               `}</style>
 
-              {/* SVG Canvas for Connecting Conduits & Flow Particles */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+              {/* Glowing Ambient Radial Backdrop */}
+              <div className="absolute w-[460px] h-[340px] rounded-full bg-gradient-to-r from-[#00A859]/15 via-[#0074BC]/10 to-[#FFB800]/15 blur-3xl pointer-events-none"></div>
+
+              {/* SVG Conduit Lines Layer Connecting Hub to Orbiting Nodes */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
+                <defs>
+                  {/* Linear Gradient for Conduit Energy Pipes */}
+                  <linearGradient id="beamGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#00A859" stopOpacity="0.9" />
+                    <stop offset="50%" stopColor="#0074BC" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#FFB800" stopOpacity="0.9" />
+                  </linearGradient>
+
+                  {/* Glow filter for conduits */}
+                  <filter id="conduitGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="2.5" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
                 {nodePositions.map((pos, idx) => (
                   <g key={idx}>
-                    {/* Base Conduit Line */}
+                    {/* Base Conduit Tube */}
                     <line
                       x1="50%"
                       y1="50%"
                       x2={`${pos.x}%`}
                       y2={`${pos.y}%`}
-                      stroke="#00A859"
-                      strokeWidth="2"
-                      strokeOpacity="0.25"
-                    />
-                    {/* Animated Energy Flow Beam */}
-                    <line
-                      x1="50%"
-                      y1="50%"
-                      x2={`${pos.x}%`}
-                      y2={`${pos.y}%`}
-                      stroke="#00A859"
+                      stroke="#E2E8F0"
                       strokeWidth="2.5"
-                      strokeDasharray="6 10"
-                      className="conduit-flow"
+                      strokeDasharray="4 4"
+                      className="opacity-70"
                     />
-                    {/* Secondary Accent Beam (Yellow/Gold) */}
+
+                    {/* Animated Pulsing Energy Conduit Beam */}
                     <line
                       x1="50%"
                       y1="50%"
                       x2={`${pos.x}%`}
                       y2={`${pos.y}%`}
-                      stroke="#FFC20E"
-                      strokeWidth="1.5"
-                      strokeDasharray="4 16"
+                      stroke="url(#beamGradient)"
+                      strokeWidth="3"
+                      strokeDasharray="8 16"
+                      filter="url(#conduitGlow)"
                       className="conduit-flow"
-                      style={{ animationDuration: '1.8s', animationDirection: 'reverse' }}
+                      style={{
+                        animationDirection: idx % 2 === 0 ? 'normal' : 'reverse',
+                        animationDuration: `${1.4 + (idx % 3) * 0.3}s`
+                      }}
                     />
                   </g>
                 ))}
@@ -880,7 +893,7 @@ export default function BrotasSlideRenderer({
               </h2>
             </div>
 
-            <div className="flex-1 w-full max-w-5xl mx-auto relative flex items-center justify-center my-auto min-h-[360px] z-10">
+            <div className="flex-1 w-full max-w-6xl mx-auto relative flex items-center justify-center my-auto min-h-[480px] md:min-h-[520px] z-10">
               <RadialOrbitalTimeline
                 timelineData={timelineData}
                 centerTitle="CICLO 360°"

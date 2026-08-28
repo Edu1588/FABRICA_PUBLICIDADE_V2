@@ -127,7 +127,7 @@ export default function RadialOrbitalTimeline({
 
   const calculateNodePosition = (index: number, total: number) => {
     const angle = ((index / total) * 360 + rotationAngle) % 360;
-    const radius = 175;
+    const radius = 230;
     const radian = (angle * Math.PI) / 180;
 
     const x = radius * Math.cos(radian) + centerOffset.x;
@@ -159,13 +159,13 @@ export default function RadialOrbitalTimeline({
 
   return (
     <div
-      className={`w-full h-full min-h-[380px] flex flex-col items-center justify-center relative overflow-hidden select-none ${
+      className={`w-full h-full min-h-[460px] md:min-h-[500px] flex flex-col items-center justify-center relative overflow-hidden select-none ${
         isDark ? "bg-[#0A0F1A] text-white" : "bg-transparent text-gray-900"
       } ${className}`}
       ref={containerRef}
       onClick={handleContainerClick}
     >
-      <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
+      <div className="relative w-full max-w-5xl h-full flex items-center justify-center">
         <div
           className="absolute w-full h-full flex items-center justify-center"
           ref={orbitRef}
@@ -175,22 +175,22 @@ export default function RadialOrbitalTimeline({
           }}
         >
           {/* Central Pulsing Orb */}
-          <div className="absolute w-20 h-20 rounded-full bg-gradient-to-br from-[#00A859] via-[#0074BC] to-[#FFB800] animate-pulse flex items-center justify-center z-10 shadow-2xl shadow-[#00A859]/50">
-            <div className="absolute w-24 h-24 rounded-full border border-white/30 animate-ping opacity-70"></div>
+          <div className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-[#00A859] via-[#0074BC] to-[#FFB800] animate-pulse flex items-center justify-center z-10 shadow-2xl shadow-[#00A859]/50">
+            <div className="absolute w-28 h-28 rounded-full border-2 border-white/30 animate-ping opacity-70"></div>
             <div
-              className="absolute w-32 h-32 rounded-full border border-[#00A859]/30 animate-ping opacity-40"
+              className="absolute w-36 h-36 rounded-full border border-[#00A859]/40 animate-ping opacity-40"
               style={{ animationDelay: "0.5s" }}
             ></div>
-            <div className="w-14 h-14 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center p-2 text-center">
-              <span className="text-[10px] font-black uppercase text-white tracking-tighter leading-none font-mono">
+            <div className="w-16 h-16 rounded-full bg-black/75 backdrop-blur-md flex items-center justify-center p-2 text-center border border-white/20">
+              <span className="text-[11px] font-black uppercase text-white tracking-tight leading-none font-mono">
                 {centerTitle || "FLUXO 360°"}
               </span>
             </div>
           </div>
 
-          {/* Orbital Ring Guide */}
-          <div className={`absolute w-[350px] h-[350px] rounded-full border border-dashed ${isDark ? 'border-white/20' : 'border-[#00A859]/30'} pointer-events-none`}></div>
-          <div className={`absolute w-[240px] h-[240px] rounded-full border border-dotted ${isDark ? 'border-white/10' : 'border-[#00A859]/15'} pointer-events-none`}></div>
+          {/* Orbital Ring Guides */}
+          <div className={`absolute w-[470px] h-[470px] rounded-full border-2 border-dashed ${isDark ? 'border-white/20' : 'border-[#00A859]/35'} pointer-events-none`}></div>
+          <div className={`absolute w-[320px] h-[320px] rounded-full border border-dotted ${isDark ? 'border-white/10' : 'border-[#00A859]/20'} pointer-events-none`}></div>
 
           {timelineData.map((item, index) => {
             const position = calculateNodePosition(index, timelineData.length);
@@ -218,59 +218,59 @@ export default function RadialOrbitalTimeline({
               >
                 {/* Pulsing Energy Glow */}
                 <div
-                  className={`absolute rounded-full -inset-1 ${
+                  className={`absolute rounded-full -inset-2 ${
                     isPulsing ? "animate-pulse duration-1000" : ""
                   }`}
                   style={{
-                    background: `radial-gradient(circle, rgba(0,168,89,0.35) 0%, rgba(0,168,89,0) 70%)`,
-                    width: `${item.energy * 0.4 + 40}px`,
-                    height: `${item.energy * 0.4 + 40}px`,
-                    left: `-${(item.energy * 0.4 + 40 - 40) / 2}px`,
-                    top: `-${(item.energy * 0.4 + 40 - 40) / 2}px`,
+                    background: `radial-gradient(circle, rgba(0,168,89,0.4) 0%, rgba(0,168,89,0) 70%)`,
+                    width: `${item.energy * 0.45 + 55}px`,
+                    height: `${item.energy * 0.45 + 55}px`,
+                    left: `-${(item.energy * 0.45 + 55 - 52) / 2}px`,
+                    top: `-${(item.energy * 0.45 + 55 - 52) / 2}px`,
                   }}
                 ></div>
 
-                {/* Node Orb Button */}
+                {/* Large Node Orb Button */}
                 <div
                   className={`
-                  w-11 h-11 rounded-full flex items-center justify-center
+                  w-13 h-13 rounded-full flex items-center justify-center
                   ${
                     isExpanded
-                      ? "bg-[#00A859] text-white shadow-xl shadow-[#00A859]/60"
+                      ? "bg-[#00A859] text-white shadow-2xl shadow-[#00A859]/70 scale-125"
                       : isRelated
-                      ? "bg-[#0074BC] text-white shadow-lg shadow-[#0074BC]/40"
+                      ? "bg-[#0074BC] text-white shadow-xl shadow-[#0074BC]/50 scale-110"
                       : isDark
                       ? "bg-[#111827] text-white"
-                      : "bg-white text-gray-900"
+                      : "bg-white text-gray-900 shadow-lg"
                   }
                   border-2 
                   ${
                     isExpanded
-                      ? "border-white shadow-lg scale-125"
+                      ? "border-white shadow-xl"
                       : isRelated
                       ? "border-[#00A859] animate-pulse"
                       : isDark
-                      ? "border-white/30"
-                      : "border-[#00A859]/40"
+                      ? "border-white/35"
+                      : "border-[#00A859]/50"
                   }
-                  transition-all duration-300 transform hover:scale-110 shadow-md
+                  transition-all duration-300 transform hover:scale-115
                 `}
                 >
-                  <Icon size={18} />
+                  <Icon size={22} />
                 </div>
 
-                {/* Node Label Below */}
+                {/* Prominent Node Label Below */}
                 <div
                   className={`
-                  absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap
-                  text-[11px] font-bold tracking-wider px-2 py-0.5 rounded-full
+                  absolute top-15 left-1/2 -translate-x-1/2 whitespace-nowrap
+                  text-xs sm:text-sm font-bold tracking-wide px-2.5 py-1 rounded-full shadow-md
                   transition-all duration-300
                   ${
                     isExpanded
-                      ? "bg-[#00A859] text-white scale-110 shadow-md"
+                      ? "bg-[#00A859] text-white scale-115 shadow-xl ring-2 ring-white"
                       : isDark
-                      ? "text-white/80 bg-black/40"
-                      : "text-gray-900 bg-white/80 shadow-xs"
+                      ? "text-white bg-black/60 border border-white/10"
+                      : "text-gray-900 bg-white/95 border border-gray-200"
                   }
                 `}
                 >
