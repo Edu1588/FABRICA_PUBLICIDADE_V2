@@ -276,6 +276,13 @@ export default function Admin() {
     if (hasChanges) {
       setSlides(newSlides);
     }
+
+    if (selectedClientData?.name?.toLowerCase().includes('unimais')) {
+      const firstVeh = slides.findIndex(s => s.type === 'veiculo' || s.type === 'destaque');
+      if (firstVeh !== -1 && activeSlideIndex === 0) {
+        setActiveSlideIndex(firstVeh);
+      }
+    }
   }, [selectedClientId, selectedClientData, slides.length]);
   
 
@@ -1530,7 +1537,13 @@ export default function Admin() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Card 1: Carrossel Carros */}
                   <div 
-                    onClick={() => setActiveEditor('destaque')}
+                    onClick={() => {
+                      setActiveEditor('destaque');
+                      const firstVehicle = slides.findIndex(s => s.type === 'veiculo' || s.type === 'destaque');
+                      if (firstVehicle !== -1) {
+                        setActiveSlideIndex(firstVehicle);
+                      }
+                    }}
                     className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
                   >
                     <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
@@ -1687,27 +1700,51 @@ export default function Admin() {
                         {activeSlide.type === 'capa' ? (
                           // COVER SLIDE EDITABLES
                           <div className="space-y-4 pt-2 border-t border-white/5">
-                            <span className="text-[10px] text-[#C46A1A] uppercase tracking-wider block mt-4">Campos da Capa (Preenchidos pela placa)</span>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-1.5">
-                                <label className="text-white/50 text-[9px] tracking-wider block">Modelo (ex: Fastback)</label>
-                                <input
-                                  type="text"
-                                  value={activeSlide.modelo || ''}
-                                  onChange={e => updateActiveSlideField('modelo', e.target.value)}
-                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
-                                />
+                            {selectedClientData?.name?.toLowerCase().includes('unimais') ? (
+                              <div className="bg-[#FF7A00]/10 border border-[#FF7A00]/30 rounded-xl p-4 space-y-2.5 mt-3 text-left">
+                                <div className="flex items-center gap-2 text-[#FF7A00] font-bold text-xs">
+                                  <Shield className="w-4 h-4" />
+                                  <span>Capa Padrão Fixa (Unimais)</span>
+                                </div>
+                                <p className="text-white/70 text-[11px] leading-relaxed">
+                                  A capa institucional da Unimais é fixa e padronizada. As lâminas editáveis com dados da placa e imagens começam em <strong>Veículo (Placa)</strong>.
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const vIdx = slides.findIndex(s => s.type === 'veiculo' || s.type === 'destaque');
+                                    if (vIdx !== -1) setActiveSlideIndex(vIdx);
+                                  }}
+                                  className="w-full bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-black font-bold py-2.5 px-3 rounded-lg text-xs uppercase tracking-wider transition-colors mt-2 flex items-center justify-center gap-1.5 shadow-md"
+                                >
+                                  Ir para Veículo (Placa) →
+                                </button>
                               </div>
-                              <div className="space-y-1.5">
-                                <label className="text-white/50 text-[9px] tracking-wider block">Detalhes (ex: 1.3 TURBO)</label>
-                                <input
-                                  type="text"
-                                  value={activeSlide.descricao || ''}
-                                  onChange={e => updateActiveSlideField('descricao', e.target.value)}
-                                  className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
-                                />
-                              </div>
-                            </div>
+                            ) : (
+                              <>
+                                <span className="text-[10px] text-[#C46A1A] uppercase tracking-wider block mt-4">Campos da Capa (Preenchidos pela placa)</span>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-1.5">
+                                    <label className="text-white/50 text-[9px] tracking-wider block">Modelo (ex: Fastback)</label>
+                                    <input
+                                      type="text"
+                                      value={activeSlide.modelo || ''}
+                                      onChange={e => updateActiveSlideField('modelo', e.target.value)}
+                                      className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                    />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <label className="text-white/50 text-[9px] tracking-wider block">Detalhes (ex: 1.3 TURBO)</label>
+                                    <input
+                                      type="text"
+                                      value={activeSlide.descricao || ''}
+                                      onChange={e => updateActiveSlideField('descricao', e.target.value)}
+                                      className="w-full bg-[#111116] border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-[#C46A1A] text-white text-xs"
+                                    />
+                                  </div>
+                                </div>
+                              </>
+                            )}
 
                             {/* PRECIFICAÇÃO NA CAPA (AZUL VEÍCULOS APENAS) */}
                             {selectedClientData?.name?.toLowerCase().includes('azul') && (
@@ -1856,7 +1893,29 @@ export default function Admin() {
                         ) : (
                           // FINAL SLIDE EDITABLES (Static)
                           <div className="space-y-4 pt-2 border-t border-white/5 text-center text-white/50 text-xs font-outfit">
-                            O Card Final utiliza apenas configuração de imagem.
+                            {selectedClientData?.name?.toLowerCase().includes('unimais') ? (
+                              <div className="bg-[#FF7A00]/10 border border-[#FF7A00]/30 rounded-xl p-4 space-y-2.5 text-left">
+                                <div className="flex items-center gap-2 text-[#FF7A00] font-bold text-xs">
+                                  <Shield className="w-4 h-4" />
+                                  <span>Lâmina Final Fixa (Unimais)</span>
+                                </div>
+                                <p className="text-white/70 text-[11px] leading-relaxed">
+                                  O slide final com contatos e canais institucionais é padronizado e fixo para a Unimais.
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const vIdx = slides.findIndex(s => s.type === 'veiculo' || s.type === 'destaque');
+                                    if (vIdx !== -1) setActiveSlideIndex(vIdx);
+                                  }}
+                                  className="w-full bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-black font-bold py-2.5 px-3 rounded-lg text-xs uppercase tracking-wider transition-colors mt-2 flex items-center justify-center gap-1.5 shadow-md"
+                                >
+                                  Ir para Veículo (Placa) →
+                                </button>
+                              </div>
+                            ) : (
+                              'O Card Final utiliza apenas configuração de imagem.'
+                            )}
                           </div>
                         )}
 
@@ -2047,8 +2106,12 @@ export default function Admin() {
                               </div>
 
                               <div className="mt-1 text-left">
-                                <p className="text-[8px] font-outfit text-white/30 uppercase tracking-wider leading-none">
-                                  {slide.type === 'capa' ? 'Capa' : slide.type === 'final' ? 'Final' : 'Veículo'}
+                                <p className="text-[8px] font-outfit text-white/40 uppercase tracking-wider leading-none font-bold">
+                                  {slide.type === 'capa' 
+                                    ? (selectedClientData?.name?.toLowerCase().includes('unimais') ? '🔒 Capa (Fixa)' : 'Capa')
+                                    : slide.type === 'final' 
+                                    ? (selectedClientData?.name?.toLowerCase().includes('unimais') ? '🔒 Final (Fixo)' : 'Final')
+                                    : '⭐ Veículo (Placa)'}
                                 </p>
                                 <h5 className="text-[11px] font-semibold tracking-wide text-white line-clamp-1 mt-0.5">
                                   {slide.title}
