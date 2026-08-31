@@ -1539,9 +1539,13 @@ export default function Admin() {
                   <div 
                     onClick={() => {
                       setActiveEditor('destaque');
-                      const firstVehicle = slides.findIndex(s => s.type === 'veiculo' || s.type === 'destaque');
-                      if (firstVehicle !== -1) {
-                        setActiveSlideIndex(firstVehicle);
+                      if (selectedClientData?.name?.toLowerCase().includes('unimais')) {
+                        const firstVehicle = slides.findIndex(s => s.type === 'veiculo' || s.type === 'destaque');
+                        if (firstVehicle !== -1) {
+                          setActiveSlideIndex(firstVehicle);
+                        }
+                      } else {
+                        setActiveSlideIndex(0);
                       }
                     }}
                     className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
@@ -1872,8 +1876,8 @@ export default function Admin() {
                               </div>
                             </div>
 
-                            {/* PREÇO E FIPE - Apenas para clientes que utilizam FIPE (Meta e Azul) */}
-                            {activeSlide.type !== 'destaque' && !selectedClientData?.name?.toLowerCase().includes('unimais') && (
+                            {/* PREÇO E FIPE - Apenas para clientes que utilizam FIPE (Azul) */}
+                            {activeSlide.type !== 'destaque' && selectedClientData?.name?.toLowerCase().includes('azul') && (
                               <div className="pt-3 border-t border-white/5 space-y-3">
                                 <span className="text-[10px] text-[#FFD000] font-bold uppercase tracking-wider block">Precificação Tabela FIPE</span>
                                 
@@ -2429,37 +2433,6 @@ export default function Admin() {
                                   <div className={`leading-none tracking-wide italic ${selectedClientData?.name?.toLowerCase().includes('meta') ? 'text-white font-light' : 'text-black font-bold'}`} style={{ fontSize: '13px', color: selectedClientData?.name?.toLowerCase().includes('meta') ? '#ffffff' : '#000000', marginTop: selectedClientData?.name?.toLowerCase().includes('meta') ? '2px' : '-2px', fontFamily: selectedClientData?.name?.toLowerCase().includes('meta') ? '"Montserrat", sans-serif' : undefined }}>
                                     {activeSlide.descricao || 'DESCRIÇÃO COMPLETA'}
                                   </div>
-
-                                  {/* TAG FIPE E VALOR DO CARRO - APENAS SE FOR META (UNIMAIS NÃO TEM FIPE NEM PREÇO AMARELO) */}
-                                  {selectedClientData?.name?.toLowerCase().includes('meta') && (
-                                    <div className="mt-3 flex flex-col items-start gap-1 not-italic">
-                                      <div className="inline-flex items-center gap-1.5 bg-[#000000]/85 backdrop-blur-md border border-[#FFD000]/50 px-2 py-0.5 rounded shadow-lg">
-                                        <span className="text-[8px] font-black tracking-widest text-white uppercase font-sans">
-                                          FIPE
-                                        </span>
-                                        <span className="text-[9px] font-extrabold text-[#FFD000] tracking-tight font-sans">
-                                          {activeSlide.valorFipe ? (activeSlide.valorFipe.startsWith('R$') ? activeSlide.valorFipe : `R$ ${activeSlide.valorFipe}`) : (activeSlide.valorIntegral ? (activeSlide.valorIntegral.startsWith('R$') ? activeSlide.valorIntegral : `R$ ${activeSlide.valorIntegral}`) : 'R$ 99.590')}
-                                        </span>
-                                      </div>
-
-                                      <div className="flex items-center gap-1.5 mt-0.5 drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
-                                        <div className="flex flex-col text-white leading-[0.9] tracking-tight font-black font-sans text-left" style={{ fontSize: '11px' }}>
-                                          <span>POR</span>
-                                          <span>R$</span>
-                                        </div>
-                                        <div 
-                                          className="text-[#FFD000] font-black leading-none tracking-tight"
-                                          style={{ 
-                                            fontFamily: '"Antonio", "Anton", sans-serif', 
-                                            fontSize: '28px',
-                                            textShadow: '2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000'
-                                          }}
-                                        >
-                                          {(activeSlide.valorIntegral || activeSlide.valorFipe || '99.590').replace(/^R\$\s*/i, '')}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
                                 </div>
                               )}
                               <div className="flex-1 z-20 pointer-events-none"></div>
