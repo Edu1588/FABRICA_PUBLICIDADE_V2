@@ -33,6 +33,7 @@ import {
 import { AdminDashboard } from '../components/AdminDashboard';
 import { DesignBrandbook } from '../components/DesignBrandbook';
 import { JornalManager } from '../components/JornalManager';
+import { AnaliseUXView } from '../components/AnaliseUXView';
 import { fetchPresentationsList, syncPresentationsList, PresentationMeta } from '../lib/presentationService';
 
 import { toCanvas } from 'html-to-image';
@@ -150,7 +151,7 @@ export default function Admin() {
   };
 
   // Unified Workflow
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'clientes' | 'apresentacoes' | 'config'>('clientes');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'clientes' | 'apresentacoes' | 'analise-ux' | 'config'>('clientes');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showCarrosseis, setShowCarrosseis] = useState(false);
   const [showDesign, setShowDesign] = useState(false);
@@ -1090,6 +1091,24 @@ export default function Admin() {
                 </button>
                 <button
                   onClick={() => {
+                    setActiveTab('analise-ux');
+                    setSelectedClientId(null);
+                    setShowCarrosseis(false);
+                    setShowDesign(false);
+                    setShowJornal(false);
+                    setActiveEditor(null);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
+                    activeTab === 'analise-ux' 
+                      ? 'bg-[#18120e] text-[#FF7A00] border-l-2 border-[#C46A1A]' 
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Análise UX
+                </button>
+                <button
+                  onClick={() => {
                     setActiveTab('config');
                     setSelectedClientId(null);
                     setShowCarrosseis(false);
@@ -1141,7 +1160,7 @@ export default function Admin() {
                   Central de Ativos / Gestão de Carrosséis
                 </span>
                 <h1 className="text-2xl md:text-3xl font-light tracking-wide uppercase mt-1" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  {activeTab === 'config' ? 'Configurações' : activeTab === 'apresentacoes' ? 'Apresentações Interativas' : showCarrosseis ? (activeEditor === 'destaque' ? `Carrossel Destaque ${selectedClientData?.name || ''}` : activeEditor === 'ofertas' ? `Carrossel de Ofertas ${selectedClientData?.name || ''}` : `Gestão de Carrosséis - ${selectedClientData?.name || ''}`) : 'Gerenciamento de Clientes'}
+                  {activeTab === 'config' ? 'Configurações' : activeTab === 'analise-ux' ? 'Auditoria & Análise UX' : activeTab === 'apresentacoes' ? 'Apresentações Interativas' : showCarrosseis ? (activeEditor === 'destaque' ? `Carrossel Destaque ${selectedClientData?.name || ''}` : activeEditor === 'ofertas' ? `Carrossel de Ofertas ${selectedClientData?.name || ''}` : `Gestão de Carrosséis - ${selectedClientData?.name || ''}`) : 'Gerenciamento de Clientes'}
                 </h1>
               </div>
               
@@ -1152,6 +1171,13 @@ export default function Admin() {
                 </span>
               </div>
             </header>
+
+            {/* Análise UX */}
+            {activeTab === 'analise-ux' && !selectedClientId && (
+              <div className="animate-fade-in">
+                <AnaliseUXView />
+              </div>
+            )}
 
             {/* Dashboard */}
             {activeTab === 'dashboard' && !selectedClientId && (
