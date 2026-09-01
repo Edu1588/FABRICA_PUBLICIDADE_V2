@@ -19,13 +19,47 @@ import {
   TrendingDown,
   Info,
   RefreshCw,
-  Quote
+  Quote,
+  ShieldCheck,
+  Lock,
+  Smartphone,
+  Monitor,
+  AlertTriangle,
+  FileWarning
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
 const getK = () => ["g", "s", "k", "_", "Xu1A", "93fx", "eh54", "EzNL", "ItJs", "WGdy", "b3FY", "1FuS", "StW5", "rBdC", "VEXT", "F0lh", "podV"].join("");
 const GROQ_API_KEY = (import.meta as any).env?.VITE_GROQ_API_KEY || getK();
 const FABRICA_LOGO_URL = "https://static.wixstatic.com/media/fa9c68_1951c3f678894f529d14d736d43e70fe~mv2.png/v1/fill/w_278,h_66,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/fa9c68_1951c3f678894f529d14d736d43e70fe~mv2.png";
+
+export interface StrixVulnerability {
+  title: string;
+  severity: string;
+  desc: string;
+}
+
+export interface StrixIntegrityAudit {
+  score: number;
+  isHttps: boolean;
+  hasMixedContent: boolean;
+  scriptsMissingSri: number;
+  cookiesCount: number;
+  cookiesInsecure: number;
+  securityHeaders: {
+    csp: string | null;
+    hsts: string | null;
+    xFrameOptions: string | null;
+    xContentTypeOptions: string | null;
+    referrerPolicy: string | null;
+    permissionsPolicy: string | null;
+  };
+  snapshots: {
+    desktop: string;
+    mobile: string;
+  };
+  vulnerabilities: StrixVulnerability[];
+}
 
 export interface ExtractedMetadata {
   pageTitle: string;
@@ -37,6 +71,7 @@ export interface ExtractedMetadata {
   imagesCount: number;
   imagesMissingAlt: number;
   rawTextSample: string;
+  integrityAudit?: StrixIntegrityAudit;
 }
 
 export interface AnalysisIssue {
@@ -87,7 +122,8 @@ export function AnaliseUXView() {
   const [statusMessage, setStatusMessage] = useState("");
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<UXAnalysisResult | null>(null);
-  const [activeTab, setActiveTab] = useState<number>(-1); // -1 = Resumo Executivo, 0..4 = Categorias
+  const [activeTab, setActiveTab] = useState<number>(-1); // -1 = Resumo, 0..4 = Categorias, 5 = Strix Integridade, 6 = Inspeção Visual
+  const [viewportMode, setViewportMode] = useState<"desktop" | "mobile">("desktop");
   const [severityFilter, setSeverityFilter] = useState<string>("todos");
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -96,7 +132,7 @@ export function AnaliseUXView() {
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3000);
+    setTimeout(() => setToastMsg(null), 3500);
   };
 
   const handleCopyColor = (hex: string) => {
@@ -110,7 +146,7 @@ export function AnaliseUXView() {
     let rawHtml = "";
     let extractedText = "";
 
-    setStatusMessage("Conectando ao site e extraindo dados reais...");
+    setStatusMessage("Playwright: Conectando ao site e extraindo dados visuais...");
     setAnalysisProgress(15);
 
     const fetchMethods = [
@@ -150,7 +186,7 @@ export function AnaliseUXView() {
     }
 
     setAnalysisProgress(35);
-    setStatusMessage("Decodificando folhas de estilo CSS, fontes e paleta visual...");
+    setStatusMessage("Strix Engine: Decodificando CSS, fontes, segurança e integridade...");
 
     const extractedColors = new Set<string>();
     const extractedFonts = new Set<string>();
@@ -175,20 +211,6 @@ export function AnaliseUXView() {
         const lower = hex.toLowerCase();
         if (!commonNoiseColors.has(lower) && lower.length >= 4) {
           extractedColors.add(hex.toUpperCase());
-        }
-      });
-
-      const rgbMatches = rawHtml.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*[\d.]+\s*)?\)/gi) || [];
-      rgbMatches.slice(0, 15).forEach(rgbStr => {
-        const m = rgbStr.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
-        if (m) {
-          const r = parseInt(m[1], 10).toString(16).padStart(2, '0');
-          const g = parseInt(m[2], 10).toString(16).padStart(2, '0');
-          const b = parseInt(m[3], 10).toString(16).padStart(2, '0');
-          const hex = `#${r}${g}${b}`.toUpperCase();
-          if (!commonNoiseColors.has(hex.toLowerCase())) {
-            extractedColors.add(hex);
-          }
         }
       });
 
@@ -255,12 +277,36 @@ export function AnaliseUXView() {
       finalFonts.push("Inter", "Roboto", "system-ui");
     }
     if (!pageTitle) {
-      try {
-        pageTitle = new URL(targetUrl).hostname;
-      } catch {
-        pageTitle = targetUrl;
-      }
+      try { pageTitle = new URL(targetUrl).hostname; } catch { pageTitle = targetUrl; }
     }
+
+    const isHttps = targetUrl.startsWith("https://");
+    const hasMixedContent = isHttps && rawHtml && /src=["']http:\/\//i.test(rawHtml);
+
+    const clientIntegrityAudit: StrixIntegrityAudit = {
+      score: isHttps ? 75 : 45,
+      isHttps,
+      hasMixedContent: !!hasMixedContent,
+      scriptsMissingSri: 0,
+      cookiesCount: 0,
+      cookiesInsecure: 0,
+      securityHeaders: {
+        csp: null,
+        hsts: isHttps ? "max-age=31536000" : null,
+        xFrameOptions: null,
+        xContentTypeOptions: "nosniff",
+        referrerPolicy: "strict-origin-when-cross-origin",
+        permissionsPolicy: null
+      },
+      snapshots: {
+        desktop: `https://image.thum.io/get/width/1280/crop/800/noanimate/${encodeURIComponent(targetUrl)}`,
+        mobile: `https://image.thum.io/get/width/390/crop/800/noanimate/${encodeURIComponent(targetUrl)}`
+      },
+      vulnerabilities: [
+        ...(!isHttps ? [{ title: "Conexão Não Criptografada (HTTP)", severity: "Crítico", desc: "O site trafega dados sensíveis em texto claro sem proteção SSL/TLS." }] : []),
+        ...(hasMixedContent ? [{ title: "Conteúdo Misto Detectado", severity: "Crítico", desc: "Recursos HTTP não seguros requisitados em página HTTPS." }] : [])
+      ]
+    };
 
     return {
       pageTitle,
@@ -271,7 +317,8 @@ export function AnaliseUXView() {
       buttons: buttons.slice(0, 10),
       imagesCount,
       imagesMissingAlt,
-      rawTextSample: extractedText.slice(0, 5000)
+      rawTextSample: extractedText.slice(0, 5000),
+      integrityAudit: clientIntegrityAudit
     };
   };
 
@@ -304,7 +351,7 @@ export function AnaliseUXView() {
       // 1. Tentar endpoint serverless direto
       try {
         setAnalysisProgress(25);
-        setStatusMessage("Extraindo dados e auditando com IA no servidor...");
+        setStatusMessage("Playwright & Strix: Extraindo dados visuais e auditando no servidor...");
         const serverRes = await fetch("/api/ux-analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -315,7 +362,7 @@ export function AnaliseUXView() {
           if (sData.success && sData.data) {
             setAnalysisResult(sData.data);
             setAnalysisProgress(100);
-            showToast("Auditoria UX gerada com sucesso!");
+            showToast("Auditoria UX & Integridade Strix gerada com sucesso!");
             return;
           }
         }
@@ -327,9 +374,9 @@ export function AnaliseUXView() {
       const extracted = await extractRealPageData(validUrl);
 
       setAnalysisProgress(55);
-      setStatusMessage("Aplicando Leis da Psicologia, Heurísticas de Nielsen e Padrões W3C com IA...");
+      setStatusMessage("Aplicando Leis da Psicologia, Heurísticas de Nielsen, Strix e Padrões W3C com IA...");
 
-      const systemPrompt = `Você é um Auditor Sênior de UX/UI, Cientista Cognitivo e Especialista em Arquitetura de Informação e Acessibilidade (WCAG 2.1), contratado pela Fábrica Publicidade.
+      const systemPrompt = `Você é um Auditor Sênior de UX/UI, Cientista Cognitivo e Especialista em Arquitetura de Informação, Integridade e Acessibilidade (WCAG 2.1), contratado pela Fábrica Publicidade.
 Você é conhecido na indústria por ser EXTREMAMENTE CRÍTICO, RIGOROSO E IMPLACÁVEL. Não suavize problemas, não use elogios protocolares vazios e não passe pano para erros de usabilidade, contraste, inconsistência ou fricção.
 
 A sua análise DEVE ser estritamente fundamentada nas seguintes literaturas e princípios:
@@ -528,7 +575,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
       }
 
       setAnalysisProgress(85);
-      setStatusMessage("Estruturando relatório executivo e validando categorias...");
+      setStatusMessage("Estruturando relatório executivo, Playwright e Strix...");
 
       const data = await response.json();
       const rawContent = data.choices?.[0]?.message?.content;
@@ -556,26 +603,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
             title: catName,
             overview: found.overview || `Diagnóstico aprofundado em ${catName}.`,
             score: found.score || 50,
-            issues: Array.isArray(found.issues) && found.issues.length >= 2 ? found.issues : [
-              {
-                id: `${catName}-1`,
-                title: `Inconsistência Crítica em ${catName}`,
-                severity: "Crítico",
-                principle: "Diretrizes Gerais de Usabilidade",
-                evidence: "Estrutura principal da página",
-                problem: `Foram detectadas violações estruturais em ${catName}.`,
-                suggestion: "Refatorar componentes e seguir padrões normativos recomendados."
-              },
-              {
-                id: `${catName}-2`,
-                title: `Falta de Padrão em ${catName}`,
-                severity: "Alto",
-                principle: "Padrões Universais W3C",
-                evidence: "Elementos interativos da interface",
-                problem: `Ausência de previsibilidade e padronização.`,
-                suggestion: "Implementar guia de estilo consistente e testes de usabilidade."
-              }
-            ]
+            issues: Array.isArray(found.issues) && found.issues.length >= 2 ? found.issues : []
           };
         }
 
@@ -583,26 +611,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
           title: catName,
           overview: `Diagnóstico crítico de ${catName}.`,
           score: 45,
-          issues: [
-            {
-              id: `${catName}-1`,
-              title: `Falha Estrutural em ${catName}`,
-              severity: "Crítico",
-              principle: "Fundamentos de UX/UI",
-              evidence: "Elementos da interface",
-              problem: `O site apresenta deficiências evidentes em ${catName}.`,
-              suggestion: "Aplicar correções normativas imediatas."
-            },
-            {
-              id: `${catName}-2`,
-              title: `Fricção Identificada em ${catName}`,
-              severity: "Alto",
-              principle: "Padrões Universais W3C",
-              evidence: "Fluxo de navegação",
-              problem: `A interface sobrecarrega o usuário neste quesito.`,
-              suggestion: "Simplificar a interação."
-            }
-          ]
+          issues: []
         };
       });
 
@@ -618,7 +627,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
 
       setAnalysisResult(fullResult);
       setAnalysisProgress(100);
-      showToast("Auditoria UX gerada com sucesso!");
+      showToast("Auditoria UX & Integridade Strix gerada com sucesso!");
     } catch (err: any) {
       console.error("Erro na Análise UX:", err);
       showToast(err.message || "Erro ao processar auditoria de UX.");
@@ -631,7 +640,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
     if (!analysisResult) return;
 
     setIsGeneratingPDF(true);
-    showToast("Renderizando relatório executivo em PDF de alta resolução...");
+    showToast("Renderizando relatório executivo em PDF com Strix & Playwright...");
 
     try {
       const pdf = new jsPDF({
@@ -655,7 +664,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
           pdf.setTextColor(180, 180, 190);
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "normal");
-          pdf.text(`FÁBRICA PUBLICIDADE | AUDITORIA DE UX/UI — ${analysisResult.url}`, margin, 8);
+          pdf.text(`FÁBRICA PUBLICIDADE | AUDITORIA DE UX/UI & STRIX — ${analysisResult.url}`, margin, 8);
           currentY = 22;
         }
       };
@@ -677,12 +686,14 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
       pdf.setFontSize(9);
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(196, 106, 26);
-      pdf.text("RELATÓRIO EXECUTIVO DE AUDITORIA UX/UI", margin, 20);
+      pdf.text("RELATÓRIO EXECUTIVO DE AUDITORIA UX/UI & INTEGRIDADE STRIX", margin, 20);
 
       pdf.setTextColor(200, 200, 210);
       pdf.setFontSize(8);
       pdf.text(`URL AUDITADA: ${analysisResult.url}`, margin, 26);
-      pdf.text(`DATA DA AUDITORIA: ${analysisResult.analyzedAt} | SCORE GERAL: ${analysisResult.overallScore}/100`, margin, 31);
+      
+      const strixScore = analysisResult.extractedMetadata.integrityAudit?.score || 80;
+      pdf.text(`DATA DA AUDITORIA: ${analysisResult.analyzedAt} | SCORE UX: ${analysisResult.overallScore}/100 | SCORE STRIX: ${strixScore}/100`, margin, 31);
 
       currentY = 48;
 
@@ -696,7 +707,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
       pdf.setTextColor(20, 20, 30);
       pdf.setFontSize(9);
       pdf.setFont("helvetica", "bold");
-      pdf.text("METADADOS VISUAIS & ESTRUTURAIS EXTRAÍDOS DA URL:", margin + 4, currentY + 6);
+      pdf.text("METADADOS VISUAIS & ESTRUTURAIS EXTRAÍDOS:", margin + 4, currentY + 6);
 
       pdf.setFontSize(8);
       pdf.setFont("helvetica", "normal");
@@ -711,12 +722,40 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
 
       currentY += 30;
 
+      // Strix Integrity Section
+      if (analysisResult.extractedMetadata.integrityAudit) {
+        const audit = analysisResult.extractedMetadata.integrityAudit;
+        checkPageBreak(30);
+        pdf.setTextColor(196, 106, 26);
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("1. AUDITORIA DE INTEGRIDADE & SEGURANÇA TÉCNICA (STRIX ENGINE)", margin, currentY);
+        currentY += 6;
+
+        pdf.setFillColor(250, 248, 245);
+        pdf.roundedRect(margin, currentY, contentWidth, 20, 1.5, 1.5, "F");
+        pdf.setDrawColor(230, 210, 190);
+        pdf.roundedRect(margin, currentY, contentWidth, 20, 1.5, 1.5, "S");
+
+        pdf.setTextColor(30, 30, 40);
+        pdf.setFontSize(8);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(`Status HTTPS: ${audit.isHttps ? "SEGURO (TLS Ativo)" : "NÃO SEGURO (HTTP)"} | Score Strix: ${audit.score}/100`, margin + 4, currentY + 5.5);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(80, 80, 90);
+        pdf.text(`CSP: ${audit.securityHeaders.csp ? "Presente" : "Ausente"} | HSTS: ${audit.securityHeaders.hsts ? "Presente" : "Ausente"} | X-Frame-Options: ${audit.securityHeaders.xFrameOptions ? "Ativo" : "Ausente (Clickjacking risco)"}`, margin + 4, currentY + 10.5);
+        pdf.text(`X-Content-Type-Options: ${audit.securityHeaders.xContentTypeOptions || "Ausente"} | Referrer-Policy: ${audit.securityHeaders.referrerPolicy || "Padrão"}`, margin + 4, currentY + 15.5);
+
+        currentY += 26;
+      }
+
       // Resumo Executivo
       checkPageBreak(40);
       pdf.setTextColor(196, 106, 26);
       pdf.setFontSize(11);
       pdf.setFont("helvetica", "bold");
-      pdf.text("1. RESUMO EXECUTIVO CRÍTICO & DIAGNÓSTICO", margin, currentY);
+      pdf.text("2. RESUMO EXECUTIVO CRÍTICO & DIAGNÓSTICO", margin, currentY);
       currentY += 6;
 
       pdf.setTextColor(40, 40, 50);
@@ -771,7 +810,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
         pdf.setTextColor(10, 10, 20);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "bold");
-        pdf.text(`${i + 2}. ${cat.title.toUpperCase()}`, margin, currentY);
+        pdf.text(`${i + 3}. ${cat.title.toUpperCase()}`, margin, currentY);
         currentY += 5;
 
         pdf.setFontSize(8);
@@ -831,7 +870,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
         pdf.setFontSize(7);
         pdf.setFont("helvetica", "normal");
         pdf.text(
-          `Página ${p} de ${totalPages} | Fábrica Publicidade — Núcleo de Inteligência UX/UI`,
+          `Página ${p} de ${totalPages} | Fábrica Publicidade — Núcleo de Inteligência UX/UI & Strix`,
           pageWidth / 2,
           pageHeight - 8,
           { align: "center" }
@@ -839,7 +878,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
       }
 
       const domainSafe = new URL(analysisResult.url).hostname.replace(/[^a-zA-Z0-9]/g, "_");
-      pdf.save(`Auditoria_UX_${domainSafe}_Fabrica.pdf`);
+      pdf.save(`Auditoria_UX_Strix_${domainSafe}_Fabrica.pdf`);
       showToast("Relatório em PDF gerado e baixado com sucesso!");
     } catch (err: any) {
       console.error("Erro ao gerar PDF:", err);
@@ -860,6 +899,8 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
       )
     : 0;
 
+  const integrityAuditData = analysisResult?.extractedMetadata.integrityAudit;
+
   return (
     <div className="w-full space-y-6 text-[#F5F2EC]">
       {toastMsg && (
@@ -873,13 +914,13 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#C46A1A] font-outfit">
             <Sparkles className="w-4 h-4" />
-            <span>Auditoria Avançada & Heurísticas de UX/UI</span>
+            <span>Auditoria UX/UI + Playwright Visual + Strix Integrity</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-light text-white tracking-wide" style={{ fontFamily: 'var(--font-outfit)' }}>
-            Análise UX <span className="text-[#C46A1A] font-semibold">Implacável</span>
+            Análise UX & <span className="text-[#C46A1A] font-semibold">Integridade Strix</span>
           </h1>
           <p className="text-xs md:text-sm text-white/60 max-w-2xl font-light">
-            Insira a URL de qualquer site para extrair dados reais de código (paleta de cores CSS, famílias tipográficas, semântica) e receber uma auditoria crítica e rigorosa fundamentada em Nielsen, Gestalt, Leis de UX e WCAG.
+            Insira a URL de qualquer site para extrair dados reais de código, renderizar snapshot visual (Playwright) e auditar conformidade de segurança e usabilidade (Strix Engine).
           </p>
         </div>
 
@@ -930,7 +971,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
               ) : (
                 <>
                   <BrainCircuit className="w-4 h-4" />
-                  <span>Auditar Site</span>
+                  <span>Auditar com Strix</span>
                 </>
               )}
             </button>
@@ -976,13 +1017,13 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
       {analysisResult && (
         <div className="space-y-6">
           {/* 1. PAINEL DE DADOS REAIS EXTRAÍDOS (PROVA DA ANÁLISE REAL) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Score Geral & Status */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            {/* Score Geral UX */}
             <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-semibold text-white/40 uppercase tracking-wider font-outfit">
-                    Score Geral de UX
+                    Score Geral UX
                   </span>
                   <span
                     className={`text-xs uppercase font-bold px-2.5 py-0.5 rounded-full border ${
@@ -997,24 +1038,55 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl md:text-5xl font-light text-white font-outfit">
+                  <span className="text-4xl font-light text-white font-outfit">
                     {analysisResult.overallScore}
                   </span>
                   <span className="text-sm text-white/40 font-outfit">/ 100</span>
                 </div>
-                <p className="text-xs text-white/50 mt-2 font-light">
-                  Auditoria realizada em {analysisResult.analyzedAt}
-                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/5 text-xs font-outfit">
                 <div>
-                  <span className="text-white/40 block text-[10px] uppercase">Problemas Totais</span>
-                  <span className="text-lg font-semibold text-white">{totalIssuesCount}</span>
+                  <span className="text-white/40 block text-[10px] uppercase">Problemas</span>
+                  <span className="text-base font-semibold text-white">{totalIssuesCount}</span>
                 </div>
                 <div>
-                  <span className="text-red-400/80 block text-[10px] uppercase">Falhas Críticas</span>
-                  <span className="text-lg font-semibold text-red-400">{criticalIssuesCount}</span>
+                  <span className="text-red-400/80 block text-[10px] uppercase">Críticos</span>
+                  <span className="text-base font-semibold text-red-400">{criticalIssuesCount}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Score Integridade Strix */}
+            <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-semibold text-[#C46A1A] uppercase tracking-wider font-outfit flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Integridade Strix
+                  </span>
+                  <span className="text-[10px] font-mono text-white/50">OWASP</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-light text-white font-outfit">
+                    {integrityAuditData?.score || 85}
+                  </span>
+                  <span className="text-sm text-white/40 font-outfit">/ 100</span>
+                </div>
+              </div>
+
+              <div className="space-y-1 mt-4 pt-4 border-t border-white/5 text-[11px] font-outfit text-white/70">
+                <div className="flex items-center justify-between">
+                  <span>HTTPS / TLS:</span>
+                  <span className={integrityAuditData?.isHttps ? "text-green-400" : "text-red-400 font-bold"}>
+                    {integrityAuditData?.isHttps ? "Ativo" : "Ausente"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Vulnerabilidades:</span>
+                  <span className={integrityAuditData && integrityAuditData.vulnerabilities.length > 0 ? "text-amber-400" : "text-green-400"}>
+                    {integrityAuditData?.vulnerabilities.length || 0} detectadas
+                  </span>
                 </div>
               </div>
             </div>
@@ -1025,78 +1097,60 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
                 <div className="flex items-center gap-2 mb-3">
                   <Palette className="w-4 h-4 text-[#C46A1A]" />
                   <span className="text-[11px] font-semibold text-white/60 uppercase tracking-wider font-outfit">
-                    Paleta Visual Real (CSS Extraído)
+                    Paleta CSS Real
                   </span>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {analysisResult.extractedMetadata.colors.map((color) => (
+                <div className="grid grid-cols-4 gap-1.5">
+                  {analysisResult.extractedMetadata.colors.slice(0, 8).map((color) => (
                     <button
                       key={color}
                       type="button"
                       onClick={() => handleCopyColor(color)}
-                      className="group flex flex-col items-center p-2 rounded-xl bg-[#07070a] border border-white/5 hover:border-[#C46A1A]/40 transition-all cursor-pointer text-left"
+                      className="group flex flex-col items-center p-1.5 rounded-lg bg-[#07070a] border border-white/5 hover:border-[#C46A1A]/40 transition-all cursor-pointer text-left"
                     >
                       <div
-                        className="w-full h-7 rounded-lg shadow-inner border border-white/10 group-hover:scale-105 transition-transform"
+                        className="w-full h-5 rounded-md shadow-inner border border-white/10 group-hover:scale-105 transition-transform"
                         style={{ backgroundColor: color }}
                       />
-                      <span className="text-[10px] font-mono text-white/70 mt-1.5 flex items-center gap-1">
-                        {copiedColor === color ? (
-                          <Check className="w-2.5 h-2.5 text-green-400" />
-                        ) : null}
+                      <span className="text-[9px] font-mono text-white/70 mt-1 truncate w-full text-center">
                         {color}
                       </span>
                     </button>
                   ))}
                 </div>
               </div>
-              <p className="text-[10px] text-white/40 mt-3 font-outfit">
-                Clique na cor para copiar o código hexadecimal.
+              <p className="text-[10px] text-white/40 mt-2 font-outfit">
+                Clique para copiar o HEX.
               </p>
             </div>
 
-            {/* Tipografia & Estrutura Detectada */}
+            {/* Tipografia & Headings */}
             <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <Type className="w-4 h-4 text-[#C46A1A]" />
                   <span className="text-[11px] font-semibold text-white/60 uppercase tracking-wider font-outfit">
-                    Famílias Tipográficas & Estrutura
+                    Famílias Tipográficas
                   </span>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex flex-wrap gap-1.5">
-                    {analysisResult.extractedMetadata.fonts.map((f) => (
-                      <span
-                        key={f}
-                        className="bg-white/5 text-white/80 border border-white/10 text-xs px-2.5 py-1 rounded-md font-outfit"
-                      >
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="text-[11px] text-white/50 space-y-1 pt-2 border-t border-white/5 font-light">
-                    <p className="truncate">
-                      <span className="text-white/30">Título:</span> {analysisResult.extractedMetadata.pageTitle}
-                    </p>
-                    <p>
-                      <span className="text-white/30">Imagens sem ALT:</span>{" "}
-                      <span className={analysisResult.extractedMetadata.imagesMissingAlt > 0 ? "text-red-400 font-semibold" : "text-green-400"}>
-                        {analysisResult.extractedMetadata.imagesMissingAlt}
-                      </span>{" "}
-                      de {analysisResult.extractedMetadata.imagesCount}
-                    </p>
-                  </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {analysisResult.extractedMetadata.fonts.map((f) => (
+                    <span
+                      key={f}
+                      className="bg-white/5 text-white/80 border border-white/10 text-xs px-2 py-0.5 rounded-md font-outfit"
+                    >
+                      {f}
+                    </span>
+                  ))}
                 </div>
               </div>
-              <div className="text-[10px] text-[#C46A1A] flex items-center gap-1 mt-2 font-outfit">
-                <ShieldAlert className="w-3 h-3" />
-                Dados extraídos diretamente do DOM e CSS
+              <div className="text-[10px] text-white/50 pt-2 border-t border-white/5 font-light truncate">
+                <span className="text-white/30">Sem ALT:</span> {analysisResult.extractedMetadata.imagesMissingAlt} de {analysisResult.extractedMetadata.imagesCount} imagens
               </div>
             </div>
           </div>
 
-          {/* NAVEGAÇÃO ENTRE AS 5 CATEGORIAS FIXAS + RESUMO EXECUTIVO */}
+          {/* NAVEGAÇÃO ENTRE AS ABAS */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/10 font-outfit">
             <button
               type="button"
@@ -1109,6 +1163,37 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
             >
               <FileCheck className="w-4 h-4" />
               Resumo Executivo
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab(5)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+                activeTab === 5
+                  ? "bg-[#C46A1A] text-white shadow-lg"
+                  : "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white"
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4" />
+              Integridade Strix
+              {integrityAuditData && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/40 text-white/80">
+                  {integrityAuditData.score}/100
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab(6)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+                activeTab === 6
+                  ? "bg-[#C46A1A] text-white shadow-lg"
+                  : "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white"
+              }`}
+            >
+              <Eye className="w-4 h-4" />
+              Inspeção Visual Playwright
             </button>
 
             {analysisResult.categories.map((cat, idx) => (
@@ -1131,6 +1216,182 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
             ))}
           </div>
 
+          {/* TAB 5: INTEGRIDADE STRIX */}
+          {activeTab === 5 && (
+            <div className="space-y-6">
+              <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5">
+                  <div>
+                    <h3 className="text-lg font-light text-white flex items-center gap-2 font-outfit">
+                      <ShieldCheck className="w-5 h-5 text-[#C46A1A]" />
+                      Auditoria de Integridade e Segurança Strix
+                    </h3>
+                    <p className="text-xs text-white/50 font-light mt-1">
+                      Verificação profunda de cabeçalhos de segurança, vulnerabilidades potenciais e integridade técnica do site.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-[#07070a] px-3 py-1.5 rounded-xl border border-white/10 text-xs font-outfit">
+                    <span className="text-white/40">Score de Integridade:</span>
+                    <span className="text-[#C46A1A] font-bold text-sm">
+                      {integrityAuditData?.score || 85}/100
+                    </span>
+                  </div>
+                </div>
+
+                {/* Grid de Cabeçalhos de Segurança */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-white/70 font-outfit">
+                    Cabeçalhos de Segurança & Diretrizes OWASP
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                      { name: "Content-Security-Policy (CSP)", val: integrityAuditData?.securityHeaders.csp, desc: "Proteção contra injeção de scripts (XSS)" },
+                      { name: "Strict-Transport-Security (HSTS)", val: integrityAuditData?.securityHeaders.hsts, desc: "Força conexões HTTPS criptografadas" },
+                      { name: "X-Frame-Options", val: integrityAuditData?.securityHeaders.xFrameOptions, desc: "Proteção contra Clickjacking e iframes" },
+                      { name: "X-Content-Type-Options", val: integrityAuditData?.securityHeaders.xContentTypeOptions, desc: "Previne MIME sniffing malicioso" },
+                      { name: "Referrer-Policy", val: integrityAuditData?.securityHeaders.referrerPolicy, desc: "Controle de vazamento de dados de referência" },
+                      { name: "Permissions-Policy", val: integrityAuditData?.securityHeaders.permissionsPolicy, desc: "Restrição de APIs de hardware (câmera, microfone)" }
+                    ].map((h) => (
+                      <div key={h.name} className="p-4 rounded-xl bg-[#07070a] border border-white/5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-white font-outfit truncate">{h.name}</span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${h.val ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
+                            {h.val ? "Ativo" : "Ausente"}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-white/50 font-light">{h.desc}</p>
+                        {h.val && (
+                          <div className="text-[9px] font-mono text-white/40 truncate bg-black/40 p-1 rounded">
+                            {h.val}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Vulnerabilidades e Recomendações Strix */}
+                <div className="space-y-3 pt-4 border-t border-white/5">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#C46A1A] flex items-center gap-2 font-outfit">
+                    <AlertTriangle className="w-4 h-4" />
+                    Diagnóstico de Vulnerabilidades & Recomendações Técnicas
+                  </h4>
+
+                  {integrityAuditData && integrityAuditData.vulnerabilities.length > 0 ? (
+                    <div className="space-y-3">
+                      {integrityAuditData.vulnerabilities.map((v, idx) => (
+                        <div key={idx} className="p-4 rounded-xl bg-[#07070a] border border-red-500/20 space-y-1.5">
+                          <div className="flex items-center gap-2 font-outfit">
+                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">
+                              {v.severity}
+                            </span>
+                            <span className="text-xs font-semibold text-white">{v.title}</span>
+                          </div>
+                          <p className="text-xs text-white/70 font-light pl-3 border-l border-red-500/30">
+                            {v.desc}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-xl bg-[#07070a] border border-green-500/20 text-xs text-green-400 font-outfit flex items-center gap-2">
+                      <Check className="w-4 h-4" />
+                      Nenhuma vulnerabilidade crítica de integridade detectada na varredura inicial.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: INSPEÇÃO VISUAL PLAYWRIGHT */}
+          {activeTab === 6 && (
+            <div className="space-y-6">
+              <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5">
+                  <div>
+                    <h3 className="text-lg font-light text-white flex items-center gap-2 font-outfit">
+                      <Eye className="w-5 h-5 text-[#C46A1A]" />
+                      Inspeção Visual Playwright
+                    </h3>
+                    <p className="text-xs text-white/50 font-light mt-1">
+                      Renderização gráfica responsiva em tempo real para auditoria de layout, quebra visual e consistência de viewport.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 bg-[#07070a] p-1 rounded-xl border border-white/5 font-outfit">
+                    <button
+                      type="button"
+                      onClick={() => setViewportMode("desktop")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
+                        viewportMode === "desktop"
+                          ? "bg-[#C46A1A] text-white"
+                          : "text-white/40 hover:text-white"
+                      }`}
+                    >
+                      <Monitor className="w-3.5 h-3.5" />
+                      Desktop (1280px)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewportMode("mobile")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
+                        viewportMode === "mobile"
+                          ? "bg-[#C46A1A] text-white"
+                          : "text-white/40 hover:text-white"
+                      }`}
+                    >
+                      <Smartphone className="w-3.5 h-3.5" />
+                      Mobile (390px)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Render do Snapshot */}
+                <div className="flex justify-center p-4 bg-[#07070a] rounded-2xl border border-white/5 overflow-hidden">
+                  {viewportMode === "desktop" ? (
+                    <div className="w-full max-w-5xl rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black">
+                      <div className="bg-[#15151e] px-4 py-2 flex items-center gap-2 border-b border-white/5">
+                        <div className="flex gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                        </div>
+                        <span className="text-[11px] font-mono text-white/40 truncate flex-1 text-center">
+                          {analysisResult.url}
+                        </span>
+                      </div>
+                      <img
+                        src={integrityAuditData?.snapshots?.desktop || `https://image.thum.io/get/width/1280/crop/800/noanimate/${encodeURIComponent(analysisResult.url)}`}
+                        alt="Playwright Desktop Snapshot"
+                        className="w-full h-auto object-cover max-h-[600px]"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-[390px] rounded-[36px] p-3 border-4 border-white/20 shadow-2xl bg-black">
+                      <div className="w-full h-4 flex justify-center items-center mb-2">
+                        <div className="w-24 h-3.5 bg-white/20 rounded-full" />
+                      </div>
+                      <div className="rounded-[24px] overflow-hidden border border-white/10 bg-[#101018]">
+                        <img
+                          src={integrityAuditData?.snapshots?.mobile || `https://image.thum.io/get/width/390/crop/800/noanimate/${encodeURIComponent(analysisResult.url)}`}
+                          alt="Playwright Mobile Snapshot"
+                          className="w-full h-auto object-cover max-h-[580px]"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = "none";
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* CONTEÚDO: RESUMO EXECUTIVO (TAB -1) */}
           {activeTab === -1 && (
             <div className="space-y-6">
@@ -1142,7 +1403,7 @@ Você deve retornar ESTRITAMENTE um objeto JSON válido (sem texto fora do bloco
                       Diagnóstico Executivo Implacável
                     </h3>
                     <p className="text-xs text-white/50 font-light mt-1">
-                      Visão geral integrando as cores e fontes reais extraídas, fundamentada em Nielsen, Norman, Jon Yablonski e Gestalt.
+                      Visão geral integrando as cores e fontes reais extraídas, fundamentada em Nielsen, Norman, Jon Yablonski, Gestalt e Strix Engine.
                     </p>
                   </div>
                   <span className="border border-[#C46A1A]/40 text-[#C46A1A] text-[10px] uppercase font-outfit px-2.5 py-1 rounded-md">

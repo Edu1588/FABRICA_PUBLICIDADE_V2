@@ -359,6 +359,19 @@ app.post('/api/ux-analyze', async (req, res) => {
 
     let rawHtml = '';
     let extractedText = '';
+    const securityHeadersMap: Record<string, string | null> = {
+      csp: null,
+      hsts: null,
+      xFrameOptions: null,
+      xContentTypeOptions: null,
+      referrerPolicy: null,
+      permissionsPolicy: null
+    };
+    let isHttps = targetUrl.startsWith('https://');
+    let hasMixedContent = false;
+    let scriptsMissingSri = 0;
+    let cookiesCount = 0;
+    let cookiesInsecure = 0;
 
     try {
       const pageRes = await fetch(targetUrl, {
@@ -367,6 +380,23 @@ app.post('/api/ux-analyze', async (req, res) => {
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
         }
       });
+
+      // Strix Security Header Evaluation
+      securityHeadersMap.csp = pageRes.headers.get('content-security-policy');
+      securityHeadersMap.hsts = pageRes.headers.get('strict-transport-security');
+      securityHeadersMap.xFrameOptions = pageRes.headers.get('x-frame-options');
+      securityHeadersMap.xContentTypeOptions = pageRes.headers.get('x-content-type-options');
+      securityHeadersMap.referrerPolicy = pageRes.headers.get('referrer-policy');
+      securityHeadersMap.permissionsPolicy = pageRes.headers.get('permissions-policy');
+
+      const rawSetCookie = pageRes.headers.get('set-cookie');
+      if (rawSetCookie) {
+        cookiesCount++;
+        if (!/;\s*Secure/i.test(rawSetCookie) || !/;\s*HttpOnly/i.test(rawSetCookie)) {
+          cookiesInsecure++;
+        }
+      }
+
       if (pageRes.ok) {
         rawHtml = await pageRes.text();
       }
@@ -470,6 +500,51 @@ app.post('/api/ux-analyze', async (req, res) => {
       try { pageTitle = new URL(targetUrl).hostname; } catch { pageTitle = targetUrl; }
     }
 
+    if (isHttps && rawHtml && (/src=["']http:\/\//i.test(rawHtml) || /href=["']http:\/\//i.test(rawHtml))) {
+      hasMixedContent = true;
+    }
+
+    if (rawHtml) {
+      const $ = cheerio.load(rawHtml);
+      $('script[src^="http"]').each((_, el) => {
+        if (!$(el).attr('integrity')) scriptsMissingSri++;
+      });
+    }
+
+    // Strix Integrity Score
+    let integrityScore = 100;
+    if (!isHttps) integrityScore -= 30;
+    if (!securityHeadersMap.csp) integrityScore -= 15;
+    if (!securityHeadersMap.hsts && isHttps) integrityScore -= 15;
+    if (!securityHeadersMap.xFrameOptions) integrityScore -= 15;
+    if (!securityHeadersMap.xContentTypeOptions) integrityScore -= 10;
+    if (!securityHeadersMap.referrerPolicy) integrityScore -= 5;
+    if (hasMixedContent) integrityScore -= 15;
+    if (cookiesInsecure > 0) integrityScore -= 10;
+    if (integrityScore < 10) integrityScore = 10;
+
+    const integrityAudit = {
+      score: integrityScore,
+      isHttps,
+      hasMixedContent,
+      scriptsMissingSri,
+      cookiesCount,
+      cookiesInsecure,
+      securityHeaders: securityHeadersMap,
+      snapshots: {
+        desktop: `https://image.thum.io/get/width/1280/crop/800/noanimate/${encodeURIComponent(targetUrl)}`,
+        mobile: `https://image.thum.io/get/width/390/crop/800/noanimate/${encodeURIComponent(targetUrl)}`
+      },
+      vulnerabilities: [
+        ...(!securityHeadersMap.xFrameOptions ? [{ title: "Falta de X-Frame-Options", severity: "Alto", desc: "Permite que a página seja incorporada em iframes externos maliciosos (vulnerável a Clickjacking)." }] : []),
+        ...(!securityHeadersMap.csp ? [{ title: "Ausência de Content-Security-Policy (CSP)", severity: "Alto", desc: "Site sem política de restrição de scripts (vulnerável a injeção XSS e scripts maliciosos)." }] : []),
+        ...(!securityHeadersMap.hsts && isHttps ? [{ title: "Ausência de HSTS (Strict-Transport-Security)", severity: "Médio", desc: "Navegador não força conexão segura criptografada em visitas subsequentes." }] : []),
+        ...(!securityHeadersMap.xContentTypeOptions ? [{ title: "Ausência de X-Content-Type-Options: nosniff", severity: "Médio", desc: "Permite MIME type sniffing, podendo executar arquivos não confiáveis como scripts." }] : []),
+        ...(hasMixedContent ? [{ title: "Conteúdo Misto Detectado (Mixed Content)", severity: "Crítico", desc: "Recursos HTTP não criptografados sendo requisitados dentro de uma página HTTPS." }] : []),
+        ...(cookiesInsecure > 0 ? [{ title: "Cookies sem flags Secure/HttpOnly", severity: "Alto", desc: "Cookies de sessão podem ser interceptados em texto claro ou acessados via JavaScript." }] : [])
+      ]
+    };
+
     const extractedMetadata = {
       pageTitle,
       metaDescription: metaDescription || "Sem meta descrição explícita encontrada.",
@@ -479,7 +554,8 @@ app.post('/api/ux-analyze', async (req, res) => {
       buttons: buttons.slice(0, 10),
       imagesCount,
       imagesMissingAlt,
-      rawTextSample: (extractedText || '').slice(0, 5000)
+      rawTextSample: (extractedText || '').slice(0, 5000),
+      integrityAudit
     };
 
     // AI Call
