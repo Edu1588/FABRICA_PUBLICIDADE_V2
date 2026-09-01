@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import {
-  Sparkles,
-  Loader2,
   Download,
   Globe,
   Palette,
@@ -11,15 +9,13 @@ import {
   Eye,
   FileCheck,
   Check,
-  ChevronRight,
-  TrendingDown,
-  Quote,
   ShieldCheck,
   Smartphone,
   Monitor,
   AlertTriangle,
-  Zap,
-  Gauge
+  Gauge,
+  Loader2,
+  FileText
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
@@ -108,15 +104,6 @@ export interface UXAnalysisResult {
   categories: AnalysisCategory[];
 }
 
-const FIXED_CATEGORIES = [
-  "Identidade Visual e UI",
-  "Heurísticas de Nielsen",
-  "Vieses Cognitivos e Psicologia",
-  "Arquitetura da Informação",
-  "Acessibilidade e Inclusão"
-];
-
-// Motor Especialista Heurístico Local
 export function generateHeuristicAnalysis(
   targetUrl: string,
   meta: ExtractedMetadata
@@ -129,27 +116,27 @@ export function generateHeuristicAnalysis(
   const fontStr = meta.fonts.join(", ");
   const headingH1 = meta.headings.find(h => h.level === "H1")?.text || meta.pageTitle || "Título Principal";
   const firstCTA = meta.buttons[0] || "Botão de Conversão Principal";
-  const secondCTA = meta.buttons[1] || "Menu / Navegação Secundária";
-  const responseTime = meta.performance?.responseTimeMs || 350;
+  const secondCTA = meta.buttons[1] || "Menu / Ação Secundária";
+  const responseTime = meta.performance?.responseTimeMs || 320;
 
   const blockquotes: BlockquoteRef[] = [
     {
       id: 1,
-      text: `Elemento: "${headingH1}" — Identificado no cabeçalho/Hero com fontes declaradas [${fontStr}].`,
+      text: `Elemento: "${headingH1}" — Identificado na dobra de abertura com as fontes [${fontStr}].`,
       location: "Hero Section / Cabeçalho Principal",
       issueTitle: "Hierarquia Tipográfica e Relação Figura-Fundo"
     },
     {
       id: 2,
-      text: `Botão / CTA: "${firstCTA}" — Estilizado com as cores da paleta [${colorStr}].`,
+      text: `Botão / CTA: "${firstCTA}" — Estilizado com paleta [${colorStr}].`,
       location: "Área de Ação e Conversão",
       issueTitle: "Visibilidade do Status e Affordance de Conversão"
     },
     {
       id: 3,
-      text: `Imagens e Performance: ${meta.imagesMissingAlt} imagens sem atributo alt de ${meta.imagesCount} elementos visuais detectados. Tempo de resposta: ${responseTime}ms.`,
-      location: "Estrutura do DOM, Acessibilidade & Velocidade",
-      issueTitle: "Acessibilidade (WCAG 1.1.1) & Desempenho de Carga"
+      text: `Acessibilidade e Latência: ${meta.imagesMissingAlt} imagens sem atributo alt de ${meta.imagesCount} imagens detectadas. TTFB de ${responseTime}ms.`,
+      location: "Estrutura do DOM & Performance",
+      issueTitle: "Conformidade WCAG 1.1.1 & Core Web Vitals"
     }
   ];
 
@@ -168,7 +155,7 @@ export function generateHeuristicAnalysis(
           principle: "Gestalt - Princípio da Proximidade / Don Norman - Visibilidade",
           evidence: `Cabeçalho principal e títulos (${fontStr})`,
           problem: `Os blocos de texto e títulos não respeitam uma escala tipográfica modular consistente, gerando ruído visual e dificultando a leitura escaneável.`,
-          suggestion: `Estabelecer uma escala tipográfica estrita (ex: base 16px, proporção Major Third 1.250) e aumentar o espaçamento entre seções para reforçar o agrupamento perceptivo.`
+          suggestion: `Estabeleça uma escala tipográfica modular rigorosa (base 16px, proporção 1.250) e amplie o respiro entre seções para reforçar o agrupamento perceptivo.`
         },
         {
           id: "ui-2",
@@ -177,7 +164,7 @@ export function generateHeuristicAnalysis(
           principle: "Gestalt - Figura-Fundo / W3C Usability",
           evidence: `Elementos com paleta ${colorStr}`,
           problem: `A combinação de tons secundários sobre fundos complexos reduz o contraste perceptivo em telas com calibração variável ou em ambientes de alta luminosidade.`,
-          suggestion: `Ajustar a luminância relativa das cores secundárias para atingir razão de contraste mínima de 4.5:1 para texto normal e 3:1 para elementos de interface.`
+          suggestion: `Ajuste a luminância relativa das cores para atingir razão de contraste mínima de 4.5:1 para textos normais e 3:1 para componentes de interface.`
         }
       ]
     },
@@ -193,7 +180,7 @@ export function generateHeuristicAnalysis(
           principle: "Nielsen #1 - Visibilidade do Status do Sistema",
           evidence: `Interações em "${firstCTA}" e formulários`,
           problem: `A interface não fornece micro-feedbacks visuais claros de carregamento ou confirmação durante o processamento de ações críticas.`,
-          suggestion: `Implementar estados ativos (hover, focus-visible, loading spinners e disabled) em todos os botões e campos de entrada.`
+          suggestion: `Implemente estados visuais ativos (hover, focus-visible, spinners de carregamento e disabled) em todos os botões e formulários.`
         },
         {
           id: "nielsen-2",
@@ -202,82 +189,82 @@ export function generateHeuristicAnalysis(
           principle: "Nielsen #4 - Consistência e Padrões",
           evidence: `Variação visual entre "${firstCTA}" e "${secondCTA}"`,
           problem: `Diferentes componentes de ação utilizam pesos visuais e alinhamentos divergentes, quebrando a expectativa cognitiva do usuário.`,
-          suggestion: `Criar um Design System unificado com tokens de espaçamento, raio de borda e estilo de botões primários e secundários.`
+          suggestion: `Padronize os componentes com um Design System consistente, unificando raio de borda, padding e hierarquia entre CTAs primários e secundários.`
         }
       ]
     },
     {
       title: "Vieses Cognitivos e Psicologia",
-      overview: "Análise das Leis de Psicologia aplicadas a UX (Jon Yablonski) e mitigação de fricção na tomada de decisão.",
+      overview: "O design explora a tomada de decisão do usuário sob a ótica das Leis da Psicologia de UX (Jon Yablonski), fricção cognitiva e vieses aplicados.",
       score: 45,
       issues: [
         {
           id: "psy-1",
-          title: "Violação da Lei de Hick (Sobrecarga de Escolhas)",
+          title: "Violação da Lei de Hick (Sobrecarga de Escolhas Concorrentes)",
           severity: "Crítico",
           principle: "Jon Yablonski - Lei de Hick / Carga Cognitiva",
           evidence: `Agrupamento de links e múltiplos botões de ação`,
           problem: `O excesso de opções visuais simultâneas na mesma dobra aumenta exponencialmente o tempo de decisão e a taxa de desistência do usuário.`,
-          suggestion: `Reduzir a densidade de opções concorrentes, priorizando um único CTA primário por viewport e colapsando ações secundárias.`
+          suggestion: `Reduza a densidade de opções concorrentes na dobra principal, elegendo um único CTA prioritário por viewport.`
         },
         {
           id: "psy-2",
-          title: "Desvio da Lei de Jakob e Convenções de Mercado",
+          title: "Desvio da Lei de Jakob e Padrões Mentais de Navegação",
           severity: "Alto",
           principle: "Jon Yablonski - Lei de Jakob",
           evidence: `Disposição de elementos de navegação e busca`,
-          problem: `A interface força o usuário a reaprender padrões de navegação comuns, gerando atrito e frustração desnecessária.`,
-          suggestion: `Reestruturar a barra de navegação para posicionar logo à esquerda, menus no centro e botão de conversão à direita conforme convenções universais.`
+          problem: `A interface força o usuário a reaprender comportamentos consolidados no mercado, elevando o esforço cognitivo inicial.`,
+          suggestion: `Reorganize a barra superior seguindo o padrão universal: logo à esquerda, navegação no centro e ação de conversão à direita.`
         }
       ]
     },
     {
       title: "Arquitetura da Informação",
-      overview: "Diagnóstico de taxonomia, hierarquia de conteúdo e facilidade de localização estrutural.",
+      overview: "Diagnóstico de taxonomia, rotulagem e hierarquia estrutural de conteúdo.",
       score: 52,
       issues: [
         {
           id: "ia-1",
-          title: "Mapeamento Incorreto de Fluxo e Profundidade Estrutural",
+          title: "Mapeamento Incorreto de Fluxo e Narrativa Estrutural",
           severity: "Alto",
           principle: "Don Norman - Mapeamento e Restrições / W3C Information Architecture",
           evidence: `Estrutura de tópicos (${meta.headings.length} headings detectados)`,
           problem: `A sequência de tópicos não segue uma narrativa lógica de conversão, dispersando a atenção antes que o valor central seja comunicado.`,
-          suggestion: `Organizar a página no modelo: Proposta de Valor Clara -> Prova Social -> Benefícios Objetivos -> FAQ -> CTA Final de Fechamento.`
+          suggestion: `Estruture o conteúdo em fluxo linear: Proposta de Valor Clara -> Prova Social -> Demonstração de Benefícios -> FAQ -> CTA Final.`
         },
         {
           id: "ia-2",
           title: "Rotulagem Ambígua em Seções de Apoio",
           severity: "Médio",
           principle: "Princípios de Taxonomia e Rotulagem (Rosenfeld & Morville)",
-          evidence: `Rótulos de menus e botões secundários`,
-          problem: `Termos genéricos ou excessivamente técnicos confundem a intenção de navegação do visitante.`,
-          suggestion: `Substituir termos ambíguos por verbos de ação claros e orientados ao benefício direto do usuário.`
+          evidence: `Rótulos de links e menus secundários`,
+          problem: `Termos genéricos ou ambíguos geram incerteza sobre o destino do clique.`,
+          suggestion: `Substitua rótulos vagos por verbos de ação claros e orientados ao benefício direto do usuário.`
         }
       ]
     },
     {
       title: "Acessibilidade e Inclusão",
-      overview: "Auditoria de conformidade técnica com as diretrizes W3C WCAG 2.1 (Níveis A e AA).",
+      overview: "Auditoria técnica de conformidade com as diretrizes internacionais W3C WCAG 2.1 (Níveis A e AA).",
       score: meta.imagesMissingAlt > 0 ? 35 : 55,
       issues: [
         {
           id: "a11y-1",
-          title: `Violação Crítica WCAG 1.1.1: ${meta.imagesMissingAlt} Imagens Sem Atributo Alt`,
+          title: `Violação WCAG 1.1.1: ${meta.imagesMissingAlt} Imagens Sem Atributo Alt`,
           severity: "Crítico",
           principle: "W3C WCAG 2.1 - Critério de Sucesso 1.1.1 (Conteúdo Não Textual)",
-          evidence: `${meta.imagesMissingAlt} de ${meta.imagesCount} imagens sem tag alt`,
-          problem: `Leitores de tela não conseguem descrever o conteúdo visual para usuários com deficiência visual, quebrando a conformidade legal e de acessibilidade.`,
-          suggestion: `Inserir atributos 'alt' descritivos em todas as imagens informativas e 'alt=""' em imagens puramente decorativas.`
+          evidence: `${meta.imagesMissingAlt} de ${meta.imagesCount} imagens sem atributo alt`,
+          problem: `Leitores de tela não conseguem interpretar o conteúdo visual para usuários com deficiência visual, bloqueando a navegação assistiva.`,
+          suggestion: `Adicione descrições objetivas no atributo alt de todas as imagens informativas e utilize alt="" em imagens meramente decorativas.`
         },
         {
           id: "a11y-2",
           title: "Navegação por Teclado e Foco Visível Insuficiente",
           severity: "Alto",
           principle: "W3C WCAG 2.1 - Critério de Sucesso 2.4.7 (Foco Visível)",
-          evidence: `Botões e links da página`,
-          problem: `Ausência de contornos de foco (outline / ring) evidentes ao navegar via tecla TAB.`,
-          suggestion: `Adicionar estilos de :focus-visible com contraste mínimo de 3:1 em todos os elementos interativos.`
+          evidence: `Elementos interativos da página`,
+          problem: `Ausência de contornos de foco destacados ao navegar via tecla TAB.`,
+          suggestion: `Declare regras de :focus-visible com contraste mínimo de 3:1 em todos os links, botões e campos de entrada.`
         }
       ]
     }
@@ -302,10 +289,8 @@ export function AnaliseUXView() {
   const [analysisResult, setAnalysisResult] = useState<UXAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState<number>(-1); // -1 = Resumo, 0..4 = Categorias, 5 = Strix, 6 = Playwright
   const [viewportMode, setViewportMode] = useState<"desktop" | "mobile">("desktop");
-  const [severityFilter, setSeverityFilter] = useState<string>("todos");
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [highlightedQuote, setHighlightedQuote] = useState<number | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -360,7 +345,7 @@ export function AnaliseUXView() {
           break;
         }
       } catch {
-        // Tenta o próximo método
+        // Tenta próximo
       }
     }
 
@@ -640,7 +625,7 @@ export function AnaliseUXView() {
       pdf.text(`URL AUDITADA: ${analysisResult.url}`, margin, 26);
       
       const strixScore = analysisResult.extractedMetadata.integrityAudit?.score || 80;
-      const respTime = analysisResult.extractedMetadata.performance?.responseTimeMs || 350;
+      const respTime = analysisResult.extractedMetadata.performance?.responseTimeMs || 320;
       pdf.text(`DATA: ${analysisResult.analyzedAt} | SCORE UX: ${analysisResult.overallScore}/100 | SCORE STRIX: ${strixScore}/100 | VELOCIDADE: ${respTime}ms`, margin, 31);
 
       currentY = 48;
@@ -836,17 +821,6 @@ export function AnaliseUXView() {
     }
   };
 
-  const totalIssuesCount = analysisResult
-    ? analysisResult.categories.reduce((acc, cat) => acc + cat.issues.length, 0)
-    : 0;
-
-  const criticalIssuesCount = analysisResult
-    ? analysisResult.categories.reduce(
-        (acc, cat) => acc + cat.issues.filter(i => i.severity === "Crítico").length,
-        0
-      )
-    : 0;
-
   const integrityAuditData = analysisResult?.extractedMetadata.integrityAudit;
   const perfData = analysisResult?.extractedMetadata.performance;
 
@@ -857,39 +831,6 @@ export function AnaliseUXView() {
           {toastMsg}
         </div>
       )}
-
-      {/* TOPO / INTRODUÇÃO DA FERRAMENTA */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 shadow-xl">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#C46A1A] font-outfit">
-            <Sparkles className="w-4 h-4" />
-            <span>Auditoria UX/UI + Playwright Visual + Strix Integrity</span>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-light text-white tracking-wide" style={{ fontFamily: 'var(--font-outfit)' }}>
-            Análise UX & <span className="text-[#C46A1A] font-semibold">Integridade Strix</span>
-          </h1>
-          <p className="text-xs md:text-sm text-white/60 max-w-2xl font-light">
-            Insira a URL de qualquer site para extrair dados reais de código, renderizar snapshot visual (Playwright) e auditar velocidade, segurança e usabilidade (Strix Engine).
-          </p>
-        </div>
-
-        {analysisResult && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isGeneratingPDF}
-              className="bg-[#C46A1A] hover:bg-[#a85914] text-white font-medium text-xs uppercase tracking-wider px-5 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2 cursor-pointer font-outfit"
-            >
-              {isGeneratingPDF ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4" />
-              )}
-              {isGeneratingPDF ? "Gerando PDF..." : "Baixar PDF Executivo"}
-            </button>
-          </div>
-        )}
-      </div>
 
       {/* FORMULÁRIO DE ENTRADA DA URL */}
       <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-6 shadow-xl overflow-hidden">
@@ -925,21 +866,6 @@ export function AnaliseUXView() {
               )}
             </button>
           </div>
-
-          {/* Sugestões rápidas */}
-          <div className="flex items-center gap-2 flex-wrap text-xs text-white/40 font-outfit">
-            <span className="text-[11px] uppercase tracking-wider">Exemplos rápidos:</span>
-            {["https://nubank.com.br", "https://airbnb.com.br", "https://globo.com"].map((ex) => (
-              <button
-                key={ex}
-                type="button"
-                onClick={() => setUrlInput(ex)}
-                className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-md text-[11px] transition-colors cursor-pointer border border-white/5"
-              >
-                {ex.replace("https://", "")}
-              </button>
-            ))}
-          </div>
         </form>
 
         {/* Feedback de Progresso da Análise */}
@@ -965,216 +891,41 @@ export function AnaliseUXView() {
       {/* RESULTADO DA AUDITORIA */}
       {analysisResult && (
         <div className="space-y-6">
-          {/* 1. PAINEL DE DADOS REAIS EXTRAÍDOS (PROVA DA ANÁLISE REAL) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {/* Score Geral UX */}
-            <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-semibold text-white/40 uppercase tracking-wider font-outfit">
-                    Score Geral UX
-                  </span>
-                  <span
-                    className={`text-xs uppercase font-bold px-2 py-0.5 rounded-full border ${
-                      analysisResult.overallScore < 50
-                        ? "border-red-500/40 text-red-400 bg-red-500/10"
-                        : analysisResult.overallScore < 70
-                        ? "border-yellow-500/40 text-yellow-400 bg-yellow-500/10"
-                        : "border-green-500/40 text-green-400 bg-green-500/10"
-                    }`}
-                  >
-                    {analysisResult.overallScore < 50 ? "Crítico" : analysisResult.overallScore < 70 ? "Alerta" : "Adequado"}
-                  </span>
-                </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl font-light text-white font-outfit">
-                    {analysisResult.overallScore}
-                  </span>
-                  <span className="text-xs text-white/40 font-outfit">/ 100</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-white/5 text-xs font-outfit">
-                <div>
-                  <span className="text-white/40 block text-[10px] uppercase">Problemas</span>
-                  <span className="text-sm font-semibold text-white">{totalIssuesCount}</span>
-                </div>
-                <div>
-                  <span className="text-red-400/80 block text-[10px] uppercase">Críticos</span>
-                  <span className="text-sm font-semibold text-red-400">{criticalIssuesCount}</span>
-                </div>
-              </div>
+          {/* HEADER: RELATÓRIO DE AUDITORIA & BAIXAR RELATÓRIO */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-3 border-b border-white/10">
+            <div className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-wider text-[#C46A1A]">
+              <FileText className="w-4 h-4 text-[#C46A1A]" />
+              <span className="font-bold">RELATÓRIO DE AUDITORIA</span>
+              <span className="text-white/30">|</span>
+              <span className="text-white/60 font-sans normal-case text-xs">{analysisResult.url}</span>
             </div>
 
-            {/* Score Integridade Strix */}
-            <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-semibold text-[#C46A1A] uppercase tracking-wider font-outfit flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    Integridade Strix
-                  </span>
-                  <span className="text-[10px] font-mono text-white/50">OWASP</span>
-                </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl font-light text-white font-outfit">
-                    {integrityAuditData?.score || 85}
-                  </span>
-                  <span className="text-xs text-white/40 font-outfit">/ 100</span>
-                </div>
-              </div>
-
-              <div className="space-y-1 mt-3 pt-3 border-t border-white/5 text-[11px] font-outfit text-white/70">
-                <div className="flex items-center justify-between">
-                  <span>HTTPS / TLS:</span>
-                  <span className={integrityAuditData?.isHttps ? "text-green-400" : "text-red-400 font-bold"}>
-                    {integrityAuditData?.isHttps ? "Ativo" : "Ausente"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Vulnerabilidades:</span>
-                  <span className={integrityAuditData && integrityAuditData.vulnerabilities.length > 0 ? "text-amber-400" : "text-green-400"}>
-                    {integrityAuditData?.vulnerabilities.length || 0} detectadas
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Velocidade & Performance */}
-            <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-semibold text-green-400 uppercase tracking-wider font-outfit flex items-center gap-1.5">
-                    <Gauge className="w-3.5 h-3.5" />
-                    Velocidade
-                  </span>
-                  <span className="text-[10px] font-mono text-white/50">TTFB</span>
-                </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl font-light text-white font-outfit">
-                    {perfData?.responseTimeMs || 320}
-                  </span>
-                  <span className="text-xs text-white/40 font-outfit">ms</span>
-                </div>
-              </div>
-
-              <div className="space-y-1 mt-3 pt-3 border-t border-white/5 text-[11px] font-outfit text-white/70">
-                <div className="flex items-center justify-between">
-                  <span>Peso DOM:</span>
-                  <span className="text-white/80 font-mono">{perfData?.pageSizeKb || 95} KB</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Status:</span>
-                  <span className={(perfData?.responseTimeMs || 320) < 600 ? "text-green-400" : "text-amber-400"}>
-                    {(perfData?.responseTimeMs || 320) < 600 ? "Rápido" : "Moderado"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Cores CSS Extraídas */}
-            <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Palette className="w-4 h-4 text-[#C46A1A]" />
-                  <span className="text-[11px] font-semibold text-white/60 uppercase tracking-wider font-outfit">
-                    Paleta CSS Real
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-1">
-                  {analysisResult.extractedMetadata.colors.slice(0, 8).map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => handleCopyColor(color)}
-                      className="group flex flex-col items-center p-1 rounded bg-[#07070a] border border-white/5 hover:border-[#C46A1A]/40 transition-all cursor-pointer text-left"
-                    >
-                      <div
-                        className="w-full h-4 rounded shadow-inner border border-white/10 group-hover:scale-105 transition-transform"
-                        style={{ backgroundColor: color }}
-                      />
-                      <span className="text-[8px] font-mono text-white/70 mt-0.5 truncate w-full text-center">
-                        {color}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <p className="text-[9px] text-white/40 mt-1 font-outfit">
-                Clique para copiar o HEX.
-              </p>
-            </div>
-
-            {/* Tipografia & Headings */}
-            <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Type className="w-4 h-4 text-[#C46A1A]" />
-                  <span className="text-[11px] font-semibold text-white/60 uppercase tracking-wider font-outfit">
-                    Tipografia & A11y
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {analysisResult.extractedMetadata.fonts.map((f) => (
-                    <span
-                      key={f}
-                      className="bg-white/5 text-white/80 border border-white/10 text-[10px] px-1.5 py-0.5 rounded font-outfit"
-                    >
-                      {f}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="text-[10px] text-white/50 pt-2 border-t border-white/5 font-light truncate">
-                <span className="text-white/30">Sem ALT:</span> {analysisResult.extractedMetadata.imagesMissingAlt} de {analysisResult.extractedMetadata.imagesCount} imagens
-              </div>
-            </div>
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isGeneratingPDF}
+              className="border border-[#C46A1A] text-[#C46A1A] hover:bg-[#C46A1A] hover:text-white font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer"
+            >
+              {isGeneratingPDF ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              {isGeneratingPDF ? "GERANDO..." : "BAIXAR RELATÓRIO"}
+            </button>
           </div>
 
-          {/* NAVEGAÇÃO ENTRE AS ABAS */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/10 font-outfit">
+          {/* BARRA DE TABS ESTILO SISTEMA DE REFERÊNCIA */}
+          <div className="flex items-center gap-2 flex-wrap font-mono text-xs">
             <button
               type="button"
               onClick={() => setActiveTab(-1)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+              className={`px-4 py-2 rounded-md border uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === -1
-                  ? "bg-[#C46A1A] text-white shadow-lg"
-                  : "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white"
+                  ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A] shadow-[0_0_15px_rgba(196,106,26,0.3)]"
+                  : "bg-transparent text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A] hover:bg-[#C46A1A]/10"
               }`}
             >
-              <FileCheck className="w-4 h-4" />
-              Resumo Executivo
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab(5)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
-                activeTab === 5
-                  ? "bg-[#C46A1A] text-white shadow-lg"
-                  : "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white"
-              }`}
-            >
-              <ShieldCheck className="w-4 h-4" />
-              Integridade Strix
-              {integrityAuditData && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/40 text-white/80">
-                  {integrityAuditData.score}/100
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab(6)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
-                activeTab === 6
-                  ? "bg-[#C46A1A] text-white shadow-lg"
-                  : "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white"
-              }`}
-            >
-              <Eye className="w-4 h-4" />
-              Inspeção Visual Playwright
+              RESUMO EXECUTIVO
             </button>
 
             {analysisResult.categories.map((cat, idx) => (
@@ -1182,421 +933,318 @@ export function AnaliseUXView() {
                 key={cat.title}
                 type="button"
                 onClick={() => setActiveTab(idx)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+                className={`px-4 py-2 rounded-md border uppercase tracking-wider transition-all cursor-pointer ${
                   activeTab === idx
-                    ? "bg-[#C46A1A] text-white shadow-lg"
-                    : "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white"
+                    ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A] shadow-[0_0_15px_rgba(196,106,26,0.3)]"
+                    : "bg-transparent text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A] hover:bg-[#C46A1A]/10"
                 }`}
               >
-                <Layers className="w-4 h-4" />
                 {cat.title}
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/40 text-white/80">
-                  {cat.issues.length}
-                </span>
               </button>
             ))}
+
+            <button
+              type="button"
+              onClick={() => setActiveTab(5)}
+              className={`px-4 py-2 rounded-md border uppercase tracking-wider transition-all cursor-pointer ${
+                activeTab === 5
+                  ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A] shadow-[0_0_15px_rgba(196,106,26,0.3)]"
+                  : "bg-transparent text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A] hover:bg-[#C46A1A]/10"
+              }`}
+            >
+              INTEGRIDADE STRIX
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab(6)}
+              className={`px-4 py-2 rounded-md border uppercase tracking-wider transition-all cursor-pointer ${
+                activeTab === 6
+                  ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A] shadow-[0_0_15px_rgba(196,106,26,0.3)]"
+                  : "bg-transparent text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A] hover:bg-[#C46A1A]/10"
+              }`}
+            >
+              INSPEÇÃO VISUAL
+            </button>
           </div>
 
-          {/* TAB 5: INTEGRIDADE STRIX */}
-          {activeTab === 5 && (
-            <div className="space-y-6">
-              <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5">
-                  <div>
-                    <h3 className="text-lg font-light text-white flex items-center gap-2 font-outfit">
-                      <ShieldCheck className="w-5 h-5 text-[#C46A1A]" />
-                      Auditoria de Integridade, Segurança & Velocidade (Strix)
-                    </h3>
-                    <p className="text-xs text-white/50 font-light mt-1">
-                      Verificação profunda de cabeçalhos de segurança, latência de rede, vulnerabilidades potenciais e integridade técnica do site.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#07070a] px-3 py-1.5 rounded-xl border border-white/10 text-xs font-outfit">
-                    <span className="text-white/40">Score de Integridade:</span>
-                    <span className="text-[#C46A1A] font-bold text-sm">
-                      {integrityAuditData?.score || 85}/100
-                    </span>
-                  </div>
-                </div>
+          {/* PAINEL DE DADOS TÉCNICOS EXTRAÍDOS */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#0a0a0f] border border-white/5 rounded-xl p-4">
+            <div>
+              <span className="text-[10px] font-mono text-white/40 uppercase block">Score Geral</span>
+              <span className="text-xl font-bold text-[#C46A1A] font-mono">{analysisResult.overallScore}/100</span>
+            </div>
+            <div>
+              <span className="text-[10px] font-mono text-white/40 uppercase block">Score Strix</span>
+              <span className="text-xl font-bold text-white font-mono">{integrityAuditData?.score || 80}/100</span>
+            </div>
+            <div>
+              <span className="text-[10px] font-mono text-white/40 uppercase block">Velocidade (TTFB)</span>
+              <span className="text-xl font-bold text-green-400 font-mono">{perfData?.responseTimeMs || 320}ms</span>
+            </div>
+            <div>
+              <span className="text-[10px] font-mono text-white/40 uppercase block">Imagens sem ALT</span>
+              <span className="text-xl font-bold text-amber-400 font-mono">{analysisResult.extractedMetadata.imagesMissingAlt} / {analysisResult.extractedMetadata.imagesCount}</span>
+            </div>
+          </div>
 
-                {/* Métricas de Velocidade e Latência */}
-                <div className="p-4 rounded-xl bg-[#07070a] border border-white/5 grid grid-cols-1 md:grid-cols-3 gap-4 font-outfit">
-                  <div>
-                    <span className="text-white/40 block text-[10px] uppercase">Tempo de Resposta (TTFB)</span>
-                    <span className="text-xl font-semibold text-green-400">{perfData?.responseTimeMs || 320} ms</span>
-                  </div>
-                  <div>
-                    <span className="text-white/40 block text-[10px] uppercase">Tamanho do Payload DOM</span>
-                    <span className="text-xl font-semibold text-white">{perfData?.pageSizeKb || 95} KB</span>
-                  </div>
-                  <div>
-                    <span className="text-white/40 block text-[10px] uppercase">Classificação W3C</span>
-                    <span className="text-xl font-semibold text-[#C46A1A]">{perfData?.rating || "Excelente"}</span>
-                  </div>
-                </div>
+          {/* RESUMO EXECUTIVO (TAB -1) */}
+          {activeTab === -1 && (
+            <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
+              <div className="space-y-3 pb-6 border-b border-white/10">
+                <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A]">
+                  DIAGNÓSTICO GERAL DE USABILIDADE & SEGURANÇA
+                </span>
+                <p className="text-sm text-white/80 leading-relaxed font-light">
+                  {analysisResult.executiveSummary}
+                </p>
+              </div>
 
-                {/* Grid de Cabeçalhos de Segurança */}
-                <div className="space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-white/70 font-outfit">
-                    Cabeçalhos de Segurança & Diretrizes OWASP
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {[
-                      { name: "Content-Security-Policy (CSP)", val: integrityAuditData?.securityHeaders.csp, desc: "Proteção contra injeção de scripts (XSS)" },
-                      { name: "Strict-Transport-Security (HSTS)", val: integrityAuditData?.securityHeaders.hsts, desc: "Força conexões HTTPS criptografadas" },
-                      { name: "X-Frame-Options", val: integrityAuditData?.securityHeaders.xFrameOptions, desc: "Proteção contra Clickjacking e iframes" },
-                      { name: "X-Content-Type-Options", val: integrityAuditData?.securityHeaders.xContentTypeOptions, desc: "Previne MIME sniffing malicioso" },
-                      { name: "Referrer-Policy", val: integrityAuditData?.securityHeaders.referrerPolicy, desc: "Controle de vazamento de dados de referência" },
-                      { name: "Permissions-Policy", val: integrityAuditData?.securityHeaders.permissionsPolicy, desc: "Restrição de APIs de hardware (câmera, microfone)" }
-                    ].map((h) => (
-                      <div key={h.name} className="p-4 rounded-xl bg-[#07070a] border border-white/5 space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-semibold text-white font-outfit truncate">{h.name}</span>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${h.val ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
-                            {h.val ? "Ativo" : "Ausente"}
+              {/* Blockquotes de Evidências */}
+              {analysisResult.blockquotes && analysisResult.blockquotes.length > 0 && (
+                <div className="space-y-4 pt-2">
+                  <span className="text-xs font-mono uppercase tracking-wider text-white/50 block">
+                    EVIDÊNCIAS DIRETAS EXTRAÍDAS DO DOM:
+                  </span>
+                  <div className="space-y-4">
+                    {analysisResult.blockquotes.map((bq) => (
+                      <div key={bq.id} className="relative pl-6 border-l-2 border-[#C46A1A]/40 space-y-1">
+                        <div className="absolute -left-[7px] top-0 w-3 h-3 rounded-full border-2 border-[#C46A1A] bg-black" />
+                        <h4 className="text-sm font-semibold text-white">
+                          [{bq.id}] {bq.issueTitle || bq.location}
+                        </h4>
+                        <p className="text-xs text-white/60 font-light">
+                          Localização: {bq.location}
+                        </p>
+                        <div className="bg-[#0f0f16] border border-[#C46A1A]/20 rounded-lg p-3 mt-2">
+                          <span className="text-[10px] font-mono text-[#C46A1A] uppercase tracking-wider block mb-1">
+                            ↳ ELEMENTO DETECTADO:
                           </span>
+                          <p className="text-xs text-white/90 italic font-mono">
+                            "{bq.text}"
+                          </p>
                         </div>
-                        <p className="text-[10px] text-white/50 font-light">{h.desc}</p>
-                        {h.val && (
-                          <div className="text-[9px] font-mono text-white/40 truncate bg-black/40 p-1 rounded">
-                            {h.val}
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
                 </div>
+              )}
+            </div>
+          )}
 
-                {/* Vulnerabilidades e Recomendações Strix */}
-                <div className="space-y-3 pt-4 border-t border-white/5">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#C46A1A] flex items-center gap-2 font-outfit">
-                    <AlertTriangle className="w-4 h-4" />
-                    Diagnóstico de Vulnerabilidades & Recomendações Técnicas
-                  </h4>
+          {/* CATEGORIAS ESPECÍFICAS (TABS 0..4) — LAYOUT IDÊNTICO À REFERÊNCIA */}
+          {activeTab >= 0 && activeTab < analysisResult.categories.length && (
+            <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
+              {(() => {
+                const currentCategory = analysisResult.categories[activeTab];
 
-                  {integrityAuditData && integrityAuditData.vulnerabilities.length > 0 ? (
-                    <div className="space-y-3">
-                      {integrityAuditData.vulnerabilities.map((v, idx) => (
-                        <div key={idx} className="p-4 rounded-xl bg-[#07070a] border border-red-500/20 space-y-1.5">
-                          <div className="flex items-center gap-2 font-outfit">
-                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">
-                              {v.severity}
+                return (
+                  <>
+                    {/* Parágrafo de Introdução da Categoria */}
+                    <div className="pb-6 border-b border-white/10">
+                      <p className="text-sm text-white/80 leading-relaxed font-light">
+                        {currentCategory.overview}
+                      </p>
+                    </div>
+
+                    {/* Lista de Problemas com Linha do Tempo e "COMO DEVERIA SER" */}
+                    <div className="space-y-8">
+                      {currentCategory.issues.map((issue) => (
+                        <div key={issue.id} className="relative pl-6 sm:pl-8 border-l-2 border-[#C46A1A]/40 space-y-2">
+                          {/* Marcador circular da linha */}
+                          <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full border-2 border-[#C46A1A] bg-black" />
+
+                          {/* Título do Problema */}
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <h3 className="text-base font-semibold text-white">
+                              {issue.title}
+                            </h3>
+                            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded border border-[#C46A1A]/40 text-[#C46A1A]">
+                              {issue.severity}
                             </span>
-                            <span className="text-xs font-semibold text-white">{v.title}</span>
                           </div>
-                          <p className="text-xs text-white/70 font-light pl-3 border-l border-red-500/30">
-                            {v.desc}
+
+                          {/* Descrição do Problema */}
+                          <p className="text-sm text-white/70 leading-relaxed font-light">
+                            {issue.problem}
                           </p>
+
+                          {issue.evidence && (
+                            <p className="text-xs text-white/40 font-mono">
+                              Evidência: {issue.evidence}
+                            </p>
+                          )}
+
+                          {/* Box: COMO DEVERIA SER */}
+                          <div className="bg-[#0f0f16] border border-[#C46A1A]/30 rounded-xl p-4 mt-3 space-y-1.5">
+                            <div className="text-[11px] font-mono text-[#C46A1A] uppercase tracking-wider flex items-center gap-1.5">
+                              <span>↳</span>
+                              <span>COMO DEVERIA SER:</span>
+                            </div>
+                            <p className="text-xs text-white/90 leading-relaxed font-medium">
+                              {issue.suggestion}
+                            </p>
+                          </div>
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    <div className="p-4 rounded-xl bg-[#07070a] border border-green-500/20 text-xs text-green-400 font-outfit flex items-center gap-2">
-                      <Check className="w-4 h-4" />
-                      Nenhuma vulnerabilidade crítica de integridade detectada na varredura inicial.
-                    </div>
-                  )}
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* TAB 5: INTEGRIDADE STRIX */}
+          {activeTab === 5 && (
+            <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
+              <div className="pb-6 border-b border-white/10 space-y-2">
+                <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A]">
+                  AUDITORIA DE INTEGRIDADE, SEGURANÇA & VELOCIDADE (STRIX ENGINE)
+                </span>
+                <p className="text-sm text-white/80 font-light">
+                  Varredura de cabeçalhos de proteção OWASP, conformidade SSL/TLS e análise de latência do servidor.
+                </p>
+              </div>
+
+              {/* Métricas de Velocidade e Latência */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="bg-[#0f0f16] border border-white/5 rounded-xl p-4">
+                  <span className="text-[10px] font-mono text-white/40 uppercase block">Tempo de Resposta (TTFB)</span>
+                  <span className="text-xl font-bold text-green-400 font-mono">{perfData?.responseTimeMs || 320} ms</span>
+                </div>
+                <div className="bg-[#0f0f16] border border-white/5 rounded-xl p-4">
+                  <span className="text-[10px] font-mono text-white/40 uppercase block">Tamanho do Payload</span>
+                  <span className="text-xl font-bold text-white font-mono">{perfData?.pageSizeKb || 95} KB</span>
+                </div>
+                <div className="bg-[#0f0f16] border border-white/5 rounded-xl p-4">
+                  <span className="text-[10px] font-mono text-white/40 uppercase block">Classificação de Velocidade</span>
+                  <span className="text-xl font-bold text-[#C46A1A] font-mono">{perfData?.rating || "Excelente"}</span>
                 </div>
               </div>
+
+              {/* Grid de Cabeçalhos */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-4">
+                {[
+                  { name: "Content-Security-Policy (CSP)", val: integrityAuditData?.securityHeaders.csp, desc: "Proteção contra injeção de scripts (XSS)" },
+                  { name: "Strict-Transport-Security (HSTS)", val: integrityAuditData?.securityHeaders.hsts, desc: "Força conexões HTTPS criptografadas" },
+                  { name: "X-Frame-Options", val: integrityAuditData?.securityHeaders.xFrameOptions, desc: "Proteção contra Clickjacking e iframes" },
+                  { name: "X-Content-Type-Options", val: integrityAuditData?.securityHeaders.xContentTypeOptions, desc: "Previne MIME sniffing malicioso" },
+                  { name: "Referrer-Policy", val: integrityAuditData?.securityHeaders.referrerPolicy, desc: "Controle de vazamento de dados de referência" },
+                  { name: "Permissions-Policy", val: integrityAuditData?.securityHeaders.permissionsPolicy, desc: "Restrição de APIs de hardware (câmera, microfone)" }
+                ].map((h) => (
+                  <div key={h.name} className="p-4 rounded-xl bg-[#0f0f16] border border-white/5 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-white font-mono truncate">{h.name}</span>
+                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded ${h.val ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
+                        {h.val ? "ATIVO" : "AUSENTE"}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-white/50 font-light">{h.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Vulnerabilidades com linha de timeline */}
+              {integrityAuditData && integrityAuditData.vulnerabilities.length > 0 && (
+                <div className="space-y-4 pt-6 border-t border-white/10">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A] block">
+                    VULNERABILIDADES DETECTADAS & CORREÇÕES:
+                  </span>
+                  <div className="space-y-6">
+                    {integrityAuditData.vulnerabilities.map((v, idx) => (
+                      <div key={idx} className="relative pl-6 sm:pl-8 border-l-2 border-[#C46A1A]/40 space-y-2">
+                        <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full border-2 border-[#C46A1A] bg-black" />
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-semibold text-white">{v.title}</h4>
+                          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded border border-red-500/40 text-red-400">
+                            {v.severity}
+                          </span>
+                        </div>
+                        <p className="text-xs text-white/70 font-light">{v.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {/* TAB 6: INSPEÇÃO VISUAL PLAYWRIGHT */}
           {activeTab === 6 && (
-            <div className="space-y-6">
-              <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5">
-                  <div>
-                    <h3 className="text-lg font-light text-white flex items-center gap-2 font-outfit">
-                      <Eye className="w-5 h-5 text-[#C46A1A]" />
-                      Inspeção Visual Playwright
-                    </h3>
-                    <p className="text-xs text-white/50 font-light mt-1">
-                      Renderização gráfica responsiva em tempo real para auditoria de layout, quebra visual e consistência de viewport.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-[#07070a] p-1 rounded-xl border border-white/5 font-outfit">
-                    <button
-                      type="button"
-                      onClick={() => setViewportMode("desktop")}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
-                        viewportMode === "desktop"
-                          ? "bg-[#C46A1A] text-white"
-                          : "text-white/40 hover:text-white"
-                      }`}
-                    >
-                      <Monitor className="w-3.5 h-3.5" />
-                      Desktop (1280px)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setViewportMode("mobile")}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
-                        viewportMode === "mobile"
-                          ? "bg-[#C46A1A] text-white"
-                          : "text-white/40 hover:text-white"
-                      }`}
-                    >
-                      <Smartphone className="w-3.5 h-3.5" />
-                      Mobile (390px)
-                    </button>
-                  </div>
+            <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                <div>
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A] block mb-1">
+                    INSPEÇÃO VISUAL RESPONSIVA (PLAYWRIGHT SNAPSHOT)
+                  </span>
+                  <p className="text-xs text-white/60 font-light">
+                    Auditoria gráfica de viewport e consistência visual em tempo real.
+                  </p>
                 </div>
 
-                {/* Render do Snapshot */}
-                <div className="flex justify-center p-4 bg-[#07070a] rounded-2xl border border-white/5 overflow-hidden">
-                  {viewportMode === "desktop" ? (
-                    <div className="w-full max-w-5xl rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black">
-                      <div className="bg-[#15151e] px-4 py-2 flex items-center gap-2 border-b border-white/5">
-                        <div className="flex gap-1.5">
-                          <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                          <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                        </div>
-                        <span className="text-[11px] font-mono text-white/40 truncate flex-1 text-center">
-                          {analysisResult.url}
-                        </span>
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setViewportMode("desktop")}
+                    className={`px-3 py-1.5 rounded border uppercase transition-all cursor-pointer ${
+                      viewportMode === "desktop"
+                        ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A]"
+                        : "text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A]"
+                    }`}
+                  >
+                    Desktop (1280px)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewportMode("mobile")}
+                    className={`px-3 py-1.5 rounded border uppercase transition-all cursor-pointer ${
+                      viewportMode === "mobile"
+                        ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A]"
+                        : "text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A]"
+                    }`}
+                  >
+                    Mobile (390px)
+                  </button>
+                </div>
+              </div>
+
+              {/* Render do Snapshot */}
+              <div className="flex justify-center p-4 bg-black rounded-xl border border-white/10 overflow-hidden">
+                {viewportMode === "desktop" ? (
+                  <div className="w-full max-w-5xl rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-black">
+                    <div className="bg-[#121218] px-4 py-2 flex items-center gap-2 border-b border-white/5">
+                      <div className="flex gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                       </div>
+                      <span className="text-[11px] font-mono text-white/40 truncate flex-1 text-center">
+                        {analysisResult.url}
+                      </span>
+                    </div>
+                    <img
+                      src={integrityAuditData?.snapshots?.desktop || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url`}
+                      alt="Playwright Desktop Snapshot"
+                      className="w-full h-auto object-cover max-h-[600px] min-h-[350px] bg-[#0c0c12]"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-[390px] rounded-[36px] p-3 border-4 border-white/20 shadow-2xl bg-black">
+                    <div className="w-full h-4 flex justify-center items-center mb-2">
+                      <div className="w-24 h-3.5 bg-white/20 rounded-full" />
+                    </div>
+                    <div className="rounded-[24px] overflow-hidden border border-white/10 bg-[#101018]">
                       <img
-                        src={integrityAuditData?.snapshots?.desktop || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url`}
-                        alt="Playwright Desktop Snapshot"
-                        className="w-full h-auto object-cover max-h-[600px] min-h-[350px] bg-[#0c0c12]"
+                        src={integrityAuditData?.snapshots?.mobile || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`}
+                        alt="Playwright Mobile Snapshot"
+                        className="w-full h-auto object-cover max-h-[580px] min-h-[450px] bg-[#0c0c12]"
                         loading="lazy"
                       />
                     </div>
-                  ) : (
-                    <div className="w-[390px] rounded-[36px] p-3 border-4 border-white/20 shadow-2xl bg-black">
-                      <div className="w-full h-4 flex justify-center items-center mb-2">
-                        <div className="w-24 h-3.5 bg-white/20 rounded-full" />
-                      </div>
-                      <div className="rounded-[24px] overflow-hidden border border-white/10 bg-[#101018]">
-                        <img
-                          src={integrityAuditData?.snapshots?.mobile || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`}
-                          alt="Playwright Mobile Snapshot"
-                          className="w-full h-auto object-cover max-h-[580px] min-h-[450px] bg-[#0c0c12]"
-                          loading="lazy"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* CONTEÚDO: RESUMO EXECUTIVO (TAB -1) */}
-          {activeTab === -1 && (
-            <div className="space-y-6">
-              <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-6 shadow-xl">
-                <div className="pb-4 border-b border-white/5 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-light text-white flex items-center gap-2 font-outfit">
-                      <Sparkles className="w-4 h-4 text-[#C46A1A]" />
-                      Diagnóstico Executivo Implacável
-                    </h3>
-                    <p className="text-xs text-white/50 font-light mt-1">
-                      Visão geral integrando as cores e fontes reais extraídas, fundamentada em Nielsen, Norman, Jon Yablonski, Gestalt e Strix Engine.
-                    </p>
                   </div>
-                  <span className="border border-[#C46A1A]/40 text-[#C46A1A] text-[10px] uppercase font-outfit px-2.5 py-1 rounded-md">
-                    Literaturas Aplicadas
-                  </span>
-                </div>
-
-                <div className="pt-6 space-y-6">
-                  {/* Resumo Executivo em Parágrafos */}
-                  <div className="text-sm text-white/80 leading-relaxed font-light space-y-4 whitespace-pre-line">
-                    {analysisResult.executiveSummary}
-                  </div>
-
-                  {/* Blockquotes de Evidências Reais */}
-                  {analysisResult.blockquotes && analysisResult.blockquotes.length > 0 && (
-                    <div className="space-y-3 pt-6 border-t border-white/5">
-                      <h4 className="text-xs font-semibold uppercase tracking-wider text-[#C46A1A] flex items-center gap-2 font-outfit">
-                        <Quote className="w-3.5 h-3.5" />
-                        Evidências e Citações Reais da Interface [Blockquotes]
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {analysisResult.blockquotes.map((bq) => (
-                          <div
-                            key={bq.id}
-                            onMouseEnter={() => setHighlightedQuote(bq.id)}
-                            onMouseLeave={() => setHighlightedQuote(null)}
-                            className={`p-4 rounded-xl border transition-all ${
-                              highlightedQuote === bq.id
-                                ? "bg-[#1f1510] border-[#C46A1A]"
-                                : "bg-[#07070a] border-white/5"
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 mb-1.5 font-outfit">
-                              <span className="w-5 h-5 rounded-full bg-[#C46A1A]/20 text-[#C46A1A] text-[10px] font-bold flex items-center justify-center">
-                                {bq.id}
-                              </span>
-                              <span className="text-[11px] font-medium text-white/70">
-                                {bq.location}
-                              </span>
-                            </div>
-                            <blockquote className="text-xs italic text-white/60 border-l-2 border-[#C46A1A] pl-3 py-1">
-                              "{bq.text}"
-                            </blockquote>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-
-              {/* Panorama das 5 Categorias em Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                {analysisResult.categories.map((cat, idx) => (
-                  <button
-                    key={cat.title}
-                    type="button"
-                    onClick={() => setActiveTab(idx)}
-                    className="p-4 rounded-xl bg-[#0f0f16]/60 hover:bg-[#161622] border border-white/5 hover:border-[#C46A1A]/30 transition-all text-left group cursor-pointer"
-                  >
-                    <span className="text-[10px] text-[#C46A1A] font-mono block mb-1">
-                      CATEGORIA {idx + 1}
-                    </span>
-                    <h4 className="text-xs font-semibold text-white group-hover:text-[#C46A1A] transition-colors mb-2 font-outfit">
-                      {cat.title}
-                    </h4>
-                    <p className="text-[11px] text-white/50 line-clamp-2 font-light">
-                      {cat.overview}
-                    </p>
-                    <div className="flex items-center justify-between text-[10px] text-white/40 mt-3 pt-2 border-t border-white/5 font-outfit">
-                      <span>{cat.issues.length} falhas</span>
-                      <span className="text-[#C46A1A] flex items-center gap-0.5">
-                        Ver detalhes <ChevronRight className="w-2.5 h-2.5" />
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* CONTEÚDO: CATEGORIAS ESPECÍFICAS (TABS 0..4) */}
-          {activeTab >= 0 && activeTab < analysisResult.categories.length && (
-            <div className="space-y-6">
-              {(() => {
-                const currentCategory = analysisResult.categories[activeTab];
-                const filteredIssues = currentCategory.issues.filter(i => {
-                  if (severityFilter === "todos") return true;
-                  return i.severity.toLowerCase() === severityFilter.toLowerCase();
-                });
-
-                return (
-                  <div className="bg-[#0f0f16] border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-[#C46A1A] uppercase">
-                            Categoria {activeTab + 1} de 5
-                          </span>
-                        </div>
-                        <h2 className="text-xl font-light text-white mt-1 font-outfit">
-                          {currentCategory.title}
-                        </h2>
-                        <p className="text-xs text-white/60 mt-1 max-w-3xl font-light">
-                          {currentCategory.overview}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-2 bg-[#07070a] p-1 rounded-xl border border-white/5 font-outfit">
-                        {["todos", "crítico", "alto", "médio"].map((sev) => (
-                          <button
-                            key={sev}
-                            type="button"
-                            onClick={() => setSeverityFilter(sev)}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all cursor-pointer ${
-                              severityFilter === sev
-                                ? "bg-[#C46A1A] text-white"
-                                : "text-white/40 hover:text-white"
-                            }`}
-                          >
-                            {sev}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {filteredIssues.length === 0 ? (
-                        <div className="text-center py-12 text-white/40 text-xs font-outfit">
-                          Nenhum problema encontrado com o filtro de severidade selecionado.
-                        </div>
-                      ) : (
-                        filteredIssues.map((issue, idx) => {
-                          const isCritical = issue.severity === "Crítico";
-                          const isHigh = issue.severity === "Alto";
-
-                          return (
-                            <div
-                              key={issue.id || idx}
-                              className="p-5 rounded-2xl bg-[#07070a] border border-white/10 hover:border-white/20 transition-all space-y-4"
-                            >
-                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                                <div className="flex items-center gap-2.5">
-                                  <span
-                                    className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border font-outfit ${
-                                      isCritical
-                                        ? "bg-red-500/20 text-red-400 border-red-500/30"
-                                        : isHigh
-                                        ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
-                                        : "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                                    }`}
-                                  >
-                                    {issue.severity}
-                                  </span>
-                                  <h3 className="text-sm font-semibold text-white font-outfit">
-                                    {issue.title}
-                                  </h3>
-                                </div>
-
-                                <span className="text-[10px] text-white/50 border border-white/10 px-2 py-0.5 rounded font-outfit">
-                                  {issue.principle}
-                                </span>
-                              </div>
-
-                              {issue.evidence && (
-                                <div className="p-3 rounded-xl bg-[#0e0e14] border border-white/5 text-xs text-white/70">
-                                  <span className="text-white/40 block text-[10px] font-mono uppercase mb-1">
-                                    Evidência / Localização na Página:
-                                  </span>
-                                  {issue.evidence}
-                                </div>
-                              )}
-
-                              <div className="space-y-1">
-                                <span className="text-red-400/90 text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5 font-outfit">
-                                  <TrendingDown className="w-3.5 h-3.5" />
-                                  Impacto & Falha Técnica:
-                                </span>
-                                <p className="text-xs text-white/70 leading-relaxed pl-5 border-l border-red-500/30 font-light">
-                                  {issue.problem}
-                                </p>
-                              </div>
-
-                              <div className="space-y-1 pt-2">
-                                <span className="text-green-400 text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5 font-outfit">
-                                  <Check className="w-3.5 h-3.5" />
-                                  Recomendação de Correção:
-                                </span>
-                                <p className="text-xs text-white/80 leading-relaxed pl-5 border-l border-green-500/30 font-medium">
-                                  {issue.suggestion}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
-                );
-              })()}
             </div>
           )}
         </div>
