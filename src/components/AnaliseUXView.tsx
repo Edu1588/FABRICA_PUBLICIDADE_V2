@@ -487,8 +487,8 @@ export function AnaliseUXView() {
         permissionsPolicy: null
       },
       snapshots: {
-        desktop: `https://image.thum.io/get/width/1280/crop/800/noanimate/${encodeURIComponent(targetUrl)}`,
-        mobile: `https://image.thum.io/get/width/390/crop/800/noanimate/${encodeURIComponent(targetUrl)}`
+        desktop: `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url`,
+        mobile: `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`
       },
       vulnerabilities: [
         ...(!isHttps ? [{ title: "Conexão Não Criptografada (HTTP)", severity: "Crítico", desc: "O site trafega dados sensíveis em texto claro sem proteção SSL/TLS." }] : []),
@@ -1426,12 +1426,10 @@ Retorne um JSON com: overallScore (number), executiveSummary (string citando cor
                         </span>
                       </div>
                       <img
-                        src={integrityAuditData?.snapshots?.desktop || `https://image.thum.io/get/width/1280/crop/800/noanimate/${encodeURIComponent(analysisResult.url)}`}
+                        src={integrityAuditData?.snapshots?.desktop || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url`}
                         alt="Playwright Desktop Snapshot"
-                        className="w-full h-auto object-cover max-h-[600px]"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = "none";
-                        }}
+                        className="w-full h-auto object-cover max-h-[600px] min-h-[350px] bg-[#0c0c12]"
+                        loading="lazy"
                       />
                     </div>
                   ) : (
@@ -1441,12 +1439,10 @@ Retorne um JSON com: overallScore (number), executiveSummary (string citando cor
                       </div>
                       <div className="rounded-[24px] overflow-hidden border border-white/10 bg-[#101018]">
                         <img
-                          src={integrityAuditData?.snapshots?.mobile || `https://image.thum.io/get/width/390/crop/800/noanimate/${encodeURIComponent(analysisResult.url)}`}
+                          src={integrityAuditData?.snapshots?.mobile || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`}
                           alt="Playwright Mobile Snapshot"
-                          className="w-full h-auto object-cover max-h-[580px]"
-                          onError={(e) => {
-                            (e.target as HTMLElement).style.display = "none";
-                          }}
+                          className="w-full h-auto object-cover max-h-[580px] min-h-[450px] bg-[#0c0c12]"
+                          loading="lazy"
                         />
                       </div>
                     </div>
