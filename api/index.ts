@@ -373,6 +373,9 @@ app.post('/api/ux-analyze', async (req, res) => {
     let cookiesCount = 0;
     let cookiesInsecure = 0;
 
+    let responseTimeMs = 0;
+    const fetchStartTime = Date.now();
+
     try {
       const pageRes = await fetch(targetUrl, {
         headers: {
@@ -380,6 +383,7 @@ app.post('/api/ux-analyze', async (req, res) => {
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
         }
       });
+      responseTimeMs = Date.now() - fetchStartTime;
 
       // Strix Security Header Evaluation
       securityHeadersMap.csp = pageRes.headers.get('content-security-policy');
@@ -402,6 +406,10 @@ app.post('/api/ux-analyze', async (req, res) => {
       }
     } catch (fetchErr) {
       console.warn("Direct fetch failed, trying Jina Reader fallback:", fetchErr);
+    }
+
+    if (!responseTimeMs) {
+      responseTimeMs = Date.now() - fetchStartTime;
     }
 
     if (!rawHtml) {
@@ -523,6 +531,14 @@ app.post('/api/ux-analyze', async (req, res) => {
     if (cookiesInsecure > 0) integrityScore -= 10;
     if (integrityScore < 10) integrityScore = 10;
 
+    const pageSizeKb = Math.round((rawHtml.length || extractedText.length || 0) / 1024);
+    const speedRating = responseTimeMs < 600 ? "Excelente (< 600ms)" : responseTimeMs < 1800 ? "Moderado (< 1.8s)" : "Lento (> 1.8s)";
+    const performance = {
+      responseTimeMs,
+      pageSizeKb,
+      rating: speedRating
+    };
+
     const integrityAudit = {
       score: integrityScore,
       isHttps,
@@ -530,6 +546,7 @@ app.post('/api/ux-analyze', async (req, res) => {
       scriptsMissingSri,
       cookiesCount,
       cookiesInsecure,
+      performance,
       securityHeaders: securityHeadersMap,
       snapshots: {
         desktop: `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url`,
@@ -541,7 +558,8 @@ app.post('/api/ux-analyze', async (req, res) => {
         ...(!securityHeadersMap.hsts && isHttps ? [{ title: "Ausência de HSTS (Strict-Transport-Security)", severity: "Médio", desc: "Navegador não força conexão segura criptografada em visitas subsequentes." }] : []),
         ...(!securityHeadersMap.xContentTypeOptions ? [{ title: "Ausência de X-Content-Type-Options: nosniff", severity: "Médio", desc: "Permite MIME type sniffing, podendo executar arquivos não confiáveis como scripts." }] : []),
         ...(hasMixedContent ? [{ title: "Conteúdo Misto Detectado (Mixed Content)", severity: "Crítico", desc: "Recursos HTTP não criptografados sendo requisitados dentro de uma página HTTPS." }] : []),
-        ...(cookiesInsecure > 0 ? [{ title: "Cookies sem flags Secure/HttpOnly", severity: "Alto", desc: "Cookies de sessão podem ser interceptados em texto claro ou acessados via JavaScript." }] : [])
+        ...(cookiesInsecure > 0 ? [{ title: "Cookies sem flags Secure/HttpOnly", severity: "Alto", desc: "Cookies de sessão podem ser interceptados em texto claro ou acessados via JavaScript." }] : []),
+        ...(responseTimeMs > 2000 ? [{ title: "Tempo de Resposta Elevado (TTFB > 2s)", severity: "Médio", desc: `A resposta inicial do servidor levou ${responseTimeMs}ms, impactando a taxa de rejeição e as métricas Core Web Vitals do Google.` }] : [])
       ]
     };
 
@@ -555,7 +573,8 @@ app.post('/api/ux-analyze', async (req, res) => {
       imagesCount,
       imagesMissingAlt,
       rawTextSample: (extractedText || '').slice(0, 5000),
-      integrityAudit
+      integrityAudit,
+      performance
     };
 
     // AI Call
