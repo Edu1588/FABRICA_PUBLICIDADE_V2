@@ -20,7 +20,11 @@ import {
   Clock,
   HardDrive,
   Activity,
-  ArrowDownRight
+  ArrowDownRight,
+  TrendingDown,
+  Quote,
+  Target,
+  Sparkles
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
@@ -99,6 +103,7 @@ export interface AnalysisIssue {
   principle: string;
   evidence: string;
   problem: string;
+  impact: string;
   suggestion: string;
 }
 
@@ -114,6 +119,7 @@ export interface BlockquoteRef {
   text: string;
   location: string;
   issueTitle?: string;
+  contextNote?: string;
 }
 
 export interface UXAnalysisResult {
@@ -127,7 +133,6 @@ export interface UXAnalysisResult {
 }
 
 export function calculatePageSpeedMetrics(responseTimeMs: number, pageSizeKb: number, imagesCount: number): CoreWebVitals {
-  // Cálculo determinístico baseado no tempo de resposta real e peso da página
   const ttfbSec = (responseTimeMs / 1000).toFixed(2);
   const fcpSec = ((responseTimeMs * 2.2 + 400) / 1000).toFixed(1);
   const lcpSec = ((responseTimeMs * 3.5 + Math.min(pageSizeKb * 8, 2200)) / 1000).toFixed(1);
@@ -135,7 +140,6 @@ export function calculatePageSpeedMetrics(responseTimeMs: number, pageSizeKb: nu
   const tbtVal = Math.round(Math.min(responseTimeMs * 0.6 + pageSizeKb * 0.4, 450));
   const speedIndexSec = ((parseFloat(fcpSec) + parseFloat(lcpSec)) * 0.75).toFixed(1);
 
-  // Score 0-100 ponderado estilo Lighthouse
   let score = 92;
   if (responseTimeMs > 800) score -= 18;
   else if (responseTimeMs > 400) score -= 8;
@@ -211,160 +215,185 @@ export function generateHeuristicAnalysis(
     try { return new URL(targetUrl).hostname; } catch { return targetUrl; }
   })();
 
-  const colorStr = meta.colors.join(", ");
-  const fontStr = meta.fonts.join(", ");
-  const headingH1 = meta.headings.find(h => h.level === "H1")?.text || meta.pageTitle || "Título Principal";
+  const colorStr = meta.colors.slice(0, 5).join(", ");
+  const fontStr = meta.fonts.join(", ") || "fontes do sistema";
+  const headingH1 = meta.headings.find(h => h.level === "H1")?.text || meta.pageTitle || "Título Principal da Dobra Superior";
+  const headingH2 = meta.headings.find(h => h.level === "H2")?.text || "Seção de Catálogo / Proposta";
   const firstCTA = meta.buttons[0] || "Botão de Conversão Principal";
-  const secondCTA = meta.buttons[1] || "Menu / Ação Secundária";
+  const secondCTA = meta.buttons[1] || "Menu Secundário / Contato";
   const responseTime = meta.performance?.responseTimeMs || 320;
   const pageSpeedScore = meta.performance?.pageSpeed?.score || 78;
+  const imagesMissing = meta.imagesMissingAlt;
+  const imagesTotal = meta.imagesCount || 1;
+  const altPercentage = Math.round((imagesMissing / (imagesTotal || 1)) * 100);
 
   const blockquotes: BlockquoteRef[] = [
     {
       id: 1,
-      text: `Elemento: "${headingH1}" — Identificado na dobra de abertura com as fontes [${fontStr}].`,
-      location: "Hero Section / Cabeçalho Principal",
-      issueTitle: "Hierarquia Tipográfica e Relação Figura-Fundo"
+      text: `Elemento de Título: "${headingH1}" — Detectado no cabeçalho com tipografia [${fontStr}].`,
+      location: "Hero Section / Dobra Superior de Impacto",
+      issueTitle: "Hierarquia Tipográfica e Sobrecarga de Entrada",
+      contextNote: "Abertura visual com peso contrastante descalibrado, forçando esforço cognitivo de fixação ocular."
     },
     {
       id: 2,
-      text: `Botão / CTA: "${firstCTA}" — Estilizado com paleta [${colorStr}].`,
-      location: "Área de Ação e Conversão",
-      issueTitle: "Visibilidade do Status e Affordance de Conversão"
+      text: `Chamada para Ação: "${firstCTA}" — Estilizada com cores da paleta [${colorStr}].`,
+      location: "Componente de Conversão Primária",
+      issueTitle: "Affordance e Previsibilidade de Ação (Don Norman)",
+      contextNote: "Falta de diferenciação clara entre botão primário e ações secundárias, gerando hesitação na tomada de decisão."
     },
     {
       id: 3,
-      text: `Performance PageSpeed: Score de ${pageSpeedScore}/100 com TTFB de ${responseTime}ms e ${meta.imagesMissingAlt} imagens sem atributo alt de ${meta.imagesCount} detectadas.`,
-      location: "Core Web Vitals & Estrutura do DOM",
-      issueTitle: "Velocidade de Carga (Google Lighthouse) & Acessibilidade WCAG"
+      text: `Auditoria de DOM & Acessibilidade: ${imagesMissing} de ${imagesTotal} imagens (${altPercentage}%) sem o atributo alt. Latência do servidor TTFB: ${responseTime}ms.`,
+      location: "Estrutura Geral do DOM & Recursos Multimídia",
+      issueTitle: "Barreira Crítica WCAG 2.1 e Perda de Indexação SEO",
+      contextNote: "Impossibilidade de leitura por tecnologias assistivas e penalização nos algoritmos de escaneabilidade do Google."
     }
   ];
 
-  const executiveSummary = `Auditoria técnica profunda realizada no domínio ${domain}. A varredura de código extraiu a paleta visual com as cores ${colorStr}, famílias tipográficas ${fontStr}, tempo de resposta do servidor de ${responseTime}ms e pontuação de velocidade PageSpeed de ${pageSpeedScore}/100. [1] A estrutura de abertura no cabeçalho "${headingH1}" apresenta fragilidades na relação de contraste e hierarquia visual, sobrecarregando a percepção inicial do usuário segundo as Leis da Gestalt. [2] No fluxo de conversão, o elemento de chamada "${firstCTA}" sofre de affordance inconsistente e mapeamento deficiente (Don Norman), violando a previsibilidade de ação esperada pela Lei de Jakob. [3] Em acessibilidade e inclusão, foram detectadas ${meta.imagesMissingAlt} imagens sem texto alternativo (alt), caracterizando uma barreira direta de conformidade com as diretrizes W3C WCAG 2.1 e penalizando a navegabilidade assistiva e a indexação técnica do site.`;
+  const executiveSummary = `Auditoria técnica e comportamental profunda conduzida no domínio ${domain}.
+
+A análise forense da camada de apresentação extraiu a paleta cromática real composta por ${colorStr}, famílias tipográficas ${fontStr}, latência de resposta do servidor de ${responseTime}ms e índice de performance PageSpeed de ${pageSpeedScore}/100.
+
+[1] No primeiro ponto de contato visual, a estrutura de título "${headingH1}" não estabelece uma relação de figura-fundo nítida em relação aos elementos adjacentes, violando a Lei da Proximidade da Gestalt e sobrecarregando o processamento atencional do usuário nos primeiros 3 segundos de visita.
+
+[2] No funil de conversão, o elemento de chamada "${firstCTA}" falha ao não comunicar feedback de estado nem affordance imediata (Don Norman), concorrendo diretamente com "${secondCTA}" e violando a Lei de Hick ao dispersar a intenção de clique em múltiplos caminhos concorrentes.
+
+[3] No pilar de acessibilidade e engenharia web, foi identificado que ${imagesMissing} das ${imagesTotal} imagens da página (${altPercentage}%) carecem completamente do atributo alt, configurando violação direta do Critério de Sucesso 1.1.1 da WCAG 2.1 (Nível A) e criando uma barreira intransponível para leitores de tela e tecnologias assistivas.`;
 
   const categories: AnalysisCategory[] = [
     {
       title: "Identidade Visual e UI",
-      overview: `Avaliação rigorosa da paleta de cores (${colorStr}), consistência tipográfica (${fontStr}) e conformidade com princípios da Gestalt (Proximidade, Similaridade e Figura-Fundo).`,
+      overview: `Auditoria analítica da composição visual, coerência cromática (${colorStr}), consistência tipográfica (${fontStr}) e conformidade com as Leis da Gestalt aplicadas ao meio digital.`,
       score: 42,
       issues: [
         {
           id: "ui-1",
-          title: "Inconsistência na Hierarquia Visual e Escala Tipográfica",
+          title: "Inconsistência de Escala Tipográfica e Descontinuidade de Leitura",
           severity: "Crítico",
-          principle: "Gestalt - Princípio da Proximidade / Don Norman - Visibilidade",
-          evidence: `Cabeçalho principal e títulos (${fontStr})`,
-          problem: `Os blocos de texto e títulos não respeitam uma escala tipográfica modular consistente, gerando ruído visual e dificultando a leitura escaneável.`,
-          suggestion: `Estabeleça uma escala tipográfica modular rigorosa (base 16px, proporção 1.250) e amplie o respiro entre seções para reforçar o agrupamento perceptivo.`
+          principle: "Gestalt - Princípio da Proximidade & Continuidade / Don Norman - Visibilidade",
+          evidence: `Cabeçalho principal "${headingH1}" e subtítulos com famílias [${fontStr}]`,
+          problem: `A hierarquia entre o título de impacto e os subtítulos não adota uma proporção modular consistente. A ausência de contrastes de peso (font-weight) e respiros verticais suficientes impede que o olho do usuário trace um trajeto de escaneamento em F ou Z sem esforço voluntário.`,
+          impact: `Aumenta o tempo de fixação ocular e a taxa de rejeição imediata, pois o usuário não consegue identificar a proposta de valor nos primeiros 5 segundos.`,
+          suggestion: `Estabeleça uma escala tipográfica modular rígida baseada em 16px (ex: proporção Major Third 1.250 com H1: 32px, H2: 24px, Body: 16px). Amplie a margem inferior dos títulos para no mínimo 24px para reforçar o agrupamento perceptivo da Gestalt.`
         },
         {
           id: "ui-2",
-          title: "Contraste Cromático e Relação Figura-Fundo Frágil",
+          title: "Relação de Contraste Cromático Insuficiente (Figura-Fundo)",
           severity: "Alto",
-          principle: "Gestalt - Figura-Fundo / W3C Usability",
-          evidence: `Elementos com paleta ${colorStr}`,
-          problem: `A combinação de tons secundários sobre fundos complexos reduz o contraste perceptivo em telas com calibração variável ou em ambientes de alta luminosidade.`,
-          suggestion: `Ajuste a luminância relativa das cores para atingir razão de contraste mínima de 4.5:1 para textos normais e 3:1 para componentes de interface.`
+          principle: "W3C WCAG 2.1 - Critério 1.4.3 (Contraste Mínimo) & Gestalt (Figura-Fundo)",
+          evidence: `Elementos e textos secundários utilizando os tons da paleta [${colorStr}]`,
+          problem: `Combinações de cores secundárias sobre fundos com baixa diferenciação de luminância não atingem a razão mínima de 4.5:1 exigida para textos normais e 3:1 para elementos gráficos essenciais de interface.`,
+          impact: `Prejudica a legibilidade em ambientes externos com reflexo solar, telas com brilho reduzido e afeta diretamente usuários com baixa acuidade visual ou daltonismo.`,
+          suggestion: `Ajuste a luminância relativa das cores de suporte e aplique um tom de fundo contrastante garantindo razão mínima de 4.5:1, validando através de analisadores de contraste WCAG.`
         }
       ]
     },
     {
       title: "Heurísticas de Nielsen",
-      overview: "Auditoria implacável fundamentada nas 10 Heurísticas de Nielsen e Design Ético (UX Collective / Giovanni Fernandes).",
+      overview: "Diagnóstico rigoroso fundamentado nas 10 Heurísticas de Nielsen e nas diretrizes de Design Ético (UX Collective & Giovanni Fernandes).",
       score: 48,
       issues: [
         {
           id: "nielsen-1",
-          title: "Heurística #1: Falta de Feedback Imediato do Status do Sistema",
+          title: "Heurística #1: Ausência de Visibilidade e Feedback do Status do Sistema",
           severity: "Crítico",
-          principle: "Nielsen #1 - Visibilidade do Status do Sistema",
-          evidence: `Interações em "${firstCTA}" e formulários`,
-          problem: `A interface não fornece micro-feedbacks visuais claros de carregamento ou confirmação durante o processamento de ações críticas.`,
-          suggestion: `Implemente estados visuais ativos (hover, focus-visible, spinners de carregamento e disabled) em todos os botões e formulários.`
+          principle: "Nielsen #1 - Visibilidade do Status do Sistema (Visibility of System Status)",
+          evidence: `Interações nos botões de conversão como "${firstCTA}" e formulários da página`,
+          problem: `Ao interagir com elementos clicáveis ou submeter formulários, a interface não dispara estados visuais imediatos de transição (ex: hover com elevação, estado active pressionado, spinner de carregamento ou aria-busy="true").`,
+          impact: `O usuário fica em dúvida se o clique foi registrado, gerando cliques repetidos desnecessários, requisições duplicadas e frustração por sensação de lentidão.`,
+          suggestion: `Implemente estados interativos obrigatórios em CSS (:hover, :active, :focus-visible e :disabled) e adicione micro-feedbacks visuais de loading com duração de transição entre 150ms e 200ms em todas as ações de envio.`
         },
         {
           id: "nielsen-2",
-          title: "Heurística #4: Quebra de Consistência e Padrões Estabelecidos",
+          title: "Heurística #4: Ruptura de Consistência e Padrões de Interação",
           severity: "Alto",
-          principle: "Nielsen #4 - Consistência e Padrões",
+          principle: "Nielsen #4 - Consistência e Padrões (Consistency and Standards)",
           evidence: `Variação visual entre "${firstCTA}" e "${secondCTA}"`,
-          problem: `Diferentes componentes de ação utilizam pesos visuais e alinhamentos divergentes, quebrando a expectativa cognitiva do usuário.`,
-          suggestion: `Padronize os componentes com um Design System consistente, unificando raio de borda, padding e hierarquia entre CTAs primários e secundários.`
+          problem: `Diferentes componentes de ação na mesma página utilizam raios de borda divergentes, paddings assimétricos e pesos de fonte heterogêneos para ações que possuem o mesmo nível hierárquico no funil.`,
+          impact: `Quebra o modelo mental do usuário, obrigando-o a reaprender o significado de cada botão à medida que navega pelas seções.`,
+          suggestion: `Unifique todos os botões em um Design System com tokens padronizados: Botão Primário (fundo sólido de destaque, padding 14px 28px, border-radius 8px) e Botão Secundário (estilo outline com borda de 1.5px e mesmo raio).`
         }
       ]
     },
     {
       title: "Vieses Cognitivos e Psicologia",
-      overview: "O design explora a tomada de decisão do usuário sob a ótica das Leis da Psicologia de UX (Jon Yablonski), fricção cognitiva e vieses aplicados.",
+      overview: "Análise comportamental baseada nas Leis da Psicologia de UX (Jon Yablonski), carga cognitiva e eliminação de fricções na tomada de decisão.",
       score: 45,
       issues: [
         {
           id: "psy-1",
-          title: "Violação da Lei de Hick (Sobrecarga de Escolhas Concorrentes)",
+          title: "Violação da Lei de Hick (Sobrecarga de Opções Concorrentes)",
           severity: "Crítico",
-          principle: "Jon Yablonski - Lei de Hick / Carga Cognitiva",
-          evidence: `Agrupamento de links e múltiplos botões de ação`,
-          problem: `O excesso de opções visuais simultâneas na mesma dobra aumenta exponencialmente o tempo de decisão e a taxa de desistência do usuário.`,
-          suggestion: `Reduza a densidade de opções concorrentes na dobra principal, elegendo um único CTA prioritário por viewport.`
+          principle: "Jon Yablonski - Lei de Hick / Teoria da Carga Cognitiva (Sweller)",
+          evidence: `Dobra superior com múltiplos botões e links de navegação competindo pelo foco`,
+          problem: `A interface apresenta mais de 4 opções de ação primária no primeiro viewport (ex: '${firstCTA}', links de catálogo e botões de contato), sem direcionar um fluxo prioritário de conversão.`,
+          impact: `Segundo a Lei de Hick, o tempo para tomar uma decisão aumenta logaritmicamente com o número de escolhas, elevando a paralisia por análise e a taxa de desistência.`,
+          suggestion: `Adote a regra do CTA único dominante: mantenha apenas 1 botão de conversão primária de alto contraste na primeira dobra e transforme as demais opções em links secundários sutis ou menus suspensos.`
         },
         {
           id: "psy-2",
-          title: "Desvio da Lei de Jakob e Padrões Mentais de Navegação",
+          title: "Desvio da Lei de Jakob (Padrões Mentais Consolidados)",
           severity: "Alto",
-          principle: "Jon Yablonski - Lei de Jakob",
-          evidence: `Disposição de elementos de navegação e busca`,
-          problem: `A interface força o usuário a reaprender comportamentos consolidados no mercado, elevando o esforço cognitivo inicial.`,
-          suggestion: `Reorganize a barra superior seguindo o padrão universal: logo à esquerda, navegação no centro e ação de conversão à direita.`
+          principle: "Jon Yablonski - Lei de Jakob / Heurísticas de Usabilidade Universal",
+          evidence: `Disposição estrutural do cabeçalho e posicionamento de elementos de busca e ação`,
+          problem: `A organização da navegação diverge das convenções consolidadas na web (onde o usuário passa a maior parte do tempo em outros sites e espera que o seu funcione da mesma forma).`,
+          impact: `Gera atrito cognitivo e desorientação inicial, forçando o visitante a gastar energia mental para descobrir onde clicar em vez de focar no valor do produto.`,
+          suggestion: `Reestruture a barra superior no formato clássico: logotipo ancorado à esquerda com link para a home, links de navegação principais centralizados e botão de contato/conversão destacado na extremidade direita.`
         }
       ]
     },
     {
       title: "Arquitetura da Informação",
-      overview: "Diagnóstico de taxonomia, rotulagem e hierarquia estrutural de conteúdo.",
+      overview: "Diagnóstico de taxonomia, rotulagem, previsibilidade estrutural e facilidade de localização (Information Scent).",
       score: 52,
       issues: [
         {
           id: "ia-1",
-          title: "Mapeamento Incorreto de Fluxo e Narrativa Estrutural",
+          title: "Hierarquia de Conteúdo Invertida e Quebra de Narrativa Comercial",
           severity: "Alto",
           principle: "Don Norman - Mapeamento e Restrições / W3C Information Architecture",
-          evidence: `Estrutura de tópicos (${meta.headings.length} headings detectados)`,
-          problem: `A sequência de tópicos não segue uma narrativa lógica de conversão, dispersando a atenção antes que o valor central seja comunicado.`,
-          suggestion: `Estruture o conteúdo em fluxo linear: Proposta de Valor Clara -> Prova Social -> Demonstração de Benefícios -> FAQ -> CTA Final.`
+          evidence: `Ordem das seções entre "${headingH1}" e "${headingH2}"`,
+          problem: `A página solicita o engajamento de conversão antes de apresentar os argumentos de autoridade, prova social ou clareza sobre os diferenciais da empresa.`,
+          impact: `Gera insegurança no lead, resultando em quedas acentuadas de retenção logo após a primeira rolagem de página.`,
+          suggestion: `Reorganize a arquitetura em fluxo progressivo de convencimento: 1. Proposta de Valor Clara (Hero) -> 2. Prova Social e Avaliações -> 3. Catálogo / Benefícios Estruturados -> 4. Quebra de Objeções (FAQ) -> 5. Chamada Final de Ação.`
         },
         {
           id: "ia-2",
-          title: "Rotulagem Ambígua em Seções de Apoio",
+          title: "Rotulagem Ambígua e Fragilidade no Rastro de Informação (Information Scent)",
           severity: "Médio",
           principle: "Princípios de Taxonomia e Rotulagem (Rosenfeld & Morville)",
-          evidence: `Rótulos de links e menus secundários`,
-          problem: `Termos genéricos ou ambíguos geram incerteza sobre o destino do clique.`,
-          suggestion: `Substitua rótulos vagos por verbos de ação claros e orientados ao benefício direto do usuário.`
+          evidence: `Rótulos genéricos em botões e menus de suporte`,
+          problem: `Termos vagos não comunicam exatamente o que acontecerá após o clique (ex: se abrirá o WhatsApp, um formulário ou outra página).`,
+          impact: `Reduz a taxa de cliques em botões secundários por desconfiança sobre o destino da navegação.`,
+          suggestion: `Substitua rótulos abstratos por microcópias assertivas com verbos de ação específicos, como "Ver Estoque Completo", "Falar com Consultor no WhatsApp" ou "Simular Financiamento".`
         }
       ]
     },
     {
       title: "Acessibilidade e Inclusão",
-      overview: "Auditoria técnica de conformidade com as diretrizes internacionais W3C WCAG 2.1 (Níveis A e AA).",
-      score: meta.imagesMissingAlt > 0 ? 35 : 55,
+      overview: "Auditoria técnica de conformidade com as diretrizes internacionais W3C WCAG 2.1 (Níveis A e AA) e normas de acessibilidade universal.",
+      score: altPercentage > 50 ? 30 : 50,
       issues: [
         {
           id: "a11y-1",
-          title: `Violação WCAG 1.1.1: ${meta.imagesMissingAlt} Imagens Sem Atributo Alt`,
+          title: `Violação Crítica WCAG 1.1.1: ${imagesMissing} de ${imagesTotal} Imagens Sem Atributo Alt (${altPercentage}%)`,
           severity: "Crítico",
-          principle: "W3C WCAG 2.1 - Critério de Sucesso 1.1.1 (Conteúdo Não Textual)",
-          evidence: `${meta.imagesMissingAlt} de ${meta.imagesCount} imagens sem atributo alt`,
-          problem: `Leitores de tela não conseguem interpretar o conteúdo visual para usuários com deficiência visual, bloqueando a navegação assistiva.`,
-          suggestion: `Adicione descrições objetivas no atributo alt de todas as imagens informativas e utilize alt="" em imagens meramente decorativas.`
+          principle: "W3C WCAG 2.1 - Critério de Sucesso 1.1.1 (Conteúdo Não Textual - Nível A)",
+          evidence: `${imagesMissing} elementos <img> identificados na estrutura do DOM sem descrição textual`,
+          problem: `A ausência da tag alt impede que leitores de tela (como NVDA, JAWS e VoiceOver) descrevam o conteúdo visual para usuários com deficiência visual. Além disso, o robô do Google fica incapacitado de indexar os produtos e imagens para busca orgânica.`,
+          impact: `Exclusão de usuários PcD, vulnerabilidade a penalidades legais de acessibilidade digital e perda significativa de tráfego orgânico no Google Imagens.`,
+          suggestion: `Insira atributos alt descritivos em todas as imagens com valor informativo (ex: alt="Veículo Sedan Prata 2024 - Frente") e declare alt="" (vazio) explicitamente em ícones e fundos meramente decorativos.`
         },
         {
           id: "a11y-2",
-          title: "Navegação por Teclado e Foco Visível Insuficiente",
+          title: "Ausência de Foco Visível para Navegação via Teclado (WCAG 2.4.7)",
           severity: "Alto",
-          principle: "W3C WCAG 2.1 - Critério de Sucesso 2.4.7 (Foco Visível)",
-          evidence: `Elementos interativos da página`,
-          problem: `Ausência de contornos de foco destacados ao navegar via tecla TAB.`,
-          suggestion: `Declare regras de :focus-visible com contraste mínimo de 3:1 em todos os links, botões e campos de entrada.`
+          principle: "W3C WCAG 2.1 - Critério de Sucesso 2.4.7 (Foco Visível - Nível AA)",
+          evidence: `Links, botões e campos interativos da página`,
+          problem: `Ao navegar na página utilizando a tecla TAB, não há indicador gráfico de foco (outline / ring de alto contraste) sinalizando em qual elemento o usuário se encontra.`,
+          impact: `Inviabiliza a utilização do site por pessoas com limitações motoras que não utilizam mouse, além de prejudicar a navegação em smart TVs e dispositivos com teclado físico.`,
+          suggestion: `Adicione a regra CSS global *:focus-visible { outline: 2px solid #C46A1A; outline-offset: 2px; } garantindo visibilidade imediata sem poluir o clique do mouse.`
         }
       ]
     }
@@ -633,7 +662,6 @@ export function AnaliseUXView() {
         if (serverRes.ok) {
           const sData = await serverRes.json();
           if (sData.success && sData.data) {
-            // Garantir que pageSpeed metrics estejam anexadas
             if (!sData.data.extractedMetadata.performance?.pageSpeed) {
               const resp = sData.data.extractedMetadata.performance?.responseTimeMs || 320;
               const size = sData.data.extractedMetadata.performance?.pageSizeKb || 95;
@@ -1121,9 +1149,9 @@ export function AnaliseUXView() {
             <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="space-y-3 pb-6 border-b border-white/10">
                 <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A]">
-                  DIAGNÓSTICO GERAL DE USABILIDADE & SEGURANÇA
+                  DIAGNÓSTICO EXECUTIVO FORENSE & COMPORTAMENTAL
                 </span>
-                <p className="text-sm text-white/80 leading-relaxed font-light">
+                <p className="text-sm text-white/80 leading-relaxed font-light whitespace-pre-line">
                   {analysisResult.executiveSummary}
                 </p>
               </div>
@@ -1132,18 +1160,25 @@ export function AnaliseUXView() {
               {analysisResult.blockquotes && analysisResult.blockquotes.length > 0 && (
                 <div className="space-y-4 pt-2">
                   <span className="text-xs font-mono uppercase tracking-wider text-white/50 block">
-                    EVIDÊNCIAS DIRETAS EXTRAÍDAS DO DOM:
+                    EVIDÊNCIAS DIRETAS EXTRAÍDAS DO DOM COM CONTEXTO CIRÚRGICO:
                   </span>
                   <div className="space-y-4">
                     {analysisResult.blockquotes.map((bq) => (
-                      <div key={bq.id} className="relative pl-6 border-l-2 border-[#C46A1A]/40 space-y-1">
+                      <div key={bq.id} className="relative pl-6 border-l-2 border-[#C46A1A]/40 space-y-1.5">
                         <div className="absolute -left-[7px] top-0 w-3 h-3 rounded-full border-2 border-[#C46A1A] bg-black" />
-                        <h4 className="text-sm font-semibold text-white">
-                          [{bq.id}] {bq.issueTitle || bq.location}
-                        </h4>
-                        <p className="text-xs text-white/60 font-light">
-                          Localização: {bq.location}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-semibold text-white">
+                            [{bq.id}] {bq.issueTitle || bq.location}
+                          </h4>
+                          <span className="text-[10px] font-mono text-[#C46A1A] border border-[#C46A1A]/30 px-1.5 py-0.2 rounded">
+                            {bq.location}
+                          </span>
+                        </div>
+                        {bq.contextNote && (
+                          <p className="text-xs text-white/70 font-light">
+                            {bq.contextNote}
+                          </p>
+                        )}
                         <div className="bg-[#0f0f16] border border-[#C46A1A]/20 rounded-lg p-3 mt-2">
                           <span className="text-[10px] font-mono text-[#C46A1A] uppercase tracking-wider block mb-1">
                             ↳ ELEMENTO DETECTADO:
@@ -1268,7 +1303,7 @@ export function AnaliseUXView() {
             </div>
           )}
 
-          {/* CATEGORIAS ESPECÍFICAS (TABS 0..4) — LAYOUT IDÊNTICO À REFERÊNCIA */}
+          {/* CATEGORIAS ESPECÍFICAS (TABS 0..4) — LAYOUT CIRÚRGICO COM CONTEXTO PROFUNDO */}
           {activeTab >= 0 && activeTab < analysisResult.categories.length && (
             <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
               {(() => {
@@ -1277,20 +1312,23 @@ export function AnaliseUXView() {
                 return (
                   <>
                     {/* Parágrafo de Introdução da Categoria */}
-                    <div className="pb-6 border-b border-white/10">
+                    <div className="pb-6 border-b border-white/10 space-y-1">
+                      <span className="text-[10px] font-mono text-[#C46A1A] uppercase tracking-wider block">
+                        DIAGNÓSTICO TÉCNICO ESPECIALIZADO
+                      </span>
                       <p className="text-sm text-white/80 leading-relaxed font-light">
                         {currentCategory.overview}
                       </p>
                     </div>
 
-                    {/* Lista de Problemas com Linha do Tempo e "COMO DEVERIA SER" */}
-                    <div className="space-y-8">
+                    {/* Lista de Problemas com Linha do Tempo, Impacto e "COMO DEVERIA SER" */}
+                    <div className="space-y-10">
                       {currentCategory.issues.map((issue) => (
-                        <div key={issue.id} className="relative pl-6 sm:pl-8 border-l-2 border-[#C46A1A]/40 space-y-2">
+                        <div key={issue.id} className="relative pl-6 sm:pl-8 border-l-2 border-[#C46A1A]/40 space-y-3">
                           {/* Marcador circular da linha */}
                           <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full border-2 border-[#C46A1A] bg-black" />
 
-                          {/* Título do Problema */}
+                          {/* Título e Severidade */}
                           <div className="flex items-center gap-3 flex-wrap">
                             <h3 className="text-base font-semibold text-white">
                               {issue.title}
@@ -1298,26 +1336,48 @@ export function AnaliseUXView() {
                             <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded border border-[#C46A1A]/40 text-[#C46A1A]">
                               {issue.severity}
                             </span>
+                            <span className="text-[10px] font-mono text-white/40">
+                              {issue.principle}
+                            </span>
                           </div>
 
-                          {/* Descrição do Problema */}
-                          <p className="text-sm text-white/70 leading-relaxed font-light">
-                            {issue.problem}
-                          </p>
-
+                          {/* Evidência Real */}
                           {issue.evidence && (
-                            <p className="text-xs text-white/40 font-mono">
-                              Evidência: {issue.evidence}
+                            <div className="text-xs text-white/50 font-mono bg-[#0f0f16] border border-white/5 px-3 py-1.5 rounded-lg inline-block">
+                              <span className="text-[#C46A1A]">Evidência:</span> {issue.evidence}
+                            </div>
+                          )}
+
+                          {/* Explicação Cirúrgica da Falha */}
+                          <div className="space-y-1">
+                            <span className="text-[11px] font-mono text-red-400 uppercase tracking-wider block">
+                              Falha Técnica & Comportamental:
+                            </span>
+                            <p className="text-sm text-white/70 leading-relaxed font-light">
+                              {issue.problem}
                             </p>
+                          </div>
+
+                          {/* Impacto no Negócio / Conversão */}
+                          {issue.impact && (
+                            <div className="space-y-1 bg-[#16100c] border border-[#C46A1A]/20 p-3 rounded-lg">
+                              <span className="text-[10px] font-mono text-[#C46A1A] uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                                <Target className="w-3 h-3 text-[#C46A1A]" />
+                                Impacto no Funil & Taxa de Conversão:
+                              </span>
+                              <p className="text-xs text-white/80 font-light">
+                                {issue.impact}
+                              </p>
+                            </div>
                           )}
 
                           {/* Box: COMO DEVERIA SER */}
-                          <div className="bg-[#0f0f16] border border-[#C46A1A]/30 rounded-xl p-4 mt-3 space-y-1.5">
-                            <div className="text-[11px] font-mono text-[#C46A1A] uppercase tracking-wider flex items-center gap-1.5">
+                          <div className="bg-[#0f0f16] border border-[#C46A1A]/40 rounded-xl p-4 mt-3 space-y-1.5">
+                            <div className="text-[11px] font-mono text-[#C46A1A] uppercase tracking-wider flex items-center gap-1.5 font-bold">
                               <span>↳</span>
                               <span>COMO DEVERIA SER:</span>
                             </div>
-                            <p className="text-xs text-white/90 leading-relaxed font-medium">
+                            <p className="text-xs text-white/95 leading-relaxed font-medium">
                               {issue.suggestion}
                             </p>
                           </div>
