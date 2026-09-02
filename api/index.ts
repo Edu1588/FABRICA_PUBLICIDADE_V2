@@ -536,7 +536,7 @@ app.post('/api/ux-analyze', async (req, res) => {
 
     // Live Google PageSpeed Insights API call
     let pageSpeedLive: any = null;
-    const googleApiKey = process.env.PAGESPEED_API_KEY || process.env.GOOGLE_API_KEY || process.env.GOOGLE_PAGESPEED_API_KEY || '';
+    const googleApiKey = process.env.PAGESPEED_API_KEY || process.env.PageSpeed || process.env.PAGESPEED || process.env.pagespeed || process.env.GOOGLE_API_KEY || process.env.GOOGLE_PAGESPEED_API_KEY || '';
     try {
       const psUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(targetUrl)}&category=PERFORMANCE&category=ACCESSIBILITY&category=BEST_PRACTICES&category=SEO&strategy=desktop${googleApiKey ? `&key=${googleApiKey}` : ''}`;
       const psRes = await fetch(psUrl, { headers: { 'Accept': 'application/json' } });
@@ -611,8 +611,7 @@ app.post('/api/ux-analyze', async (req, res) => {
     };
 
     // AI Call
-    const getK = () => ["g", "s", "k", "_", "Xu1A", "93fx", "eh54", "EzNL", "ItJs", "WGdy", "b3FY", "1FuS", "StW5", "rBdC", "VEXT", "F0lh", "podV"].join("");
-    const groqKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY || getK();
+    const groqKey = process.env.GROQ_API_KEY || process.env.Groq || process.env.GROQ || process.env.groq || process.env.VITE_GROQ_API_KEY || '';
 
     const systemPrompt = `Você é um Auditor Sênior de UX/UI, Cientista Cognitivo e Especialista em Arquitetura de Informação e Acessibilidade (WCAG 2.1), contratado pela Fábrica Publicidade.
 Você é conhecido na indústria por ser EXTREMAMENTE CRÍTICO, RIGOROSO E IMPLACÁVEL. Não suavize problemas, não use elogios protocolares vazios e não passe pano para erros de usabilidade, contraste, inconsistência ou fricção.
