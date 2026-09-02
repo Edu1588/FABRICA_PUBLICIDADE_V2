@@ -940,11 +940,17 @@ export function AnaliseUXView() {
       pdf.setTextColor(70, 70, 80);
       const colorsText = `Cores da Marca: ${analysisResult.extractedMetadata.colors.join(", ")}`;
       const fontsText = `Fontes Utilizadas: ${analysisResult.extractedMetadata.fonts.join(", ")}`;
-      const structText = `Título do Site: ${analysisResult.extractedMetadata.pageTitle} | Total de Fotos: ${analysisResult.extractedMetadata.imagesCount} (Sem Descrição: ${analysisResult.extractedMetadata.imagesMissingAlt}) | Resposta do Servidor: ${analysisResult.extractedMetadata.performance?.responseTimeMs || 320}ms`;
+      const structText = `Título: ${analysisResult.extractedMetadata.pageTitle} | Fotos: ${analysisResult.extractedMetadata.imagesCount} (Sem Desc: ${analysisResult.extractedMetadata.imagesMissingAlt}) | Servidor: ${analysisResult.extractedMetadata.performance?.responseTimeMs || 320}ms`;
 
-      pdf.text(colorsText, margin + 4, currentY + 11);
-      pdf.text(fontsText, margin + 4, currentY + 16);
-      pdf.text(structText, margin + 4, currentY + 21);
+      const colorsLines = pdf.splitTextToSize(colorsText, contentWidth - 8);
+      const fontsLines = pdf.splitTextToSize(fontsText, contentWidth - 8);
+      const structLines = pdf.splitTextToSize(structText, contentWidth - 8);
+
+      pdf.text(colorsLines, margin + 4, currentY + 11);
+      const fontsStartY = currentY + 11 + colorsLines.length * 3.8;
+      pdf.text(fontsLines, margin + 4, fontsStartY);
+      const structStartY = fontsStartY + fontsLines.length * 3.8;
+      pdf.text(structLines, margin + 4, structStartY);
 
       currentY += 30;
 
@@ -1005,7 +1011,9 @@ export function AnaliseUXView() {
         const cleanTbt = cleanDisplayMetric(ps.tbt?.value, "280ms");
         const cleanTtfb = cleanDisplayMetric(ps.ttfb?.value, "0.3s");
 
-        pdf.text(`Abertura Inicial: ${cleanFcp} | Conteúdo Principal: ${cleanLcp} | Estabilidade da Tela: ${cleanCls} | Resposta ao Toque: ${cleanTbt} | Servidor: ${cleanTtfb}`, margin + 4, currentY + 6);
+        const metricsLine = `Abertura: ${cleanFcp} | Principal: ${cleanLcp} | Estabilidade: ${cleanCls} | Toque: ${cleanTbt} | Servidor: ${cleanTtfb}`;
+        const metricsLines = pdf.splitTextToSize(metricsLine, contentWidth - 8);
+        pdf.text(metricsLines, margin + 4, currentY + 6);
         
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(16, 120, 60);
@@ -1016,72 +1024,74 @@ export function AnaliseUXView() {
         currentY += 26;
 
         // GRÁFICO COMPARATIVO VISUAL (PAGESPEED & RETENÇÃO MOBILE)
-        checkPageBreak(38);
+        checkPageBreak(48);
         pdf.setFillColor(245, 245, 250);
-        pdf.roundedRect(margin, currentY, contentWidth, 32, 2, 2, "F");
+        pdf.roundedRect(margin, currentY, contentWidth, 42, 2, 2, "F");
         pdf.setDrawColor(210, 210, 225);
-        pdf.roundedRect(margin, currentY, contentWidth, 32, 2, 2, "S");
+        pdf.roundedRect(margin, currentY, contentWidth, 42, 2, 2, "S");
 
         pdf.setTextColor(20, 20, 30);
         pdf.setFontSize(8.5);
         pdf.setFont("helvetica", "bold");
-        pdf.text("GRÁFICO COMPARATIVO: CENÁRIO ATUAL vs PADRÃO IDEAL FÁBRICA", margin + 4, currentY + 5.5);
+        pdf.text("COMPARATIVO: CENARIO ATUAL vs PADRAO IDEAL FABRICA", margin + 4, currentY + 5.5);
 
-        // Barra 1: Tempo de Carregamento no Celular
-        const b1Y = currentY + 9;
-        pdf.setFontSize(7);
-        pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(70, 70, 80);
-        pdf.text("Tempo de Espera no Celular (4G):", margin + 4, b1Y + 3);
+        const barLabelW = 52;
+        const barStartX = margin + barLabelW;
+        const barMaxW = contentWidth - barLabelW - 4;
 
-        const barStartX = margin + 46;
-        const barMaxW = contentWidth - 88;
-
-        // Atual (Vermelha)
-        pdf.setFillColor(239, 68, 68);
-        pdf.roundedRect(barStartX, b1Y, barMaxW * 0.75, 4, 1, 1, "F");
+        // Linha 1: Velocidade Atual (Vermelha)
+        const b1Y = currentY + 10;
+        pdf.setFontSize(6.5);
+        pdf.setFont("helvetica", "bold");
         pdf.setTextColor(185, 28, 28);
-        pdf.setFontSize(6.5);
-        pdf.setFont("helvetica", "bold");
-        pdf.text(`${cleanLcp} (Lento - Perda de Leads)`, barStartX + barMaxW * 0.75 + 2, b1Y + 3);
-
-        // Ideal Fábrica (Verde)
-        const b2Y = currentY + 16;
-        pdf.setFontSize(7);
-        pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(70, 70, 80);
-        pdf.text("Padrão Ideal Fábrica:", margin + 4, b2Y + 3);
-
-        pdf.setFillColor(34, 197, 94);
-        pdf.roundedRect(barStartX, b2Y, barMaxW * 0.22, 4, 1, 1, "F");
-        pdf.setTextColor(21, 128, 61);
-        pdf.setFontSize(6.5);
-        pdf.setFont("helvetica", "bold");
-        pdf.text("0.8s (Instantâneo - Alta Conversão)", barStartX + barMaxW * 0.22 + 2, b2Y + 3);
-
-        // Barra 2: Retenção de Visitantes
-        const b3Y = currentY + 23;
-        pdf.setFontSize(7);
-        pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(70, 70, 80);
-        pdf.text("Retenção nos 3 Primeiros Segundos:", margin + 4, b3Y + 3);
-
-        // Barra Atual vs Ideal
+        pdf.text("VELOCIDADE ATUAL:", margin + 4, b1Y + 3);
         pdf.setFillColor(239, 68, 68);
-        pdf.roundedRect(barStartX, b3Y, barMaxW * 0.38, 4, 1, 1, "F");
-        pdf.setTextColor(185, 28, 28);
+        const actualBarW = Math.min(barMaxW * 0.65, barMaxW);
+        pdf.roundedRect(barStartX, b1Y, actualBarW, 4, 1, 1, "F");
+        pdf.setTextColor(120, 20, 20);
+        pdf.setFontSize(6);
+        pdf.text(`${cleanLcp} (Lento)`, barStartX + actualBarW + 2, b1Y + 3);
+
+        // Linha 2: Velocidade Ideal (Verde)
+        const b2Y = currentY + 17;
         pdf.setFontSize(6.5);
         pdf.setFont("helvetica", "bold");
-        pdf.text("38% (Atual)", barStartX + barMaxW * 0.38 + 2, b3Y + 3);
-
-        pdf.setFillColor(34, 197, 94);
-        pdf.roundedRect(barStartX + barMaxW * 0.52, b3Y, barMaxW * 0.36, 4, 1, 1, "F");
         pdf.setTextColor(21, 128, 61);
+        pdf.text("IDEAL FABRICA:", margin + 4, b2Y + 3);
+        pdf.setFillColor(34, 197, 94);
+        const idealBarW = Math.min(barMaxW * 0.18, barMaxW);
+        pdf.roundedRect(barStartX, b2Y, idealBarW, 4, 1, 1, "F");
+        pdf.setTextColor(15, 90, 40);
+        pdf.setFontSize(6);
+        pdf.text("0.8s (Rapido)", barStartX + idealBarW + 2, b2Y + 3);
+
+        // Linha 3: Retenção Atual (Vermelha)
+        const b3Y = currentY + 26;
         pdf.setFontSize(6.5);
         pdf.setFont("helvetica", "bold");
-        pdf.text("88% (Ideal)", barStartX + barMaxW * 0.52 + barMaxW * 0.36 + 2, b3Y + 3);
+        pdf.setTextColor(185, 28, 28);
+        pdf.text("RETENCAO ATUAL:", margin + 4, b3Y + 3);
+        pdf.setFillColor(239, 68, 68);
+        const retActualW = Math.min(barMaxW * 0.38, barMaxW);
+        pdf.roundedRect(barStartX, b3Y, retActualW, 4, 1, 1, "F");
+        pdf.setTextColor(120, 20, 20);
+        pdf.setFontSize(6);
+        pdf.text("38% dos visitantes", barStartX + retActualW + 2, b3Y + 3);
 
-        currentY += 36;
+        // Linha 4: Retenção Ideal (Verde)
+        const b4Y = currentY + 33;
+        pdf.setFontSize(6.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(21, 128, 61);
+        pdf.text("RETENCAO IDEAL:", margin + 4, b4Y + 3);
+        pdf.setFillColor(34, 197, 94);
+        const retIdealW = Math.min(barMaxW * 0.88, barMaxW);
+        pdf.roundedRect(barStartX, b4Y, retIdealW, 4, 1, 1, "F");
+        pdf.setTextColor(15, 90, 40);
+        pdf.setFontSize(6);
+        pdf.text("88% dos visitantes", barStartX + retIdealW + 2, b4Y + 3);
+
+        currentY += 46;
       }
 
       // ========================================================
@@ -1232,15 +1242,36 @@ export function AnaliseUXView() {
 
         for (const issue of cat.issues) {
           const isCritical = issue.severity === "Crítico";
-          const maxInnerW = contentWidth - 10;
-          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, maxInnerW);
-          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, maxInnerW);
-          
+          const innerTextW = contentWidth - 8;
+
+          // Medir todas as linhas com splitTextToSize para calcular altura real
+          const titleLines = pdf.splitTextToSize(issue.title, innerTextW - 22);
+          const titleHeight = titleLines.length * 4;
+
+          const evidLines = issue.evidence
+            ? pdf.splitTextToSize(`Foco: ${issue.principle} | Ponto: ${issue.evidence}`, innerTextW)
+            : [];
+          const evidHeight = evidLines.length > 0 ? evidLines.length * 3.5 + 1 : 0;
+
+          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, innerTextW);
           const probHeight = probLines.length * 3.8;
+
+          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, innerTextW);
           const sugHeight = sugLines.length * 3.8;
-          const evidenceHeight = issue.evidence ? 4.5 : 0;
-          const compBoxHeight = issue.currentVsIdeal ? 16 : 0;
-          const cardHeight = 12 + evidenceHeight + probHeight + sugHeight + compBoxHeight + 4;
+
+          // Boxes comparativos: empilhados verticalmente para não estourar
+          const hasComp = !!issue.currentVsIdeal;
+          let compBoxHeight = 0;
+          let curTextLines: string[] = [];
+          let idlTextLines: string[] = [];
+          if (hasComp && issue.currentVsIdeal) {
+            const compInnerW = contentWidth - 14;
+            curTextLines = pdf.splitTextToSize(`X CENARIO ATUAL: ${issue.currentVsIdeal.current}`, compInnerW);
+            idlTextLines = pdf.splitTextToSize(`+ IDEAL FABRICA: ${issue.currentVsIdeal.ideal}`, compInnerW);
+            compBoxHeight = 6 + curTextLines.length * 3.2 + 3 + idlTextLines.length * 3.2 + 4;
+          }
+
+          const cardHeight = 10 + titleHeight + evidHeight + probHeight + 2 + sugHeight + 2.5 + compBoxHeight + 4;
 
           checkPageBreak(cardHeight + 4);
 
@@ -1258,76 +1289,64 @@ export function AnaliseUXView() {
           pdf.setFont("helvetica", "bold");
           pdf.text(issue.severity.toUpperCase(), margin + 4.5, currentY + 6.3);
 
-          // Título
+          // Título (com quebra de linha)
           pdf.setTextColor(20, 20, 30);
           pdf.setFontSize(8.5);
           pdf.setFont("helvetica", "bold");
-          pdf.text(issue.title, margin + 22, currentY + 6.5);
+          pdf.text(titleLines, margin + 22, currentY + 6.5);
 
-          let innerY = currentY + 11.5;
+          let innerY = currentY + 10 + titleHeight;
 
-          // Evidência
-          if (issue.evidence) {
+          // Evidência (com quebra de linha)
+          if (evidLines.length > 0) {
             pdf.setTextColor(110, 110, 120);
             pdf.setFontSize(7);
             pdf.setFont("helvetica", "normal");
-            pdf.text(`Foco: ${issue.principle} | Ponto: ${issue.evidence}`, margin + 3, innerY);
-            innerY += 4.5;
+            pdf.text(evidLines, margin + 4, innerY);
+            innerY += evidHeight;
           }
 
           // Problema (Linhas Completas)
           pdf.setTextColor(60, 60, 70);
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "normal");
-          pdf.text(probLines, margin + 3, innerY);
+          pdf.text(probLines, margin + 4, innerY);
           innerY += probHeight + 2;
 
           // Sugestão de Vendas (Linhas Completas)
           pdf.setTextColor(16, 120, 60);
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "bold");
-          pdf.text(sugLines, margin + 3, innerY);
+          pdf.text(sugLines, margin + 4, innerY);
           innerY += sugHeight + 2.5;
 
-          // BOX COMPARATIVO VISUAL COM QUEBRA AUTOMÁTICA DE LINHAS
-          if (issue.currentVsIdeal) {
-            const barW = (contentWidth - 10) / 2;
-            const curLines = pdf.splitTextToSize(issue.currentVsIdeal.current, barW - 6);
-            const idlLines = pdf.splitTextToSize(issue.currentVsIdeal.ideal, barW - 6);
+          // BOXES COMPARATIVOS EMPILHADOS VERTICALMENTE (nunca ultrapassam margem)
+          if (hasComp && issue.currentVsIdeal) {
+            const compW = contentWidth - 8;
 
-            // Box Atual (Vermelho)
+            // Box Atual (Vermelho) — largura total
             pdf.setFillColor(254, 242, 242);
-            pdf.roundedRect(margin + 3, innerY, barW, 14, 1, 1, "F");
-            pdf.setDrawColor(252, 165, 165);
-            pdf.roundedRect(margin + 3, innerY, barW, 14, 1, 1, "S");
-
+            pdf.roundedRect(margin + 4, innerY, compW, 4 + curTextLines.length * 3.2, 1, 1, "F");
             pdf.setFillColor(239, 68, 68);
-            pdf.rect(margin + 3, innerY, 2, 14, "F");
+            pdf.rect(margin + 4, innerY, 2, 4 + curTextLines.length * 3.2, "F");
 
-            pdf.setFontSize(6);
+            pdf.setFontSize(6.5);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(185, 28, 28);
-            pdf.text("X CENÁRIO ATUAL (GARGALO):", margin + 6.5, innerY + 3.5);
-            pdf.setFont("helvetica", "normal");
-            pdf.setTextColor(127, 29, 29);
-            pdf.text(curLines, margin + 6.5, innerY + 7);
+            pdf.text(curTextLines, margin + 8, innerY + 3.5);
 
-            // Box Ideal Fábrica (Verde)
+            innerY += 4 + curTextLines.length * 3.2 + 2;
+
+            // Box Ideal Fábrica (Verde) — largura total
             pdf.setFillColor(240, 253, 244);
-            pdf.roundedRect(margin + 4 + barW, innerY, barW, 14, 1, 1, "F");
-            pdf.setDrawColor(134, 239, 172);
-            pdf.roundedRect(margin + 4 + barW, innerY, barW, 14, 1, 1, "S");
-
+            pdf.roundedRect(margin + 4, innerY, compW, 4 + idlTextLines.length * 3.2, 1, 1, "F");
             pdf.setFillColor(34, 197, 94);
-            pdf.rect(margin + 4 + barW, innerY, 2, 14, "F");
+            pdf.rect(margin + 4, innerY, 2, 4 + idlTextLines.length * 3.2, "F");
 
-            pdf.setFontSize(6);
+            pdf.setFontSize(6.5);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(21, 128, 61);
-            pdf.text("+ CENÁRIO IDEAL FÁBRICA (ALTA PERFORMANCE):", margin + 7.5 + barW, innerY + 3.5);
-            pdf.setFont("helvetica", "normal");
-            pdf.setTextColor(20, 83, 45);
-            pdf.text(idlLines, margin + 7.5 + barW, innerY + 7);
+            pdf.text(idlTextLines, margin + 8, innerY + 3.5);
           }
 
           currentY += cardHeight + 4;
