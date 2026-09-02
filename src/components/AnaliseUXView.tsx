@@ -27,7 +27,9 @@ import {
   CheckCircle2,
   TrendingUp,
   ShoppingBag,
-  DollarSign
+  DollarSign,
+  MessageCircle,
+  PhoneCall
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
@@ -141,6 +143,24 @@ export interface UXAnalysisResult {
   executiveSummary: string;
   blockquotes: BlockquoteRef[];
   categories: AnalysisCategory[];
+}
+
+const FABRICA_LOGO_URL = "https://static.wixstatic.com/media/fa9c68_1951c3f678894f529d14d736d43e70fe~mv2.png/v1/fill/w_278,h_66,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/fa9c68_1951c3f678894f529d14d736d43e70fe~mv2.png";
+
+async function fetchLogoBase64(): Promise<string | null> {
+  try {
+    const res = await fetch(FABRICA_LOGO_URL);
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
 }
 
 export function cleanDisplayMetric(val: string | undefined, fallback: string): string {
@@ -442,7 +462,7 @@ export function AnaliseUXView() {
   const [statusMessage, setStatusMessage] = useState("");
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<UXAnalysisResult | null>(null);
-  const [activeTab, setActiveTab] = useState<number>(-1); // -1 = Resumo, 0..4 = Categorias, 5 = Seguranca, 6 = Playwright, 7 = PageSpeed
+  const [activeTab, setActiveTab] = useState<number>(-1);
   const [viewportMode, setViewportMode] = useState<"desktop" | "mobile">("desktop");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -674,7 +694,6 @@ export function AnaliseUXView() {
     setStatusMessage("Iniciando auditoria comercial de UX/UI, Velocidade & Segurança...");
 
     try {
-      // 1. Tentar endpoint serverless direto
       try {
         setAnalysisProgress(25);
         setStatusMessage("Medindo velocidade real e extraindo dados do site...");
@@ -706,7 +725,6 @@ export function AnaliseUXView() {
         console.warn("Backend /api/ux-analyze não respondeu, usando motor client-side:", srvErr);
       }
 
-      // 2. Extração client-side com dados reais do DOM
       const extracted = await extractRealPageData(validUrl);
 
       setAnalysisProgress(80);
@@ -730,9 +748,11 @@ export function AnaliseUXView() {
     if (!analysisResult) return;
 
     setIsGeneratingPDF(true);
-    showToast("Renderizando relatório executivo comercial em PDF...");
+    showToast("Renderizando relatório executivo em PDF com logotipo e CTA da Fábrica...");
 
     try {
+      const logoBase64 = await fetchLogoBase64();
+
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
@@ -745,8 +765,46 @@ export function AnaliseUXView() {
       const contentWidth = pageWidth - margin * 2;
       let currentY = 18;
 
+      const drawHeader = () => {
+        pdf.setFillColor(10, 10, 15);
+        pdf.rect(0, 0, pageWidth, 40, "F");
+
+        pdf.setFillColor(196, 106, 26);
+        pdf.rect(0, 40, pageWidth, 1.5, "F");
+
+        if (logoBase64) {
+          try {
+            pdf.addImage(logoBase64, "PNG", margin, 10, 42, 10);
+          } catch {
+            pdf.setTextColor(245, 242, 236);
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "bold");
+            pdf.text("FÁBRICA PUBLICIDADE", margin, 18);
+          }
+        } else {
+          pdf.setTextColor(245, 242, 236);
+          pdf.setFontSize(14);
+          pdf.setFont("helvetica", "bold");
+          pdf.text("FÁBRICA PUBLICIDADE", margin, 18);
+        }
+
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(196, 106, 26);
+        pdf.text("RELATÓRIO EXECUTIVO DE AUDITORIA: CONVERSÃO, VELOCIDADE & SEGURANÇA", margin, 26);
+
+        pdf.setTextColor(200, 200, 210);
+        pdf.setFontSize(8);
+        pdf.text(`URL AUDITADA: ${analysisResult.url}`, margin, 32);
+
+        const securityScore = analysisResult.extractedMetadata.integrityAudit?.score || 85;
+        const psScore = analysisResult.extractedMetadata.performance?.pageSpeed?.categories?.performance || 61;
+        const respTime = analysisResult.extractedMetadata.performance?.responseTimeMs || 320;
+        pdf.text(`DATA: ${analysisResult.analyzedAt} | SCORE GERAL: ${analysisResult.overallScore}/100 | VELOCIDADE: ${psScore}/100 | SEGURANÇA: ${securityScore}/100`, margin, 37);
+      };
+
       const checkPageBreak = (neededHeight: number) => {
-        if (currentY + neededHeight > pageHeight - 15) {
+        if (currentY + neededHeight > pageHeight - 16) {
           pdf.addPage();
           currentY = 18;
           pdf.setFillColor(15, 15, 22);
@@ -759,34 +817,8 @@ export function AnaliseUXView() {
         }
       };
 
-      // Fundo topo escuro premium
-      pdf.setFillColor(10, 10, 15);
-      pdf.rect(0, 0, pageWidth, 38, "F");
-
-      // Linha de acento laranja Fábrica
-      pdf.setFillColor(196, 106, 26);
-      pdf.rect(0, 38, pageWidth, 1.5, "F");
-
-      // Título e logo
-      pdf.setTextColor(245, 242, 236);
-      pdf.setFontSize(14);
-      pdf.setFont("helvetica", "bold");
-      pdf.text("FÁBRICA PUBLICIDADE", margin, 14);
-
-      pdf.setFontSize(9);
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor(196, 106, 26);
-      pdf.text("RELATÓRIO EXECUTIVO DE AUDITORIA: CONVERSÃO, VELOCIDADE & SEGURANÇA", margin, 20);
-
-      pdf.setTextColor(200, 200, 210);
-      pdf.setFontSize(8);
-      pdf.text(`URL AUDITADA: ${analysisResult.url}`, margin, 26);
-      
-      const securityScore = analysisResult.extractedMetadata.integrityAudit?.score || 85;
-      const psScore = analysisResult.extractedMetadata.performance?.pageSpeed?.categories?.performance || 61;
-      const respTime = analysisResult.extractedMetadata.performance?.responseTimeMs || 320;
-      pdf.text(`DATA: ${analysisResult.analyzedAt} | SCORE GERAL: ${analysisResult.overallScore}/100 | VELOCIDADE: ${psScore}/100 | SEGURANÇA: ${securityScore}/100`, margin, 31);
-
+      // Header Página 1
+      drawHeader();
       currentY = 48;
 
       // Metadados visuais e estruturais
@@ -806,7 +838,7 @@ export function AnaliseUXView() {
       pdf.setTextColor(70, 70, 80);
       const colorsText = `Cores da Marca: ${analysisResult.extractedMetadata.colors.join(", ")}`;
       const fontsText = `Fontes Utilizadas: ${analysisResult.extractedMetadata.fonts.join(", ")}`;
-      const structText = `Título do Site: ${analysisResult.extractedMetadata.pageTitle} | Total de Fotos: ${analysisResult.extractedMetadata.imagesCount} (Sem Descrição: ${analysisResult.extractedMetadata.imagesMissingAlt}) | Resposta do Servidor: ${respTime}ms`;
+      const structText = `Título do Site: ${analysisResult.extractedMetadata.pageTitle} | Total de Fotos: ${analysisResult.extractedMetadata.imagesCount} (Sem Descrição: ${analysisResult.extractedMetadata.imagesMissingAlt}) | Resposta do Servidor: ${analysisResult.extractedMetadata.performance?.responseTimeMs || 320}ms`;
 
       pdf.text(colorsText, margin + 4, currentY + 11);
       pdf.text(fontsText, margin + 4, currentY + 16);
@@ -847,7 +879,9 @@ export function AnaliseUXView() {
         
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(16, 120, 60);
-        pdf.text(`Diagnóstico Comercial: Otimizar o peso das fotos e carregar scripts de atendimento em segundo plano. Isso acelera o site no 4G/5G, reduz a perda de clientes no celular e aumenta o envio de mensagens no WhatsApp.`, margin + 4, currentY + 18, { maxWidth: contentWidth - 8 });
+        const diagText = `Diagnóstico Comercial: Otimizar o peso das fotos e carregar scripts de atendimento em segundo plano. Isso acelera o site no 4G/5G, reduz a perda de clientes no celular e aumenta o envio de mensagens no WhatsApp.`;
+        const diagLines = pdf.splitTextToSize(diagText, contentWidth - 8);
+        pdf.text(diagLines, margin + 4, currentY + 17);
 
         currentY += 32;
       }
@@ -883,11 +917,15 @@ export function AnaliseUXView() {
         currentY += 5;
 
         for (const bq of analysisResult.blockquotes) {
-          checkPageBreak(16);
+          const fullQuoteText = `"${bq.text}" ${bq.contextNote ? `— ${bq.contextNote}` : ""}`;
+          const quoteLines = pdf.splitTextToSize(fullQuoteText, contentWidth - 8);
+          const bqHeight = Math.max(12, 7 + quoteLines.length * 3.8);
+
+          checkPageBreak(bqHeight + 2);
           pdf.setFillColor(250, 248, 245);
-          pdf.roundedRect(margin, currentY, contentWidth, 12, 1, 1, "F");
+          pdf.roundedRect(margin, currentY, contentWidth, bqHeight, 1, 1, "F");
           pdf.setFillColor(196, 106, 26);
-          pdf.rect(margin, currentY, 2, 12, "F");
+          pdf.rect(margin, currentY, 2, bqHeight, "F");
 
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "bold");
@@ -896,15 +934,14 @@ export function AnaliseUXView() {
 
           pdf.setFont("helvetica", "normal");
           pdf.setTextColor(60, 60, 70);
-          const quoteLines = pdf.splitTextToSize(`"${bq.text}" — ${bq.contextNote || ""}`, contentWidth - 8);
-          pdf.text(quoteLines[0] || "", margin + 4, currentY + 9);
+          pdf.text(quoteLines, margin + 4, currentY + 8.5);
 
-          currentY += 14;
+          currentY += bqHeight + 3;
         }
         currentY += 4;
       }
 
-      // As 5 Categorias Comerciais
+      // As 5 Categorias Comerciais (Com Altura Dinâmica Sem Cortes)
       for (let i = 0; i < analysisResult.categories.length; i++) {
         const cat = analysisResult.categories[i];
         checkPageBreak(35);
@@ -923,14 +960,24 @@ export function AnaliseUXView() {
         currentY += overviewLines.length * 4 + 4;
 
         for (const issue of cat.issues) {
-          checkPageBreak(30);
-
           const isCritical = issue.severity === "Crítico";
-          pdf.setFillColor(isCritical ? 255 : 248, isCritical ? 245 : 248, isCritical ? 245 : 252);
-          pdf.roundedRect(margin, currentY, contentWidth, 25, 1.5, 1.5, "F");
-          pdf.setDrawColor(isCritical ? 240 : 220, isCritical ? 180 : 220, isCritical ? 180 : 230);
-          pdf.roundedRect(margin, currentY, contentWidth, 25, 1.5, 1.5, "S");
+          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, contentWidth - 8);
+          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, contentWidth - 8);
+          
+          const probHeight = probLines.length * 3.8;
+          const sugHeight = sugLines.length * 3.8;
+          const evidenceHeight = issue.evidence ? 4.5 : 0;
+          const cardHeight = 12 + evidenceHeight + probHeight + sugHeight + 4;
 
+          checkPageBreak(cardHeight + 4);
+
+          // Fundo do card
+          pdf.setFillColor(isCritical ? 255 : 248, isCritical ? 245 : 248, isCritical ? 245 : 252);
+          pdf.roundedRect(margin, currentY, contentWidth, cardHeight, 1.5, 1.5, "F");
+          pdf.setDrawColor(isCritical ? 240 : 220, isCritical ? 180 : 220, isCritical ? 180 : 230);
+          pdf.roundedRect(margin, currentY, contentWidth, cardHeight, 1.5, 1.5, "S");
+
+          // Badge de Severidade
           pdf.setFillColor(isCritical ? 220 : 196, isCritical ? 38 : 106, isCritical ? 38 : 26);
           pdf.roundedRect(margin + 3, currentY + 3, 16, 4.5, 1, 1, "F");
           pdf.setTextColor(255, 255, 255);
@@ -938,35 +985,169 @@ export function AnaliseUXView() {
           pdf.setFont("helvetica", "bold");
           pdf.text(issue.severity.toUpperCase(), margin + 4.5, currentY + 6.3);
 
+          // Título
           pdf.setTextColor(20, 20, 30);
           pdf.setFontSize(8.5);
           pdf.setFont("helvetica", "bold");
           pdf.text(issue.title, margin + 22, currentY + 6.5);
 
-          pdf.setTextColor(110, 110, 120);
-          pdf.setFontSize(7);
-          pdf.setFont("helvetica", "normal");
-          pdf.text(`Foco: ${issue.principle}`, margin + 3, currentY + 11.5);
+          let innerY = currentY + 11.5;
 
+          // Evidência
+          if (issue.evidence) {
+            pdf.setTextColor(110, 110, 120);
+            pdf.setFontSize(7);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(`Foco: ${issue.principle} | Ponto: ${issue.evidence}`, margin + 3, innerY);
+            innerY += 4.5;
+          }
+
+          // Problema (Linhas Completas)
           pdf.setTextColor(60, 60, 70);
           pdf.setFontSize(7.5);
-          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, contentWidth - 6);
-          pdf.text(probLines[0] || "", margin + 3, currentY + 16);
+          pdf.setFont("helvetica", "normal");
+          pdf.text(probLines, margin + 3, innerY);
+          innerY += probHeight + 2;
 
+          // Sugestão de Vendas (Linhas Completas)
           pdf.setTextColor(16, 120, 60);
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "bold");
-          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, contentWidth - 6);
-          pdf.text(sugLines[0] || "", margin + 3, currentY + 21);
+          pdf.text(sugLines, margin + 3, innerY);
 
-          currentY += 28;
+          currentY += cardHeight + 4;
         }
 
         currentY += 4;
       }
 
+      // ==========================================
+      // PÁGINA FINAL: CTA EXCLUSIVO DA FÁBRICA PUBLICIDADE
+      // ==========================================
+      pdf.addPage();
+      
+      // Fundo escuro premium
+      pdf.setFillColor(10, 10, 15);
+      pdf.rect(0, 0, pageWidth, pageHeight, "F");
+
+      // Borda decorativa dourada/laranja Fábrica
+      pdf.setDrawColor(196, 106, 26);
+      pdf.setLineWidth(0.8);
+      pdf.roundedRect(12, 12, pageWidth - 24, pageHeight - 24, 3, 3, "S");
+
+      // Logotipo Centralizado da Fábrica
+      if (logoBase64) {
+        try {
+          pdf.addImage(logoBase64, "PNG", (pageWidth - 65) / 2, 28, 65, 15.5);
+        } catch {}
+      }
+
+      let ctaY = 52;
+
+      // Badge
+      pdf.setFillColor(196, 106, 26);
+      pdf.roundedRect((pageWidth - 70) / 2, ctaY, 70, 6, 1, 1, "F");
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(7.5);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("NÚCLEO DE INTELIGÊNCIA COMERCIAL & CRO", pageWidth / 2, ctaY + 4.2, { align: "center" });
+
+      ctaY += 16;
+
+      // Título Principal do CTA
+      pdf.setTextColor(245, 242, 236);
+      pdf.setFontSize(15);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("PRONTO PARA TRANSFORMAR SEU SITE", pageWidth / 2, ctaY, { align: "center" });
+      ctaY += 6;
+      pdf.setTextColor(196, 106, 26);
+      pdf.text("EM UMA MÁQUINA DE VENDAS?", pageWidth / 2, ctaY, { align: "center" });
+
+      ctaY += 10;
+
+      // Parágrafo de Apoio
+      pdf.setTextColor(180, 180, 195);
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "normal");
+      const ctaDesc = "A Fábrica Publicidade desenvolve ecossistemas digitais de alta conversão, unindo design de autoridade, máxima velocidade no celular e estratégias validadas para transformar visitantes em clientes reais.";
+      const ctaDescLines = pdf.splitTextToSize(ctaDesc, contentWidth - 10);
+      pdf.text(ctaDescLines, pageWidth / 2, ctaY, { align: "center" });
+
+      ctaY += ctaDescLines.length * 4.5 + 8;
+
+      // Grid dos 4 Pilares de Atuação
+      const pilares = [
+        { title: "SITES & LANDING PAGES ULTRA-RÁPIDAS", desc: "Estruturas modernas com carregamento instantâneo no celular 4G/5G." },
+        { title: "GESTÃO DE TRÁFEGO PAGO (ADS)", desc: "Campanhas no Google e Meta focadas em leads qualificados no WhatsApp." },
+        { title: "IDENTIDADE VISUAL & AUTORIDADE", desc: "Design exclusivo que transmite alto valor percebido e segurança de compra." },
+        { title: "OTIMIZAÇÃO DE CONVERSÃO (CRO)", desc: "Ajuste cirúrgico em botões, formulários e roteiros para vender mais." }
+      ];
+
+      const pilarBoxW = (contentWidth - 6) / 2;
+      const pilarBoxH = 22;
+
+      pilares.forEach((p, idx) => {
+        const col = idx % 2;
+        const row = Math.floor(idx / 2);
+        const bx = margin + col * (pilarBoxW + 6);
+        const by = ctaY + row * (pilarBoxH + 4);
+
+        pdf.setFillColor(18, 18, 26);
+        pdf.roundedRect(bx, by, pilarBoxW, pilarBoxH, 2, 2, "F");
+        pdf.setDrawColor(40, 40, 55);
+        pdf.roundedRect(bx, by, pilarBoxW, pilarBoxH, 2, 2, "S");
+
+        pdf.setFillColor(196, 106, 26);
+        pdf.circle(bx + 5, by + 6, 1.5, "F");
+
+        pdf.setTextColor(245, 242, 236);
+        pdf.setFontSize(7.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(p.title, bx + 9, by + 7);
+
+        pdf.setTextColor(140, 140, 155);
+        pdf.setFontSize(7);
+        pdf.setFont("helvetica", "normal");
+        const pLines = pdf.splitTextToSize(p.desc, pilarBoxW - 8);
+        pdf.text(pLines, bx + 5, by + 12);
+      });
+
+      ctaY += pilarBoxH * 2 + 14;
+
+      // BOTÃO DE WHATSAPP DA FÁBRICA (CLICÁVEL)
+      const btnW = 120;
+      const btnH = 22;
+      const btnX = (pageWidth - btnW) / 2;
+      const btnY = ctaY;
+
+      // Fundo Verde WhatsApp Oficial
+      pdf.setFillColor(37, 211, 102);
+      pdf.roundedRect(btnX, btnY, btnW, btnH, 3, 3, "F");
+
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("FALAR COM A FÁBRICA NO WHATSAPP", pageWidth / 2, btnY + 8.5, { align: "center" });
+
+      pdf.setFontSize(12);
+      pdf.text("📱 (19) 97407-0224", pageWidth / 2, btnY + 16, { align: "center" });
+
+      // Link Clicável no PDF
+      const waLink = "https://wa.me/5519974070224?text=Ol%C3%A1!%20Recebi%20o%20relat%C3%B3rio%20de%20auditoria%20e%20gostaria%20de%20conversar%20sobre%20a%20otimiza%C3%A7%C3%A3o%20do%20meu%20site.";
+      pdf.link(btnX, btnY, btnW, btnH, { url: waLink });
+
+      ctaY += btnH + 8;
+
+      // Rodapé da Última Página
+      pdf.setTextColor(120, 120, 135);
+      pdf.setFontSize(7.5);
+      pdf.setFont("helvetica", "normal");
+      pdf.text("Clique no botão acima ou entre em contato direto pelo WhatsApp: (19) 97407-0224", pageWidth / 2, ctaY, { align: "center" });
+      pdf.text("Fábrica Publicidade — Todos os direitos reservados • fabricapublicidade.com.br", pageWidth / 2, ctaY + 5, { align: "center" });
+
+      // Numeração de páginas (exceto capa final se desejar, ou todas)
       const totalPages = pdf.getNumberOfPages();
-      for (let p = 1; p <= totalPages; p++) {
+      for (let p = 1; p < totalPages; p++) {
         pdf.setPage(p);
         pdf.setTextColor(150, 150, 160);
         pdf.setFontSize(7);
@@ -981,7 +1162,7 @@ export function AnaliseUXView() {
 
       const domainSafe = new URL(analysisResult.url).hostname.replace(/[^a-zA-Z0-9]/g, "_");
       pdf.save(`Auditoria_Comercial_UX_Velocidade_${domainSafe}_Fabrica.pdf`);
-      showToast("Relatório em PDF exportado com sucesso!");
+      showToast("Relatório em PDF com logotipo e CTA exportado com sucesso!");
     } catch (err: any) {
       console.error("Erro ao gerar PDF:", err);
       showToast("Erro ao exportar PDF.");
@@ -1073,7 +1254,7 @@ export function AnaliseUXView() {
             <button
               onClick={handleDownloadPDF}
               disabled={isGeneratingPDF}
-              className="border border-[#C46A1A] text-[#C46A1A] hover:bg-[#C46A1A] hover:text-white font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer"
+              className="border border-[#C46A1A] text-[#C46A1A] hover:bg-[#C46A1A] hover:text-white font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95"
             >
               {isGeneratingPDF ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1127,7 +1308,7 @@ export function AnaliseUXView() {
               VELOCIDADE & PERFORMANCE
             </button>
 
-            {/* ABA SEGURANÇA (SEM NOME STRIX) */}
+            {/* ABA SEGURANÇA */}
             <button
               type="button"
               onClick={() => setActiveTab(5)}
@@ -1431,7 +1612,7 @@ export function AnaliseUXView() {
             </div>
           )}
 
-          {/* TAB 5: SEGURANÇA & PROTEÇÃO DO SITE (SEM A PALAVRA STRIX) */}
+          {/* TAB 5: SEGURANÇA & PROTEÇÃO DO SITE */}
           {activeTab === 5 && (
             <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="pb-6 border-b border-white/10 space-y-2">
@@ -1528,7 +1709,6 @@ export function AnaliseUXView() {
                 </div>
               </div>
 
-              {/* Render do Snapshot */}
               <div className="flex justify-center p-4 bg-black rounded-xl border border-white/10 overflow-hidden">
                 {viewportMode === "desktop" ? (
                   <div className="w-full max-w-5xl rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-black">
