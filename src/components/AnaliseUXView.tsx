@@ -151,9 +151,9 @@ export interface UXAnalysisResult {
 
 const FABRICA_LOGO_URL = "https://static.wixstatic.com/media/fa9c68_1951c3f678894f529d14d736d43e70fe~mv2.png/v1/fill/w_278,h_66,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/fa9c68_1951c3f678894f529d14d736d43e70fe~mv2.png";
 
-async function fetchLogoBase64(): Promise<string | null> {
+async function fetchImageAsBase64(url: string): Promise<string | null> {
   try {
-    const res = await fetch(FABRICA_LOGO_URL);
+    const res = await fetch(url);
     if (!res.ok) return null;
     const blob = await res.blob();
     return new Promise((resolve) => {
@@ -164,6 +164,54 @@ async function fetchLogoBase64(): Promise<string | null> {
     });
   } catch {
     return null;
+  }
+}
+
+function generateCircularGaugeDataUrl(score: number, label: string, color: string): string {
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = 160;
+    canvas.height = 180;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return "";
+
+    const cx = 80;
+    const cy = 72;
+    const r = 50;
+    const lineWidth = 10;
+
+    // Fundo do anel
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = "#E2E8F0";
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+
+    // Arco de progresso
+    const startAngle = -Math.PI / 2;
+    const endAngle = startAngle + (Math.PI * 2 * (Math.min(100, Math.max(0, score)) / 100));
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAngle, endAngle);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.stroke();
+
+    // Número central
+    ctx.fillStyle = color;
+    ctx.font = "bold 38px Helvetica, Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(score.toString(), cx, cy);
+
+    // Texto do rótulo
+    ctx.fillStyle = "#1E293B";
+    ctx.font = "bold 15px Helvetica, Arial, sans-serif";
+    ctx.fillText(label, cx, 150);
+
+    return canvas.toDataURL("image/png");
+  } catch {
+    return "";
   }
 }
 
@@ -327,7 +375,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `Aumenta o cansaço visual e faz com que o cliente saia da página antes de entender o diferencial da sua empresa.`,
           suggestion: `Aumente o tamanho e o peso visual dos títulos de destaque (H1 bem forte e direto) e dê respiros de espaçamento entre as seções para tornar a leitura natural e agradável.`,
           currentVsIdeal: {
-            current: "Textos de baixa hierarquia: 38% de retencao inicial",
+            current: "Textos de baixa hierarquia: 38% de retencao",
             ideal: "Tipografia de autoridade com H1 dominante: 88% de retencao"
           }
         },
@@ -341,7 +389,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `Reduz a taxa de cliques e a quantidade de pessoas que avançam para falar com a equipe de vendas.`,
           suggestion: `Utilize uma cor de destaque vibrante e exclusiva para os botões de ação (ex: verde para WhatsApp ou cor de alto contraste), reservando as demais cores apenas para o design de apoio.`,
           currentVsIdeal: {
-            current: "Botao camuflado no fundo: baixa taxa de cliques",
+            current: "Botao camuflado: baixa taxa de cliques",
             ideal: "Botao WhatsApp com cor exclusiva e 100% de destaque"
           }
         }
@@ -362,8 +410,8 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `O cliente fica em dúvida se o clique funcionou, clica várias vezes seguidas ou desiste achando que o site travou.`,
           suggestion: `Adicione animação suave de clique e mensagem imediata de envio (ex: "Enviando...", "Abrindo WhatsApp...") para transmitir agilidade e profissionalismo.`,
           currentVsIdeal: {
-            current: "Sem feedback de clique: sensacao de lentidao ou travamento",
-            ideal: "Resposta visual em menos de 100ms e abertura agil do WhatsApp"
+            current: "Sem feedback de clique: sensacao de travamento",
+            ideal: "Resposta visual em menos de 100ms e WhatsApp agil"
           }
         },
         {
@@ -376,8 +424,8 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `Passa sensação de amadorismo e confunde o visitante sobre qual ação é a mais importante.`,
           suggestion: `Padronize todos os botões do site: Botão Principal (destacado e com preenchimento sólido) e Botão Secundário (com contorno sutil).`,
           currentVsIdeal: {
-            current: "Botoes despadronizados: cliente em duvida onde clicar",
-            ideal: "Design System com padrao unico de Botoes Primarios e Secundarios"
+            current: "Botoes despadronizados: cliente em duvida",
+            ideal: "Design System com padrao de Botoes Primarios e Secundarios"
           }
         }
       ]
@@ -397,7 +445,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `Segundo estudos de conversão, quanto mais opções são apresentadas de uma vez, maior a paralisia do cliente e menor a taxa de fechamento.`,
           suggestion: `Mantenha apenas 1 chamada principal de destaque na primeira tela (ex: "Ver Estoque com Desconto" ou "Falar com Consultor no WhatsApp") e organize as opções secundárias de forma mais discreta.`,
           currentVsIdeal: {
-            current: "5+ chamadas competindo: paralisia e fuga de 60% dos visitantes",
+            current: "5+ chamadas competindo: fuga de 60% dos visitantes",
             ideal: "1 Chamada Dominante: aumento imediato de contatos no WhatsApp"
           }
         },
@@ -411,8 +459,8 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `O cliente gasta tempo procurando onde clicar em vez de se concentrar nos produtos e ofertas.`,
           suggestion: `Posicione o logo à esquerda, o menu simples no centro e o botão de contato ou WhatsApp bem visível no canto superior direito.`,
           currentVsIdeal: {
-            current: "Menus confusos: tempo perdido procurando o botao de contato",
-            ideal: "Layout padrao de mercado com WhatsApp flutuante sempre a 1 clique"
+            current: "Menus confusos: tempo perdido procurando contato",
+            ideal: "Layout padrao de mercado com WhatsApp sempre a 1 clique"
           }
         }
       ]
@@ -432,7 +480,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `Gera insegurança no visitante, fazendo com que ele role um pouco e saia sem entrar em contato.`,
           suggestion: `Siga o roteiro comercial de alta conversão: 1. Oferta Irresistível (Topo) -> 2. Prova Social e Avaliações de Clientes -> 3. Catálogo de Produtos -> 4. Perguntas Frequentes (quebra de objeções) -> 5. Chamada Final de WhatsApp.`,
           currentVsIdeal: {
-            current: "Ordem sem roteiro: cliente desconfia e sai sem entrar em contato",
+            current: "Sem roteiro de convencimento: cliente desconfia e sai",
             ideal: "Funil em 5 passos: Oferta -> Prova Social -> Estoque -> WhatsApp"
           }
         },
@@ -446,8 +494,8 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `Menor taxa de cliques em comparação com chamadas mais dinâmicas e convidativas.`,
           suggestion: `Substitua por chamadas que vendam o benefício: "Quero Receber as Melhores Ofertas", "Consultar Condições no WhatsApp" ou "Simular Meu Financiamento Agora".`,
           currentVsIdeal: {
-            current: 'Botoes frios como "Saiba Mais": baixa intencao de clique',
-            ideal: 'Botoes de valor: "Consultar Condicoes Especiais no WhatsApp"'
+            current: 'Botoes frios ("Saiba Mais"): baixa intencao',
+            ideal: 'Botoes de valor ("Consultar Ofertas Especiais no WhatsApp")'
           }
         }
       ]
@@ -467,7 +515,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `Perda diária de potenciais clientes que pesquisam veículos ou produtos no Google e vão parar no site do concorrente.`,
           suggestion: `Cadastre descrições objetivas em todas as fotos (ex: "Veículo Sedan Prata 2024 - Frente") para turbinar o ranqueamento gratuito no Google.`,
           currentVsIdeal: {
-            current: `${altPercentage}% de fotos invisiveis para as buscas do Google`,
+            current: `${altPercentage}% de fotos invisiveis no Google`,
             ideal: "100% de imagens indexadas e ranqueadas no topo das buscas"
           }
         },
@@ -481,8 +529,8 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           impact: `Dificulta a experiência de compra de uma parcela de usuários e reduz a nota técnica de acessibilidade no Google.`,
           suggestion: `Adicione borda de destaque suave no elemento selecionado, garantindo facilidade total de navegação para qualquer dispositivo.`,
           currentVsIdeal: {
-            current: "Sem foco visual nos campos: nota técnica reduzida no Google",
-            ideal: "Navegacao universal acessivel e pontuacao maxima no Lighthouse"
+            current: "Sem foco visual nos campos: nota tecnica reduzida",
+            ideal: "Navegacao universal acessivel e pontuacao maxima no Google"
           }
         }
       ]
@@ -792,10 +840,20 @@ export function AnaliseUXView() {
     if (!analysisResult) return;
 
     setIsGeneratingPDF(true);
-    showToast("Renderizando relatório executivo com gráficos comparativos e logotipo...");
+    showToast("Renderizando relatório executivo com gráficos circulares, prints do site e CTA...");
 
     try {
-      const logoBase64 = await fetchLogoBase64();
+      const logoBase64 = await fetchImageAsBase64(FABRICA_LOGO_URL);
+
+      const desktopSnapshotUrl = analysisResult.extractedMetadata.integrityAudit?.snapshots?.desktop ||
+        `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url`;
+      const mobileSnapshotUrl = analysisResult.extractedMetadata.integrityAudit?.snapshots?.mobile ||
+        `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`;
+
+      const [desktopImgBase64, mobileImgBase64] = await Promise.all([
+        fetchImageAsBase64(desktopSnapshotUrl),
+        fetchImageAsBase64(mobileSnapshotUrl)
+      ]);
 
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -805,7 +863,7 @@ export function AnaliseUXView() {
 
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 15;
+      const margin = 14;
       const contentWidth = pageWidth - margin * 2;
       let currentY = 18;
 
@@ -893,25 +951,53 @@ export function AnaliseUXView() {
       // Seção 1: Velocidade e Métricas Comerciais (Google PageSpeed)
       const ps = analysisResult.extractedMetadata.performance?.pageSpeed;
       if (ps) {
-        checkPageBreak(50);
+        checkPageBreak(65);
         pdf.setTextColor(196, 106, 26);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "bold");
         pdf.text("1. AUDITORIA DE VELOCIDADE & DESEMPENHO (GOOGLE PAGESPEED)", margin, currentY);
         currentY += 6;
 
-        pdf.setFillColor(250, 248, 245);
-        pdf.roundedRect(margin, currentY, contentWidth, 24, 1.5, 1.5, "F");
-        pdf.setDrawColor(230, 210, 190);
-        pdf.roundedRect(margin, currentY, contentWidth, 24, 1.5, 1.5, "S");
+        // RENDERIZAÇÃO DOS 4 GRÁFICOS CIRCULARES IDÊNTICOS AO SISTEMA
+        pdf.setFillColor(250, 250, 252);
+        pdf.roundedRect(margin, currentY, contentWidth, 38, 2, 2, "F");
+        pdf.setDrawColor(225, 225, 235);
+        pdf.roundedRect(margin, currentY, contentWidth, 38, 2, 2, "S");
 
-        pdf.setTextColor(30, 30, 40);
-        pdf.setFontSize(8);
-        pdf.setFont("helvetica", "bold");
-        pdf.text(`Desempenho Comercial: ${ps.categories.performance}/100 | Acessibilidade: ${ps.categories.accessibility}/100 | Boas Práticas: ${ps.categories.bestPractices}/100 | SEO (Google): ${ps.categories.seo}/100`, margin + 4, currentY + 6);
+        const gaugeConfigs = [
+          { score: ps.categories.performance, label: "Desempenho", color: ps.categories.performance >= 90 ? "#22C55E" : ps.categories.performance >= 50 ? "#F59E0B" : "#EF4444" },
+          { score: ps.categories.accessibility, label: "Acessibilidade", color: ps.categories.accessibility >= 90 ? "#22C55E" : ps.categories.accessibility >= 50 ? "#F59E0B" : "#EF4444" },
+          { score: ps.categories.bestPractices, label: "Boas Práticas", color: ps.categories.bestPractices >= 90 ? "#22C55E" : ps.categories.bestPractices >= 50 ? "#F59E0B" : "#EF4444" },
+          { score: ps.categories.seo, label: "SEO (Google)", color: ps.categories.seo >= 90 ? "#22C55E" : ps.categories.seo >= 50 ? "#F59E0B" : "#EF4444" }
+        ];
+
+        const gWidth = 32;
+        const gHeight = 34;
+        const totalGaugesW = gWidth * 4;
+        const gSpacing = (contentWidth - totalGaugesW) / 5;
+
+        gaugeConfigs.forEach((gc, gIdx) => {
+          const gx = margin + gSpacing + gIdx * (gWidth + gSpacing);
+          const gy = currentY + 2;
+          const gDataUrl = generateCircularGaugeDataUrl(gc.score, gc.label, gc.color);
+          if (gDataUrl) {
+            try {
+              pdf.addImage(gDataUrl, "PNG", gx, gy, gWidth, gHeight);
+            } catch {}
+          }
+        });
+
+        currentY += 42;
+
+        // Métricas Numéricas
+        pdf.setFillColor(250, 248, 245);
+        pdf.roundedRect(margin, currentY, contentWidth, 22, 1.5, 1.5, "F");
+        pdf.setDrawColor(230, 210, 190);
+        pdf.roundedRect(margin, currentY, contentWidth, 22, 1.5, 1.5, "S");
 
         pdf.setFont("helvetica", "normal");
         pdf.setTextColor(80, 80, 90);
+        pdf.setFontSize(7.5);
         
         const cleanFcp = cleanDisplayMetric(ps.fcp?.value, "1.8s");
         const cleanLcp = cleanDisplayMetric(ps.lcp?.value, "3.1s");
@@ -919,15 +1005,15 @@ export function AnaliseUXView() {
         const cleanTbt = cleanDisplayMetric(ps.tbt?.value, "280ms");
         const cleanTtfb = cleanDisplayMetric(ps.ttfb?.value, "0.3s");
 
-        pdf.text(`Abertura Inicial: ${cleanFcp} | Conteúdo Principal: ${cleanLcp} | Estabilidade da Tela: ${cleanCls} | Resposta ao Toque: ${cleanTbt} | Servidor: ${cleanTtfb}`, margin + 4, currentY + 12);
+        pdf.text(`Abertura Inicial: ${cleanFcp} | Conteúdo Principal: ${cleanLcp} | Estabilidade da Tela: ${cleanCls} | Resposta ao Toque: ${cleanTbt} | Servidor: ${cleanTtfb}`, margin + 4, currentY + 6);
         
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(16, 120, 60);
         const diagText = `Diagnóstico Comercial: Otimizar o peso das fotos e carregar scripts de atendimento em segundo plano. Isso acelera o site no 4G/5G, reduz a perda de clientes no celular e aumenta o envio de mensagens no WhatsApp.`;
         const diagLines = pdf.splitTextToSize(diagText, contentWidth - 8);
-        pdf.text(diagLines, margin + 4, currentY + 17);
+        pdf.text(diagLines, margin + 4, currentY + 11.5);
 
-        currentY += 28;
+        currentY += 26;
 
         // GRÁFICO COMPARATIVO VISUAL (PAGESPEED & RETENÇÃO MOBILE)
         checkPageBreak(38);
@@ -998,12 +1084,85 @@ export function AnaliseUXView() {
         currentY += 36;
       }
 
+      // ========================================================
+      // SEÇÃO: PRINTS REAIS DO SITE (DESKTOP & CELULAR)
+      // ========================================================
+      if (desktopImgBase64 || mobileImgBase64) {
+        checkPageBreak(95);
+        pdf.setTextColor(196, 106, 26);
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("2. INSPEÇÃO VISUAL & RESPONSIVIDADE (PRINTS REAIS DO SITE)", margin, currentY);
+        currentY += 6;
+
+        pdf.setFillColor(245, 245, 250);
+        pdf.roundedRect(margin, currentY, contentWidth, 86, 2, 2, "F");
+        pdf.setDrawColor(215, 215, 230);
+        pdf.roundedRect(margin, currentY, contentWidth, 86, 2, 2, "S");
+
+        const dtW = 110;
+        const dtH = 68;
+        const dtX = margin + 4;
+        const dtY = currentY + 12;
+
+        // Frame Desktop
+        pdf.setFillColor(18, 18, 26);
+        pdf.roundedRect(dtX, dtY - 5, dtW, 5, 1, 1, "F");
+        // 3 bolinhas de browser
+        pdf.setFillColor(239, 68, 68);
+        pdf.circle(dtX + 3, dtY - 2.5, 0.8, "F");
+        pdf.setFillColor(245, 158, 11);
+        pdf.circle(dtX + 6, dtY - 2.5, 0.8, "F");
+        pdf.setFillColor(34, 197, 94);
+        pdf.circle(dtX + 9, dtY - 2.5, 0.8, "F");
+
+        pdf.setTextColor(200, 200, 215);
+        pdf.setFontSize(5.5);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(analysisResult.url, dtX + dtW / 2, dtY - 1.8, { align: "center" });
+
+        if (desktopImgBase64) {
+          try {
+            pdf.addImage(desktopImgBase64, "JPEG", dtX, dtY, dtW, dtH);
+          } catch {}
+        }
+
+        // Título Desktop
+        pdf.setTextColor(20, 20, 30);
+        pdf.setFontSize(7.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Computador (Desktop 1280px)", dtX, currentY + 5);
+
+        // Frame Mobile
+        const mbW = 48;
+        const mbH = 68;
+        const mbX = margin + dtW + 10;
+        const mbY = currentY + 12;
+
+        pdf.setTextColor(20, 20, 30);
+        pdf.setFontSize(7.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Celular (Mobile 390px)", mbX, currentY + 5);
+
+        // Borda do smartphone
+        pdf.setFillColor(18, 18, 26);
+        pdf.roundedRect(mbX - 1.5, mbY - 3, mbW + 3, mbH + 6, 2, 2, "F");
+
+        if (mobileImgBase64) {
+          try {
+            pdf.addImage(mobileImgBase64, "JPEG", mbX, mbY, mbW, mbH);
+          } catch {}
+        }
+
+        currentY += 92;
+      }
+
       // Resumo Executivo Comercial
       checkPageBreak(40);
       pdf.setTextColor(196, 106, 26);
       pdf.setFontSize(11);
       pdf.setFont("helvetica", "bold");
-      pdf.text("2. RESUMO EXECUTIVO COMERCIAL & OPORTUNIDADES DE VENDAS", margin, currentY);
+      pdf.text("3. RESUMO EXECUTIVO COMERCIAL & OPORTUNIDADES DE VENDAS", margin, currentY);
       currentY += 6;
 
       pdf.setTextColor(40, 40, 50);
@@ -1030,7 +1189,7 @@ export function AnaliseUXView() {
 
         for (const bq of analysisResult.blockquotes) {
           const fullQuoteText = `"${bq.text}" ${bq.contextNote ? `— ${bq.contextNote}` : ""}`;
-          const quoteLines = pdf.splitTextToSize(fullQuoteText, contentWidth - 8);
+          const quoteLines = pdf.splitTextToSize(fullQuoteText, contentWidth - 10);
           const bqHeight = Math.max(12, 7 + quoteLines.length * 3.8);
 
           checkPageBreak(bqHeight + 2);
@@ -1053,7 +1212,7 @@ export function AnaliseUXView() {
         currentY += 4;
       }
 
-      // As 5 Categorias Comerciais (Com Gráficos Comparativos Inline)
+      // As 5 Categorias Comerciais (Com Gráficos Comparativos Inline Sem Cortes)
       for (let i = 0; i < analysisResult.categories.length; i++) {
         const cat = analysisResult.categories[i];
         checkPageBreak(35);
@@ -1061,7 +1220,7 @@ export function AnaliseUXView() {
         pdf.setTextColor(10, 10, 20);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "bold");
-        pdf.text(`${i + 3}. ${cat.title.toUpperCase()}`, margin, currentY);
+        pdf.text(`${i + 4}. ${cat.title.toUpperCase()}`, margin, currentY);
         currentY += 5;
 
         pdf.setFontSize(8);
@@ -1073,13 +1232,14 @@ export function AnaliseUXView() {
 
         for (const issue of cat.issues) {
           const isCritical = issue.severity === "Crítico";
-          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, contentWidth - 8);
-          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, contentWidth - 8);
+          const maxInnerW = contentWidth - 10;
+          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, maxInnerW);
+          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, maxInnerW);
           
           const probHeight = probLines.length * 3.8;
           const sugHeight = sugLines.length * 3.8;
           const evidenceHeight = issue.evidence ? 4.5 : 0;
-          const compBoxHeight = issue.currentVsIdeal ? 14 : 0;
+          const compBoxHeight = issue.currentVsIdeal ? 16 : 0;
           const cardHeight = 12 + evidenceHeight + probHeight + sugHeight + compBoxHeight + 4;
 
           checkPageBreak(cardHeight + 4);
@@ -1129,43 +1289,45 @@ export function AnaliseUXView() {
           pdf.text(sugLines, margin + 3, innerY);
           innerY += sugHeight + 2.5;
 
-          // BOX COMPARATIVO VISUAL (CENÁRIO ATUAL vs IDEAL FÁBRICA)
+          // BOX COMPARATIVO VISUAL COM QUEBRA AUTOMÁTICA DE LINHAS
           if (issue.currentVsIdeal) {
             const barW = (contentWidth - 10) / 2;
+            const curLines = pdf.splitTextToSize(issue.currentVsIdeal.current, barW - 6);
+            const idlLines = pdf.splitTextToSize(issue.currentVsIdeal.ideal, barW - 6);
 
             // Box Atual (Vermelho)
             pdf.setFillColor(254, 242, 242);
-            pdf.roundedRect(margin + 3, innerY, barW, 11, 1, 1, "F");
+            pdf.roundedRect(margin + 3, innerY, barW, 14, 1, 1, "F");
             pdf.setDrawColor(252, 165, 165);
-            pdf.roundedRect(margin + 3, innerY, barW, 11, 1, 1, "S");
+            pdf.roundedRect(margin + 3, innerY, barW, 14, 1, 1, "S");
 
             pdf.setFillColor(239, 68, 68);
-            pdf.rect(margin + 3, innerY, 2, 11, "F");
+            pdf.rect(margin + 3, innerY, 2, 14, "F");
 
             pdf.setFontSize(6);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(185, 28, 28);
-            pdf.text("X CENARIO ATUAL (GARGALO):", margin + 6.5, innerY + 4);
+            pdf.text("X CENÁRIO ATUAL (GARGALO):", margin + 6.5, innerY + 3.5);
             pdf.setFont("helvetica", "normal");
             pdf.setTextColor(127, 29, 29);
-            pdf.text(issue.currentVsIdeal.current, margin + 6.5, innerY + 8.5);
+            pdf.text(curLines, margin + 6.5, innerY + 7);
 
             // Box Ideal Fábrica (Verde)
             pdf.setFillColor(240, 253, 244);
-            pdf.roundedRect(margin + 4 + barW, innerY, barW, 11, 1, 1, "F");
+            pdf.roundedRect(margin + 4 + barW, innerY, barW, 14, 1, 1, "F");
             pdf.setDrawColor(134, 239, 172);
-            pdf.roundedRect(margin + 4 + barW, innerY, barW, 11, 1, 1, "S");
+            pdf.roundedRect(margin + 4 + barW, innerY, barW, 14, 1, 1, "S");
 
             pdf.setFillColor(34, 197, 94);
-            pdf.rect(margin + 4 + barW, innerY, 2, 11, "F");
+            pdf.rect(margin + 4 + barW, innerY, 2, 14, "F");
 
             pdf.setFontSize(6);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(21, 128, 61);
-            pdf.text("+ CENARIO IDEAL FABRICA (ALTA PERFORMANCE):", margin + 7.5 + barW, innerY + 4);
+            pdf.text("+ CENÁRIO IDEAL FÁBRICA (ALTA PERFORMANCE):", margin + 7.5 + barW, innerY + 3.5);
             pdf.setFont("helvetica", "normal");
             pdf.setTextColor(20, 83, 45);
-            pdf.text(issue.currentVsIdeal.ideal, margin + 7.5 + barW, innerY + 8.5);
+            pdf.text(idlLines, margin + 7.5 + barW, innerY + 7);
           }
 
           currentY += cardHeight + 4;
@@ -1315,7 +1477,7 @@ export function AnaliseUXView() {
 
       const domainSafe = new URL(analysisResult.url).hostname.replace(/[^a-zA-Z0-9]/g, "_");
       pdf.save(`Auditoria_Comercial_UX_Velocidade_${domainSafe}_Fabrica.pdf`);
-      showToast("Relatório em PDF com gráficos comparativos e CTA exportado com sucesso!");
+      showToast("Relatório em PDF com gráficos e prints exportado com sucesso!");
     } catch (err: any) {
       console.error("Erro ao gerar PDF:", err);
       showToast("Erro ao exportar PDF.");
