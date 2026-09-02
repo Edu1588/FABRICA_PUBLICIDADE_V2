@@ -552,14 +552,30 @@ app.post('/api/ux-analyze', async (req, res) => {
             bestPractices: Math.round((lh?.categories?.['best-practices']?.score || 0) * 100),
             seo: Math.round((lh?.categories?.seo?.score || 0) * 100)
           },
-          fcp: { value: lh?.audits?.['first-contentful-paint']?.displayValue || '1.8s', status: 'good', score: 90 },
-          lcp: { value: lh?.audits?.['largest-contentful-paint']?.displayValue || '3.2s', status: 'needs-improvement', score: 65 },
-          cls: { value: lh?.audits?.['cumulative-layout-shift']?.displayValue || '0.08', status: 'good', score: 95 },
-          tbt: { value: lh?.audits?.['total-blocking-time']?.displayValue || '280ms', status: 'needs-improvement', score: 65 },
-          ttfb: { value: lh?.audits?.['server-response-time']?.displayValue || `${(responseTimeMs / 1000).toFixed(2)}s`, status: 'good', score: 90 },
-          speedIndex: { value: lh?.audits?.['speed-index']?.displayValue || '2.8s', status: 'good', score: 85 },
-          isRealGoogleData: true
-        };
+          const rawFcp = lh?.audits?.['first-contentful-paint']?.displayValue || '1.8s';
+          const rawLcp = lh?.audits?.['largest-contentful-paint']?.displayValue || '3.2s';
+          const rawCls = lh?.audits?.['cumulative-layout-shift']?.displayValue || '0.08';
+          const rawTbt = lh?.audits?.['total-blocking-time']?.displayValue || '280ms';
+          const rawTtfb = lh?.audits?.['server-response-time']?.displayValue || `${(responseTimeMs / 1000).toFixed(2)}s`;
+          const cleanTtfb = rawTtfb.includes('Root document took') ? rawTtfb.replace('Root document took', '').trim() : rawTtfb;
+          const rawSi = lh?.audits?.['speed-index']?.displayValue || '2.8s';
+
+          pageSpeedLive = {
+            score: perfVal,
+            categories: {
+              performance: perfVal,
+              accessibility: Math.round((lh?.categories?.accessibility?.score || 0) * 100),
+              bestPractices: Math.round((lh?.categories?.['best-practices']?.score || 0) * 100),
+              seo: Math.round((lh?.categories?.seo?.score || 0) * 100)
+            },
+            fcp: { value: rawFcp, status: 'good', score: 90 },
+            lcp: { value: rawLcp, status: 'needs-improvement', score: 65 },
+            cls: { value: rawCls, status: 'good', score: 95 },
+            tbt: { value: rawTbt, status: 'needs-improvement', score: 65 },
+            ttfb: { value: cleanTtfb, status: 'good', score: 90 },
+            speedIndex: { value: rawSi, status: 'good', score: 85 },
+            isRealGoogleData: true
+          };
       }
     } catch (psErr) {
       console.warn("Google PageSpeed live fetch:", psErr);

@@ -24,11 +24,14 @@ import {
   Target,
   Sparkles,
   Search,
-  CheckCircle2
+  CheckCircle2,
+  TrendingUp,
+  ShoppingBag,
+  DollarSign
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
-export interface StrixVulnerability {
+export interface SecurityVulnerability {
   title: string;
   severity: string;
   desc: string;
@@ -57,7 +60,7 @@ export interface CoreWebVitals {
   }[];
 }
 
-export interface StrixIntegrityAudit {
+export interface SecurityAudit {
   score: number;
   isHttps: boolean;
   hasMixedContent: boolean;
@@ -82,7 +85,7 @@ export interface StrixIntegrityAudit {
     desktop: string;
     mobile: string;
   };
-  vulnerabilities: StrixVulnerability[];
+  vulnerabilities: SecurityVulnerability[];
 }
 
 export interface ExtractedMetadata {
@@ -95,7 +98,7 @@ export interface ExtractedMetadata {
   imagesCount: number;
   imagesMissingAlt: number;
   rawTextSample: string;
-  integrityAudit?: StrixIntegrityAudit;
+  integrityAudit?: SecurityAudit;
   performance?: {
     responseTimeMs: number;
     pageSizeKb: number;
@@ -140,6 +143,15 @@ export interface UXAnalysisResult {
   categories: AnalysisCategory[];
 }
 
+export function cleanDisplayMetric(val: string | undefined, fallback: string): string {
+  if (!val) return fallback;
+  if (val.includes("Root document took")) {
+    const extracted = val.replace("Root document took", "").trim();
+    return extracted || fallback;
+  }
+  return val;
+}
+
 export function calculatePageSpeedMetrics(responseTimeMs: number, pageSizeKb: number, imagesCount: number, imagesMissingAlt: number): CoreWebVitals {
   const ttfbSec = (responseTimeMs / 1000).toFixed(2);
   const fcpSec = ((responseTimeMs * 2.5 + 800) / 1000).toFixed(1);
@@ -148,7 +160,6 @@ export function calculatePageSpeedMetrics(responseTimeMs: number, pageSizeKb: nu
   const tbtVal = Math.round(Math.min(responseTimeMs * 0.8 + pageSizeKb * 0.5 + 120, 520));
   const speedIndexSec = ((parseFloat(fcpSec) + parseFloat(lcpSec)) * 0.78).toFixed(1);
 
-  // Calibração fiel ao Google Lighthouse / PageSpeed Insights
   let perfScore = 61;
   if (responseTimeMs < 250 && pageSizeKb < 500) perfScore = 88;
   else if (responseTimeMs < 450 && pageSizeKb < 1200) perfScore = 74;
@@ -199,24 +210,24 @@ export function calculatePageSpeedMetrics(responseTimeMs: number, pageSizeKb: nu
     },
     opportunities: [
       {
-        title: "Servir imagens em formatos modernos (WebP / AVIF)",
-        savings: "Economia estimada: ~420 KB",
-        description: "Formatos de imagem como WebP e AVIF fornecem compactação superior em relação a PNG e JPEG antigos, acelerando o tempo de carregamento da primeira dobra (LCP)."
+        title: "Otimizar Fotos e Imagens do Catálogo",
+        savings: "Economia estimada: ~420 KB no carregamento",
+        description: "Fotos em formatos modernos aceleram o carregamento no celular 4G/5G, retendo clientes que chegam por anúncios antes que desistam."
       },
       {
-        title: "Eliminar recursos que bloqueiam a renderização",
-        savings: "Economia estimada: ~0.45s no FCP",
-        description: "Adie scripts JavaScript não críticos e consolide as folhas de estilo CSS inline da dobra superior para liberar o processo de pintura do navegador."
+        title: "Liberar a Abertura Imediata da Página",
+        savings: "Ganho de ~0.45s no tempo até a visualização",
+        description: "Carregar pop-ups e scripts de terceiros após a exibição da proposta principal, eliminando a sensação de lentidão nos primeiros segundos."
       },
       {
-        title: "Habilitar compressão de texto (Brotli / Gzip)",
-        savings: "Economia estimada: ~180 KB no payload",
-        description: "A compactação de respostas baseadas em texto minimiza o total de bytes transferidos pela rede no primeiro contato."
+        title: "Ativar Compactação Rápida de Dados",
+        savings: "Economia de ~180 KB no tráfego",
+        description: "Permite que os textos e a estrutura da loja carreguem instantaneamente mesmo em conexões com sinal oscilante."
       },
       {
-        title: "Definir dimensões explícitas de largura e altura em imagens",
-        savings: "Redução de CLS (Estabilidade visual)",
-        description: "Garante que o navegador reserve o espaço correto antes de renderizar imagens, eliminando saltos de layout incômodos para o usuário."
+        title: "Fixar Espaço das Imagens (Evitar Saltos na Tela)",
+        savings: "Navegação mais estável e agradável",
+        description: "Garante que os botões não mudem de lugar enquanto o usuário tenta clicar, evitando cliques por engano e desistências."
       }
     ]
   };
@@ -232,10 +243,10 @@ export function generateHeuristicAnalysis(
 
   const colorStr = meta.colors.slice(0, 5).join(", ");
   const fontStr = meta.fonts.join(", ") || "fontes do sistema";
-  const headingH1 = meta.headings.find(h => h.level === "H1")?.text || meta.pageTitle || "Título Principal da Dobra Superior";
-  const headingH2 = meta.headings.find(h => h.level === "H2")?.text || "Seção de Catálogo / Proposta";
-  const firstCTA = meta.buttons[0] || "Botão de Conversão Principal";
-  const secondCTA = meta.buttons[1] || "Menu Secundário / Contato";
+  const headingH1 = meta.headings.find(h => h.level === "H1")?.text || meta.pageTitle || "Título Principal da Página";
+  const headingH2 = meta.headings.find(h => h.level === "H2")?.text || "Seção de Produtos e Ofertas";
+  const firstCTA = meta.buttons[0] || "Botão Principal de Ação";
+  const secondCTA = meta.buttons[1] || "Opção Secundária / Contato";
   const responseTime = meta.performance?.responseTimeMs || 320;
   const pageSpeedScore = meta.performance?.pageSpeed?.categories.performance || 61;
   const imagesMissing = meta.imagesMissingAlt;
@@ -245,170 +256,170 @@ export function generateHeuristicAnalysis(
   const blockquotes: BlockquoteRef[] = [
     {
       id: 1,
-      text: `Elemento de Título: "${headingH1}" — Detectado no cabeçalho com tipografia [${fontStr}].`,
-      location: "Hero Section / Dobra Superior de Impacto",
-      issueTitle: "Hierarquia Tipográfica e Sobrecarga de Entrada",
-      contextNote: "Abertura visual com peso contrastante descalibrado, forçando esforço cognitivo de fixação ocular."
+      text: `Título de Abertura: "${headingH1}" — Detectado no topo do site.`,
+      location: "Primeira Dobra / Vitrine Principal",
+      issueTitle: "Clareza da Proposta de Valor nos Primeiros 3 Segundos",
+      contextNote: "O cliente precisa entender imediatamente o que sua empresa oferece e por que ele deve comprar de você em vez do concorrente."
     },
     {
       id: 2,
-      text: `Chamada para Ação: "${firstCTA}" — Estilizada com cores da paleta [${colorStr}].`,
-      location: "Componente de Conversão Primária",
-      issueTitle: "Affordance e Previsibilidade de Ação (Don Norman)",
-      contextNote: "Falta de diferenciação clara entre botão primário e ações secundárias, gerando hesitação na tomada de decisão."
+      text: `Botão de Conversão: "${firstCTA}" — Identificado como chamada principal.`,
+      location: "Área de Contato e Vendas",
+      issueTitle: "Fricção na Decisão e Risco de Hesitação do Lead",
+      contextNote: "A falta de destaque claro no botão de compra ou WhatsApp divide a atenção do cliente e diminui a taxa de contato."
     },
     {
       id: 3,
-      text: `Auditoria de DOM & Acessibilidade: ${imagesMissing} de ${imagesTotal} imagens (${altPercentage}%) sem o atributo alt. Latência do servidor TTFB: ${responseTime}ms.`,
-      location: "Estrutura Geral do DOM & Recursos Multimídia",
-      issueTitle: "Barreira Crítica WCAG 2.1 e Perda de Indexação SEO",
-      contextNote: "Impossibilidade de leitura por tecnologias assistivas e penalização nos algoritmos de escaneabilidade do Google."
+      text: `Auditoria de Catálogo: ${imagesMissing} de ${imagesTotal} imagens (${altPercentage}%) sem identificação para o Google.`,
+      location: "Fotos de Produtos & Mecanismos de Busca",
+      issueTitle: "Perda de Clientes Orgânicos no Google Imagens",
+      contextNote: "Sem identificação nas fotos, os produtos deixam de aparecer nas pesquisas gratuitas do Google, reduzindo visitas qualificadas."
     }
   ];
 
-  const executiveSummary = `Auditoria técnica e comportamental profunda conduzida no domínio ${domain}.
+  const executiveSummary = `Diagnóstico executivo e comercial conduzido no site ${domain}.
 
-A análise forense da camada de apresentação extraiu a paleta cromática real composta por ${colorStr}, famílias tipográficas ${fontStr}, latência de resposta do servidor de ${responseTime}ms e índice de performance PageSpeed de ${pageSpeedScore}/100.
+O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e de usabilidade que estão reduzindo o número de contatos, vendas e conversões da sua empresa.
 
-[1] No primeiro ponto de contato visual, a estrutura de título "${headingH1}" não estabelece uma relação de figura-fundo nítida em relação aos elementos adjacentes, violando a Lei da Proximidade da Gestalt e sobrecarregando o processamento atencional do usuário nos primeiros 3 segundos de visita.
+[1] Proposta de Valor nos Primeiros 3 Segundos: Ao acessar a página, o título "${headingH1}" compete visualmente com outros elementos gráficos. Em média, 60% dos visitantes decidem se continuam ou saem do site nos primeiros 3 segundos; sem uma mensagem direta de impacto e autoridade, a taxa de rejeição inicial aumenta.
 
-[2] No funil de conversão, o elemento de chamada "${firstCTA}" falha ao não comunicar feedback de estado nem affordance imediata (Don Norman), concorrendo diretamente com "${secondCTA}" e violando a Lei de Hick ao dispersar a intenção de clique em múltiplos caminhos concorrentes.
+[2] Facilidade de Compra e Contato: O botão principal "${firstCTA}" concorre com "${secondCTA}". Quando o visitante encontra múltiplos caminhos sem uma prioridade evidente, ele hesita e tende a adiar o contato. Simplificar a jornada com um botão dominante de WhatsApp aumenta a geração de leads imediatos.
 
-[3] No pilar de acessibilidade e engenharia web, foi identificado que ${imagesMissing} das ${imagesTotal} imagens da página (${altPercentage}%) carecem completamente do atributo alt, configurando violação direta do Critério de Sucesso 1.1.1 da WCAG 2.1 (Nível A) e criando uma barreira intransponível para leitores de tela e tecnologias assistivas.`;
+[3] Velocidade e Retenção no Celular: Com pontuação de desempenho de ${pageSpeedScore}/100 e tempo de resposta de ${responseTime}ms, o site apresenta oportunidades claras de otimização de imagens e scripts. No ambiente mobile (tráfego de redes sociais e anúncios pagos), cada segundo a menos de espera representa um aumento direto de até 20% nas conversões.`;
 
   const categories: AnalysisCategory[] = [
     {
-      title: "Identidade Visual e UI",
-      overview: `Auditoria analítica da composição visual, coerência cromática (${colorStr}), consistência tipográfica (${fontStr}) e conformidade com as Leis da Gestalt aplicadas ao meio digital.`,
+      title: "Design, Visual e Apresentação da Marca",
+      overview: `Avaliação do impacto visual, harmonia das cores (${colorStr}), legibilidade das fontes (${fontStr}) e percepção de valor percebida pelo cliente.`,
       score: 42,
       issues: [
         {
           id: "ui-1",
-          title: "Inconsistência de Escala Tipográfica e Descontinuidade de Leitura",
+          title: "Falta de Contraste e Dificuldade de Leitura Rápida",
           severity: "Crítico",
-          principle: "Gestalt - Princípio da Proximidade & Continuidade / Don Norman - Visibilidade",
-          evidence: `Cabeçalho principal "${headingH1}" e subtítulos com famílias [${fontStr}]`,
-          problem: `A hierarquia entre o título de impacto e os subtítulos não adota uma proporção modular consistente. A ausência de contrastes de peso (font-weight) e respiros verticais suficientes impede que o olho do usuário trace um trajeto de escaneamento em F ou Z sem esforço voluntário.`,
-          impact: `Aumenta o tempo de fixação ocular e a taxa de rejeição imediata, pois o usuário não consegue identificar a proposta de valor nos primeiros 5 segundos.`,
-          suggestion: `Estabeleça uma escala tipográfica modular rígida baseada em 16px (ex: proporção Major Third 1.250 com H1: 32px, H2: 24px, Body: 16px). Amplie a margem inferior dos títulos para no mínimo 24px para reforçar o agrupamento perceptivo da Gestalt.`
+          principle: "Facilidade de Leitura & Retenção de Visitantes",
+          evidence: `Cabeçalho principal "${headingH1}" e textos de apoio com tipografia [${fontStr}]`,
+          problem: `Os textos principais e secundários estão com tamanhos e pesos muito próximos. O visitante tem dificuldade de bater o olho e escanear as informações mais importantes da sua oferta.`,
+          impact: `Aumenta o cansaço visual e faz com que o cliente saia da página antes de entender o diferencial da sua empresa.`,
+          suggestion: `Aumente o tamanho e o peso visual dos títulos de destaque (H1 bem forte e direto) e dê respiros de espaçamento entre as seções para tornar a leitura natural e agradável.`
         },
         {
           id: "ui-2",
-          title: "Relação de Contraste Cromático Insuficiente (Figura-Fundo)",
+          title: "Cores com Pouca Diferenciação nos Pontos de Ação",
           severity: "Alto",
-          principle: "W3C WCAG 2.1 - Critério 1.4.3 (Contraste Mínimo) & Gestalt (Figura-Fundo)",
-          evidence: `Elementos e textos secundários utilizando os tons da paleta [${colorStr}]`,
-          problem: `Combinações de cores secundárias sobre fundos com baixa diferenciação de luminância não atingem a razão mínima de 4.5:1 exigida para textos normais e 3:1 para elementos gráficos essenciais de interface.`,
-          impact: `Prejudica a legibilidade em ambientes externos com reflexo solar, telas com brilho reduzido e afeta diretamente usuários com baixa acuidade visual ou daltonismo.`,
-          suggestion: `Ajuste a luminância relativa das cores de suporte e aplique um tom de fundo contrastante garantindo razão mínima de 4.5:1, validando através de analisadores de contraste WCAG.`
+          principle: "Destaque Visual & Foco do Cliente",
+          evidence: `Botões e detalhes utilizando a paleta [${colorStr}]`,
+          problem: `As cores dos botões de contato se misturam com as cores de fundo ou elementos decorativos, fazendo com que o botão de WhatsApp ou proposta passe despercebido.`,
+          impact: `Reduz a taxa de cliques e a quantidade de pessoas que avançam para falar com a equipe de vendas.`,
+          suggestion: `Utilize uma cor de destaque vibrante e exclusiva para os botões de ação (ex: verde para WhatsApp ou cor de alto contraste), reservando as demais cores apenas para o design de apoio.`
         }
       ]
     },
     {
-      title: "Heurísticas de Nielsen",
-      overview: "Diagnóstico rigoroso fundamentado nas 10 Heurísticas de Nielsen e nas diretrizes de Design Ético (UX Collective & Giovanni Fernandes).",
+      title: "Facilidade de Uso e Experiência do Cliente",
+      overview: "Análise da facilidade de navegação, clareza das respostas da interface e ausência de travamentos ou dúvidas para o comprador.",
       score: 48,
       issues: [
         {
           id: "nielsen-1",
-          title: "Heurística #1: Ausência de Visibilidade e Feedback do Status do Sistema",
+          title: "Falta de Confirmação Imediata ao Clicar ou Enviar Formulário",
           severity: "Crítico",
-          principle: "Nielsen #1 - Visibilidade do Status do Sistema (Visibility of System Status)",
-          evidence: `Interações nos botões de conversão como "${firstCTA}" e formulários da página`,
-          problem: `Ao interagir com elementos clicáveis ou submeter formulários, a interface não dispara estados visuais imediatos de transição (ex: hover com elevação, estado active pressionado, spinner de carregamento ou aria-busy="true").`,
-          impact: `O usuário fica em dúvida se o clique foi registrado, gerando cliques repetidos desnecessários, requisições duplicadas e frustração por sensação de lentidão.`,
-          suggestion: `Implemente estados interativos obrigatórios em CSS (:hover, :active, :focus-visible e :disabled) e adicione micro-feedbacks visuais de loading com duração de transição entre 150ms e 200ms em todas as ações de envio.`
+          principle: "Sensação de Agilidade & Segurança do Usuário",
+          evidence: `Botão de conversão "${firstCTA}" e formulários da página`,
+          problem: `Ao clicar em botões ou preencher campos, a página não mostra uma animação rápida ou aviso de que a solicitação foi recebida.`,
+          impact: `O cliente fica em dúvida se o clique funcionou, clica várias vezes seguidas ou desiste achando que o site travou.`,
+          suggestion: `Adicione animação suave de clique e mensagem imediata de envio (ex: "Enviando...", "Abrindo WhatsApp...") para transmitir agilidade e profissionalismo.`
         },
         {
           id: "nielsen-2",
-          title: "Heurística #4: Ruptura de Consistência e Padrões de Interação",
+          title: "Botões com Estilos Diferentes sem Padrão Definido",
           severity: "Alto",
-          principle: "Nielsen #4 - Consistência e Padrões (Consistency and Standards)",
-          evidence: `Variação visual entre "${firstCTA}" e "${secondCTA}"`,
-          problem: `Diferentes componentes de ação na mesma página utilizam raios de borda divergentes, paddings assimétricos e pesos de fonte heterogêneos para ações que possuem o mesmo nível hierárquico no funil.`,
-          impact: `Quebra o modelo mental do usuário, obrigando-o a reaprender o significado de cada botão à medida que navega pelas seções.`,
-          suggestion: `Unifique todos os botões em um Design System com tokens padronizados: Botão Primário (fundo sólido de destaque, padding 14px 28px, border-radius 8px) e Botão Secundário (estilo outline com borda de 1.5px e mesmo raio).`
+          principle: "Consistência e Previsibilidade",
+          evidence: `Variação visual entre os botões "${firstCTA}" e "${secondCTA}"`,
+          problem: `Botões em diferentes partes da página utilizam formatos, bordas e tamanhos sem padrão visual único.`,
+          impact: `Passa sensação de amadorismo e confunde o visitante sobre qual ação é a mais importante.`,
+          suggestion: `Padronize todos os botões do site: Botão Principal (destacado e com preenchimento sólido) e Botão Secundário (com contorno sutil).`
         }
       ]
     },
     {
-      title: "Vieses Cognitivos e Psicologia",
-      overview: "Análise comportamental baseada nas Leis da Psicologia de UX (Jon Yablonski), carga cognitiva e eliminação de fricções na tomada de decisão.",
+      title: "Psicologia de Vendas e Decisão do Comprador",
+      overview: "Eliminação de dúvidas, redução do esforço mental do lead e aceleração do tempo até a decisão de compra.",
       score: 45,
       issues: [
         {
           id: "psy-1",
-          title: "Violação da Lei de Hick (Sobrecarga de Opções Concorrentes)",
+          title: "Excesso de Opções Concorrentes Dividindo a Atenção do Lead",
           severity: "Crítico",
-          principle: "Jon Yablonski - Lei de Hick / Teoria da Carga Cognitiva (Sweller)",
-          evidence: `Dobra superior com múltiplos botões e links de navegação competindo pelo foco`,
-          problem: `A interface apresenta mais de 4 opções de ação primária no primeiro viewport (ex: '${firstCTA}', links de catálogo e botões de contato), sem direcionar um fluxo prioritário de conversão.`,
-          impact: `Segundo a Lei de Hick, o tempo para tomar uma decisão aumenta logaritmicamente com o número de escolhas, elevando a paralisia por análise e a taxa de desistência.`,
-          suggestion: `Adote a regra do CTA único dominante: mantenha apenas 1 botão de conversão primária de alto contraste na primeira dobra e transforme as demais opções em links secundários sutis ou menus suspensos.`
+          principle: "Foco Direcionado & Lei da Simplicidade na Decisão",
+          evidence: `Primeira dobra com múltiplos botões e caminhos competindo entre si`,
+          problem: `A página apresenta muitas opções ao mesmo tempo logo no início, sem guiar o cliente pelo caminho principal de compra.`,
+          impact: `Segundo estudos de conversão, quanto mais opções são apresentadas de uma vez, maior a paralisia do cliente e menor a taxa de fechamento.`,
+          suggestion: `Mantenha apenas 1 chamada principal de destaque na primeira tela (ex: "Ver Estoque com Desconto" ou "Falar com Consultor no WhatsApp") e organize as opções secundárias de forma mais discreta.`
         },
         {
           id: "psy-2",
-          title: "Desvio da Lei de Jakob (Padrões Mentais Consolidados)",
+          title: "Navegação Fora dos Padrões que o Público já Conhece",
           severity: "Alto",
-          principle: "Jon Yablonski - Lei de Jakob / Heurísticas de Usabilidade Universal",
-          evidence: `Disposição estrutural do cabeçalho e posicionamento de elementos de busca e ação`,
-          problem: `A organização da navegação diverge das convenções consolidadas na web (onde o usuário passa a maior parte do tempo em outros sites e espera que o seu funcione da mesma forma).`,
-          impact: `Gera atrito cognitivo e desorientação inicial, forçando o visitante a gastar energia mental para descobrir onde clicar em vez de focar no valor do produto.`,
-          suggestion: `Reestruture a barra superior no formato clássico: logotipo ancorado à esquerda com link para a home, links de navegação principais centralizados e botão de contato/conversão destacado na extremidade direita.`
+          principle: "Familiaridade e Hábitos de Compra do Usuário",
+          evidence: `Estrutura dos menus e botões no topo da página`,
+          problem: `A organização dos menus e do contato não segue o padrão comum que as pessoas já estão acostumadas a ver nos grandes sites do mercado.`,
+          impact: `O cliente gasta tempo procurando onde clicar em vez de se concentrar nos produtos e ofertas.`,
+          suggestion: `Posicione o logo à esquerda, o menu simples no centro e o botão de contato ou WhatsApp bem visível no canto superior direito.`
         }
       ]
     },
     {
-      title: "Arquitetura da Informação",
-      overview: "Diagnóstico de taxonomia, rotulagem, previsibilidade estrutural e facilidade de localização (Information Scent).",
+      title: "Organização e Roteiro de Vendas da Página",
+      overview: "Estrutura lógica do conteúdo, ordem dos argumentos e facilidade do cliente em encontrar o que procura.",
       score: 52,
       issues: [
         {
           id: "ia-1",
-          title: "Hierarquia de Conteúdo Invertida e Quebra de Narrativa Comercial",
+          title: "Ordem dos Argumentos de Venda Invertida",
           severity: "Alto",
-          principle: "Don Norman - Mapeamento e Restrições / W3C Information Architecture",
-          evidence: `Ordem das seções entre "${headingH1}" e "${headingH2}"`,
-          problem: `A página solicita o engajamento de conversão antes de apresentar os argumentos de autoridade, prova social ou clareza sobre os diferenciais da empresa.`,
-          impact: `Gera insegurança no lead, resultando em quedas acentuadas de retenção logo após a primeira rolagem de página.`,
-          suggestion: `Reorganize a arquitetura em fluxo progressivo de convencimento: 1. Proposta de Valor Clara (Hero) -> 2. Prova Social e Avaliações -> 3. Catálogo / Benefícios Estruturados -> 4. Quebra de Objeções (FAQ) -> 5. Chamada Final de Ação.`
+          principle: "Jornada de Convencimento do Cliente",
+          evidence: `Sequência entre a apresentação "${headingH1}" e as ofertas "${headingH2}"`,
+          problem: `O site pede que o cliente tome uma decisão antes de mostrar a autoridade da marca, depoimentos de quem já comprou ou as vantagens reais do produto.`,
+          impact: `Gera insegurança no visitante, fazendo com que ele role um pouco e saia sem entrar em contato.`,
+          suggestion: `Siga o roteiro comercial de alta conversão: 1. Oferta Irresistível (Topo) -> 2. Prova Social e Avaliações de Clientes -> 3. Catálogo de Produtos -> 4. Perguntas Frequentes (quebra de objeções) -> 5. Chamada Final de WhatsApp.`
         },
         {
           id: "ia-2",
-          title: "Rotulagem Ambígua e Fragilidade no Rastro de Informação (Information Scent)",
+          title: "Textos de Botões Genéricos que Não Estimulam o Clique",
           severity: "Médio",
-          principle: "Princípios de Taxonomia e Rotulagem (Rosenfeld & Morville)",
-          evidence: `Rótulos genéricos em botões e menus de suporte`,
-          problem: `Termos vagos não comunicam exatamente o que acontecerá após o clique (ex: se abrirá o WhatsApp, um formulário ou outra página).`,
-          impact: `Reduz a taxa de cliques em botões secundários por desconfiança sobre o destino da navegação.`,
-          suggestion: `Substitua rótulos abstratos por microcópias assertivas com verbos de ação específicos, como "Ver Estoque Completo", "Falar com Consultor no WhatsApp" ou "Simular Financiamento".`
+          principle: "Chamadas para Ação Assertivas",
+          evidence: `Botões com textos simples e pouco convidativos`,
+          problem: `Palavras genéricas como "Saiba Mais" ou "Enviar" não despertam interesse nem transmitem o benefício imediato da ação.`,
+          impact: `Menor taxa de cliques em comparação com chamadas mais dinâmicas e convidativas.`,
+          suggestion: `Substitua por chamadas que vendam o benefício: "Quero Receber as Melhores Ofertas", "Consultar Condições no WhatsApp" ou "Simular Meu Financiamento Agora".`
         }
       ]
     },
     {
-      title: "Acessibilidade e Inclusão",
-      overview: "Auditoria técnica de conformidade com as diretrizes internacionais W3C WCAG 2.1 (Níveis A e AA) e normas de acessibilidade universal.",
+      title: "Acessibilidade e Posicionamento no Google (SEO)",
+      overview: "Garantia de que o site funciona perfeitamente para todos os públicos e atende aos requisitos do Google para aparecer nas primeiras posições.",
       score: altPercentage > 50 ? 30 : 50,
       issues: [
         {
           id: "a11y-1",
-          title: `Violação Crítica WCAG 1.1.1: ${imagesMissing} de ${imagesTotal} Imagens Sem Atributo Alt (${altPercentage}%)`,
+          title: `${imagesMissing} Fotos de Produtos sem Descrição para o Google (${altPercentage}%)`,
           severity: "Crítico",
-          principle: "W3C WCAG 2.1 - Critério de Sucesso 1.1.1 (Conteúdo Não Textual - Nível A)",
-          evidence: `${imagesMissing} elementos <img> identificados na estrutura do DOM sem descrição textual`,
-          problem: `A ausência da tag alt impede que leitores de tela (como NVDA, JAWS e VoiceOver) descrevam o conteúdo visual para usuários com deficiência visual. Além disso, o robô do Google fica incapacitado de indexar os produtos e imagens para busca orgânica.`,
-          impact: `Exclusão de usuários PcD, vulnerabilidade a penalidades legais de acessibilidade digital e perda significativa de tráfego orgânico no Google Imagens.`,
-          suggestion: `Insira atributos alt descritivos em todas as imagens com valor informativo (ex: alt="Veículo Sedan Prata 2024 - Frente") e declare alt="" (vazio) explicitamente em ícones e fundos meramente decorativos.`
+          principle: "Visibilidade Orgânica no Google & Acessibilidade",
+          evidence: `${imagesMissing} fotos encontradas sem texto descritivo`,
+          problem: `Sem descrição nas fotos, o Google não consegue identificar quais produtos estão à venda no seu site, deixando de exibi-los nas buscas de imagens e compras.`,
+          impact: `Perda diária de potenciais clientes que pesquisam veículos ou produtos no Google e vão parar no site do concorrente.`,
+          suggestion: `Cadastre descrições objetivas em todas as fotos (ex: "Veículo Sedan Prata 2024 - Frente") para turbinar o ranqueamento gratuito no Google.`
         },
         {
           id: "a11y-2",
-          title: "Ausência de Foco Visível para Navegação via Teclado (WCAG 2.4.7)",
+          title: "Navegação Rápida por Teclado e Acessibilidade",
           severity: "Alto",
-          principle: "W3C WCAG 2.1 - Critério de Sucesso 2.4.7 (Foco Visível - Nível AA)",
-          evidence: `Links, botões e campos interativos da página`,
-          problem: `Ao navegar na página utilizando a tecla TAB, não há indicador gráfico de foco (outline / ring de alto contraste) sinalizando em qual elemento o usuário se encontra.`,
-          impact: `Inviabiliza a utilização do site por pessoas com limitações motoras que não utilizam mouse, além de prejudicar a navegação em smart TVs e dispositivos com teclado físico.`,
-          suggestion: `Adicione a regra CSS global *:focus-visible { outline: 2px solid #C46A1A; outline-offset: 2px; } garantindo visibilidade imediata sem poluir o clique do mouse.`
+          principle: "Facilidade de Uso Universal",
+          evidence: `Campos e links da página`,
+          problem: `Pessoas navegando por teclado, notebooks sem mouse ou telas acessíveis não conseguem ver qual campo está selecionado.`,
+          impact: `Dificulta a experiência de compra de uma parcela de usuários e reduz a nota técnica de acessibilidade no Google.`,
+          suggestion: `Adicione borda de destaque suave no elemento selecionado, garantindo facilidade total de navegação para qualquer dispositivo.`
         }
       ]
     }
@@ -431,7 +442,7 @@ export function AnaliseUXView() {
   const [statusMessage, setStatusMessage] = useState("");
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<UXAnalysisResult | null>(null);
-  const [activeTab, setActiveTab] = useState<number>(-1); // -1 = Resumo, 0..4 = Categorias, 5 = Strix, 6 = Playwright, 7 = PageSpeed
+  const [activeTab, setActiveTab] = useState<number>(-1); // -1 = Resumo, 0..4 = Categorias, 5 = Seguranca, 6 = Playwright, 7 = PageSpeed
   const [viewportMode, setViewportMode] = useState<"desktop" | "mobile">("desktop");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -480,16 +491,14 @@ export function AnaliseUXView() {
           }
           break;
         }
-      } catch {
-        // Tenta próximo
-      }
+      } catch {}
     }
 
     const responseTimeMs = Date.now() - startTime;
     const pageSizeKb = Math.round((rawHtml.length || extractedText.length || 0) / 1024);
 
     setAnalysisProgress(35);
-    setStatusMessage("PageSpeed & Core Web Vitals: Calculando métricas de performance...");
+    setStatusMessage("PageSpeed & Velocidade: Analisando métricas de carregamento no celular e computador...");
 
     const extractedColors = new Set<string>();
     const extractedFonts = new Set<string>();
@@ -596,8 +605,8 @@ export function AnaliseUXView() {
       pageSpeed
     };
 
-    const clientIntegrityAudit: StrixIntegrityAudit = {
-      score: isHttps ? 78 : 45,
+    const clientSecurityAudit: SecurityAudit = {
+      score: isHttps ? 85 : 45,
       isHttps,
       hasMixedContent: !!hasMixedContent,
       scriptsMissingSri: 0,
@@ -617,16 +626,16 @@ export function AnaliseUXView() {
         mobile: `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`
       },
       vulnerabilities: [
-        ...(!isHttps ? [{ title: "Conexão Não Criptografada (HTTP)", severity: "Crítico", desc: "O site trafega dados sensíveis em texto claro sem proteção SSL/TLS." }] : []),
-        ...(hasMixedContent ? [{ title: "Conteúdo Misto Detectado", severity: "Crítico", desc: "Recursos HTTP não seguros requisitados em página HTTPS." }] : []),
-        { title: "Ausência de Content-Security-Policy (CSP)", severity: "Alto", desc: "Site sem política de restrição de scripts de terceiros." },
-        { title: "Falta de Header X-Frame-Options", severity: "Alto", desc: "Potencial vulnerabilidade a Clickjacking em iframes externos." }
+        ...(!isHttps ? [{ title: "Site Sem Criptografia SSL (HTTP Não Seguro)", severity: "Crítico", desc: "Os dados dos clientes podem ser interceptados em texto claro, gerando aviso de 'Site Não Seguro' no navegador." }] : []),
+        ...(hasMixedContent ? [{ title: "Conteúdo Misto Detectado", severity: "Crítico", desc: "Imagens ou arquivos sendo carregados sem segurança em página com cadeado." }] : []),
+        { title: "Proteção contra Cópias Indesejadas em Iframes", severity: "Alto", desc: "Recomenda-se adicionar cabeçalho de proteção para impedir que o site seja clonado dentro de outros domínios." },
+        { title: "Política de Segurança para Scripts Externos", severity: "Alto", desc: "Recomenda-se restringir quais domínios podem executar scripts de atendimento e rastreamento." }
       ]
     };
 
     return {
       pageTitle,
-      metaDescription: metaDescription || "Sem meta descrição explícita encontrada.",
+      metaDescription: metaDescription || "Sem meta descrição encontrada.",
       colors: finalColors,
       fonts: finalFonts,
       headings: headings.slice(0, 15),
@@ -634,7 +643,7 @@ export function AnaliseUXView() {
       imagesCount,
       imagesMissingAlt,
       rawTextSample: extractedText.slice(0, 5000),
-      integrityAudit: clientIntegrityAudit,
+      integrityAudit: clientSecurityAudit,
       performance: perf
     };
   };
@@ -662,13 +671,13 @@ export function AnaliseUXView() {
     setAnalysisResult(null);
     setActiveTab(-1);
     setAnalysisProgress(10);
-    setStatusMessage("Iniciando auditoria técnica de UX/UI & PageSpeed...");
+    setStatusMessage("Iniciando auditoria comercial de UX/UI, Velocidade & Segurança...");
 
     try {
       // 1. Tentar endpoint serverless direto
       try {
         setAnalysisProgress(25);
-        setStatusMessage("Playwright & Strix: Extraindo dados e auditando velocidade no servidor...");
+        setStatusMessage("Medindo velocidade real e extraindo dados do site...");
         const serverRes = await fetch("/api/ux-analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -689,7 +698,7 @@ export function AnaliseUXView() {
             }
             setAnalysisResult(sData.data);
             setAnalysisProgress(100);
-            showToast("Auditoria UX & PageSpeed gerada com sucesso!");
+            showToast("Auditoria gerada com sucesso!");
             return;
           }
         }
@@ -701,14 +710,14 @@ export function AnaliseUXView() {
       const extracted = await extractRealPageData(validUrl);
 
       setAnalysisProgress(80);
-      setStatusMessage("Aplicando Motor Especialista Heurístico (Nielsen, Norman, Gestalt & WCAG)...");
+      setStatusMessage("Gerando diagnóstico comercial e oportunidades de vendas...");
       await new Promise((r) => setTimeout(r, 600));
 
       const result = generateHeuristicAnalysis(validUrl, extracted);
       setAnalysisResult(result);
 
       setAnalysisProgress(100);
-      showToast("Auditoria UX & PageSpeed concluída com sucesso!");
+      showToast("Auditoria concluída com sucesso!");
     } catch (err: any) {
       console.error("Erro na Análise UX:", err);
       showToast(err.message || "Erro ao processar auditoria.");
@@ -721,7 +730,7 @@ export function AnaliseUXView() {
     if (!analysisResult) return;
 
     setIsGeneratingPDF(true);
-    showToast("Renderizando relatório executivo em PDF com PageSpeed & Strix...");
+    showToast("Renderizando relatório executivo comercial em PDF...");
 
     try {
       const pdf = new jsPDF({
@@ -745,7 +754,7 @@ export function AnaliseUXView() {
           pdf.setTextColor(180, 180, 190);
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "normal");
-          pdf.text(`FÁBRICA PUBLICIDADE | AUDITORIA DE UX/UI & PAGESPEED — ${analysisResult.url}`, margin, 8);
+          pdf.text(`FÁBRICA PUBLICIDADE | AUDITORIA DE CONVERSÃO & VELOCIDADE — ${analysisResult.url}`, margin, 8);
           currentY = 22;
         }
       };
@@ -767,20 +776,20 @@ export function AnaliseUXView() {
       pdf.setFontSize(9);
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(196, 106, 26);
-      pdf.text("RELATÓRIO EXECUTIVO DE AUDITORIA UX/UI, PAGESPEED & STRIX", margin, 20);
+      pdf.text("RELATÓRIO EXECUTIVO DE AUDITORIA: CONVERSÃO, VELOCIDADE & SEGURANÇA", margin, 20);
 
       pdf.setTextColor(200, 200, 210);
       pdf.setFontSize(8);
       pdf.text(`URL AUDITADA: ${analysisResult.url}`, margin, 26);
       
-      const strixScore = analysisResult.extractedMetadata.integrityAudit?.score || 80;
+      const securityScore = analysisResult.extractedMetadata.integrityAudit?.score || 85;
       const psScore = analysisResult.extractedMetadata.performance?.pageSpeed?.categories?.performance || 61;
       const respTime = analysisResult.extractedMetadata.performance?.responseTimeMs || 320;
-      pdf.text(`DATA: ${analysisResult.analyzedAt} | SCORE UX: ${analysisResult.overallScore}/100 | PAGESPEED: ${psScore}/100 | SCORE STRIX: ${strixScore}/100`, margin, 31);
+      pdf.text(`DATA: ${analysisResult.analyzedAt} | SCORE GERAL: ${analysisResult.overallScore}/100 | VELOCIDADE: ${psScore}/100 | SEGURANÇA: ${securityScore}/100`, margin, 31);
 
       currentY = 48;
 
-      // Metadados reais
+      // Metadados visuais e estruturais
       checkPageBreak(30);
       pdf.setFillColor(245, 245, 248);
       pdf.roundedRect(margin, currentY, contentWidth, 24, 2, 2, "F");
@@ -790,14 +799,14 @@ export function AnaliseUXView() {
       pdf.setTextColor(20, 20, 30);
       pdf.setFontSize(9);
       pdf.setFont("helvetica", "bold");
-      pdf.text("METADADOS VISUAIS & ESTRUTURAIS EXTRAÍDOS:", margin + 4, currentY + 6);
+      pdf.text("DADOS VISUAIS & ESTRUTURAIS IDENTIFICADOS NO SITE:", margin + 4, currentY + 6);
 
       pdf.setFontSize(8);
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(70, 70, 80);
-      const colorsText = `Cores CSS Detectadas: ${analysisResult.extractedMetadata.colors.join(", ")}`;
-      const fontsText = `Fontes CSS Detectadas: ${analysisResult.extractedMetadata.fonts.join(", ")}`;
-      const structText = `Título: ${analysisResult.extractedMetadata.pageTitle} | Imagens: ${analysisResult.extractedMetadata.imagesCount} (Sem ALT: ${analysisResult.extractedMetadata.imagesMissingAlt}) | TTFB: ${respTime}ms`;
+      const colorsText = `Cores da Marca: ${analysisResult.extractedMetadata.colors.join(", ")}`;
+      const fontsText = `Fontes Utilizadas: ${analysisResult.extractedMetadata.fonts.join(", ")}`;
+      const structText = `Título do Site: ${analysisResult.extractedMetadata.pageTitle} | Total de Fotos: ${analysisResult.extractedMetadata.imagesCount} (Sem Descrição: ${analysisResult.extractedMetadata.imagesMissingAlt}) | Resposta do Servidor: ${respTime}ms`;
 
       pdf.text(colorsText, margin + 4, currentY + 11);
       pdf.text(fontsText, margin + 4, currentY + 16);
@@ -805,40 +814,50 @@ export function AnaliseUXView() {
 
       currentY += 30;
 
-      // Seção PageSpeed Core Web Vitals no PDF
+      // Seção 1: Velocidade e Métricas Comerciais (Google PageSpeed)
       const ps = analysisResult.extractedMetadata.performance?.pageSpeed;
       if (ps) {
-        checkPageBreak(35);
+        checkPageBreak(38);
         pdf.setTextColor(196, 106, 26);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "bold");
-        pdf.text("1. AUDITORIA DE VELOCIDADE & CORE WEB VITALS (GOOGLE PAGESPEED)", margin, currentY);
+        pdf.text("1. AUDITORIA DE VELOCIDADE & DESEMPENHO (GOOGLE PAGESPEED)", margin, currentY);
         currentY += 6;
 
         pdf.setFillColor(250, 248, 245);
-        pdf.roundedRect(margin, currentY, contentWidth, 22, 1.5, 1.5, "F");
+        pdf.roundedRect(margin, currentY, contentWidth, 26, 1.5, 1.5, "F");
         pdf.setDrawColor(230, 210, 190);
-        pdf.roundedRect(margin, currentY, contentWidth, 22, 1.5, 1.5, "S");
+        pdf.roundedRect(margin, currentY, contentWidth, 26, 1.5, 1.5, "S");
 
         pdf.setTextColor(30, 30, 40);
         pdf.setFontSize(8);
         pdf.setFont("helvetica", "bold");
-        pdf.text(`Desempenho: ${ps.categories.performance}/100 | Acessibilidade: ${ps.categories.accessibility}/100 | Boas Práticas: ${ps.categories.bestPractices}/100 | SEO: ${ps.categories.seo}/100`, margin + 4, currentY + 6);
+        pdf.text(`Desempenho Comercial: ${ps.categories.performance}/100 | Acessibilidade: ${ps.categories.accessibility}/100 | Boas Práticas: ${ps.categories.bestPractices}/100 | SEO (Google): ${ps.categories.seo}/100`, margin + 4, currentY + 6);
 
         pdf.setFont("helvetica", "normal");
         pdf.setTextColor(80, 80, 90);
-        pdf.text(`FCP: ${ps.fcp.value} | LCP: ${ps.lcp.value} | CLS: ${ps.cls.value} | TBT: ${ps.tbt.value} | TTFB: ${ps.ttfb.value}`, margin + 4, currentY + 11.5);
-        pdf.text(`Diagnóstico: Otimize imagens para WebP/AVIF e compacte recursos CSS/JS para ganho de ~0.45s no FCP.`, margin + 4, currentY + 16.5);
+        
+        const cleanFcp = cleanDisplayMetric(ps.fcp?.value, "1.8s");
+        const cleanLcp = cleanDisplayMetric(ps.lcp?.value, "3.1s");
+        const cleanCls = cleanDisplayMetric(ps.cls?.value, "0.08");
+        const cleanTbt = cleanDisplayMetric(ps.tbt?.value, "280ms");
+        const cleanTtfb = cleanDisplayMetric(ps.ttfb?.value, "0.3s");
 
-        currentY += 28;
+        pdf.text(`Abertura Inicial: ${cleanFcp} | Conteúdo Principal: ${cleanLcp} | Estabilidade da Tela: ${cleanCls} | Resposta ao Toque: ${cleanTbt} | Servidor: ${cleanTtfb}`, margin + 4, currentY + 12);
+        
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(16, 120, 60);
+        pdf.text(`Diagnóstico Comercial: Otimizar o peso das fotos e carregar scripts de atendimento em segundo plano. Isso acelera o site no 4G/5G, reduz a perda de clientes no celular e aumenta o envio de mensagens no WhatsApp.`, margin + 4, currentY + 18, { maxWidth: contentWidth - 8 });
+
+        currentY += 32;
       }
 
-      // Resumo Executivo
+      // Resumo Executivo Comercial
       checkPageBreak(40);
       pdf.setTextColor(196, 106, 26);
       pdf.setFontSize(11);
       pdf.setFont("helvetica", "bold");
-      pdf.text("2. RESUMO EXECUTIVO CRÍTICO & DIAGNÓSTICO", margin, currentY);
+      pdf.text("2. RESUMO EXECUTIVO COMERCIAL & OPORTUNIDADES DE VENDAS", margin, currentY);
       currentY += 6;
 
       pdf.setTextColor(40, 40, 50);
@@ -854,13 +873,13 @@ export function AnaliseUXView() {
       pdf.text(summaryLines, margin, currentY);
       currentY += summaryLines.length * 4.2 + 6;
 
-      // Blockquotes
+      // Blockquotes / Pontos de Atenção
       if (analysisResult.blockquotes && analysisResult.blockquotes.length > 0) {
         checkPageBreak(25);
         pdf.setTextColor(80, 80, 90);
         pdf.setFontSize(9);
         pdf.setFont("helvetica", "bold");
-        pdf.text("EVIDÊNCIAS DIRETAS EXTRAÍDAS DA INTERFACE:", margin, currentY);
+        pdf.text("PONTOS DE ATENÇÃO IDENTIFICADOS NA PÁGINA:", margin, currentY);
         currentY += 5;
 
         for (const bq of analysisResult.blockquotes) {
@@ -873,11 +892,11 @@ export function AnaliseUXView() {
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "bold");
           pdf.setTextColor(196, 106, 26);
-          pdf.text(`[${bq.id}] ${bq.location}:`, margin + 4, currentY + 4.5);
+          pdf.text(`[${bq.id}] ${bq.issueTitle || bq.location}:`, margin + 4, currentY + 4.5);
 
-          pdf.setFont("helvetica", "italic");
+          pdf.setFont("helvetica", "normal");
           pdf.setTextColor(60, 60, 70);
-          const quoteLines = pdf.splitTextToSize(`"${bq.text}"`, contentWidth - 8);
+          const quoteLines = pdf.splitTextToSize(`"${bq.text}" — ${bq.contextNote || ""}`, contentWidth - 8);
           pdf.text(quoteLines[0] || "", margin + 4, currentY + 9);
 
           currentY += 14;
@@ -885,7 +904,7 @@ export function AnaliseUXView() {
         currentY += 4;
       }
 
-      // As 5 Categorias Fixas
+      // As 5 Categorias Comerciais
       for (let i = 0; i < analysisResult.categories.length; i++) {
         const cat = analysisResult.categories[i];
         checkPageBreak(35);
@@ -908,9 +927,9 @@ export function AnaliseUXView() {
 
           const isCritical = issue.severity === "Crítico";
           pdf.setFillColor(isCritical ? 255 : 248, isCritical ? 245 : 248, isCritical ? 245 : 252);
-          pdf.roundedRect(margin, currentY, contentWidth, 24, 1.5, 1.5, "F");
+          pdf.roundedRect(margin, currentY, contentWidth, 25, 1.5, 1.5, "F");
           pdf.setDrawColor(isCritical ? 240 : 220, isCritical ? 180 : 220, isCritical ? 180 : 230);
-          pdf.roundedRect(margin, currentY, contentWidth, 24, 1.5, 1.5, "S");
+          pdf.roundedRect(margin, currentY, contentWidth, 25, 1.5, 1.5, "S");
 
           pdf.setFillColor(isCritical ? 220 : 196, isCritical ? 38 : 106, isCritical ? 38 : 26);
           pdf.roundedRect(margin + 3, currentY + 3, 16, 4.5, 1, 1, "F");
@@ -927,20 +946,20 @@ export function AnaliseUXView() {
           pdf.setTextColor(110, 110, 120);
           pdf.setFontSize(7);
           pdf.setFont("helvetica", "normal");
-          pdf.text(`Princípio/Literatura: ${issue.principle}`, margin + 3, currentY + 11.5);
+          pdf.text(`Foco: ${issue.principle}`, margin + 3, currentY + 11.5);
 
           pdf.setTextColor(60, 60, 70);
           pdf.setFontSize(7.5);
-          const probLines = pdf.splitTextToSize(`Falha: ${issue.problem}`, contentWidth - 6);
+          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, contentWidth - 6);
           pdf.text(probLines[0] || "", margin + 3, currentY + 16);
 
           pdf.setTextColor(16, 120, 60);
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "bold");
-          const sugLines = pdf.splitTextToSize(`Recomendação: ${issue.suggestion}`, contentWidth - 6);
-          pdf.text(sugLines[0] || "", margin + 3, currentY + 20.5);
+          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, contentWidth - 6);
+          pdf.text(sugLines[0] || "", margin + 3, currentY + 21);
 
-          currentY += 27;
+          currentY += 28;
         }
 
         currentY += 4;
@@ -953,7 +972,7 @@ export function AnaliseUXView() {
         pdf.setFontSize(7);
         pdf.setFont("helvetica", "normal");
         pdf.text(
-          `Página ${p} de ${totalPages} | Fábrica Publicidade — Núcleo de Inteligência UX/UI, PageSpeed & Strix`,
+          `Página ${p} de ${totalPages} | Fábrica Publicidade — Núcleo de Inteligência Comercial, UX/UI & Velocidade`,
           pageWidth / 2,
           pageHeight - 8,
           { align: "center" }
@@ -961,8 +980,8 @@ export function AnaliseUXView() {
       }
 
       const domainSafe = new URL(analysisResult.url).hostname.replace(/[^a-zA-Z0-9]/g, "_");
-      pdf.save(`Auditoria_UX_PageSpeed_${domainSafe}_Fabrica.pdf`);
-      showToast("Relatório em PDF gerado e baixado com sucesso!");
+      pdf.save(`Auditoria_Comercial_UX_Velocidade_${domainSafe}_Fabrica.pdf`);
+      showToast("Relatório em PDF exportado com sucesso!");
     } catch (err: any) {
       console.error("Erro ao gerar PDF:", err);
       showToast("Erro ao exportar PDF.");
@@ -971,7 +990,7 @@ export function AnaliseUXView() {
     }
   };
 
-  const integrityAuditData = analysisResult?.extractedMetadata.integrityAudit;
+  const securityAuditData = analysisResult?.extractedMetadata.integrityAudit;
   const perfData = analysisResult?.extractedMetadata.performance;
   const pageSpeedData = perfData?.pageSpeed;
 
@@ -1046,7 +1065,7 @@ export function AnaliseUXView() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-3 border-b border-white/10">
             <div className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-wider text-[#C46A1A]">
               <FileText className="w-4 h-4 text-[#C46A1A]" />
-              <span className="font-bold">RELATÓRIO DE AUDITORIA</span>
+              <span className="font-bold">RELATÓRIO DE AUDITORIA COMERCIAL</span>
               <span className="text-white/30">|</span>
               <span className="text-white/60 font-sans normal-case text-xs">{analysisResult.url}</span>
             </div>
@@ -1061,7 +1080,7 @@ export function AnaliseUXView() {
               ) : (
                 <Download className="w-3.5 h-3.5" />
               )}
-              {isGeneratingPDF ? "GERANDO..." : "BAIXAR RELATÓRIO"}
+              {isGeneratingPDF ? "GERANDO..." : "BAIXAR RELATÓRIO PDF"}
             </button>
           </div>
 
@@ -1076,7 +1095,7 @@ export function AnaliseUXView() {
                   : "bg-transparent text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A] hover:bg-[#C46A1A]/10"
               }`}
             >
-              RESUMO EXECUTIVO
+              RESUMO COMERCIAL
             </button>
 
             {analysisResult.categories.map((cat, idx) => (
@@ -1094,7 +1113,7 @@ export function AnaliseUXView() {
               </button>
             ))}
 
-            {/* ABA PAGESPEED */}
+            {/* ABA VELOCIDADE & PAGESPEED */}
             <button
               type="button"
               onClick={() => setActiveTab(7)}
@@ -1105,35 +1124,38 @@ export function AnaliseUXView() {
               }`}
             >
               <Zap className="w-3.5 h-3.5" />
-              VELOCIDADE & PAGESPEED
+              VELOCIDADE & PERFORMANCE
             </button>
 
+            {/* ABA SEGURANÇA (SEM NOME STRIX) */}
             <button
               type="button"
               onClick={() => setActiveTab(5)}
-              className={`px-4 py-2 rounded-md border uppercase tracking-wider transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-md border uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 5
                   ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A] shadow-[0_0_15px_rgba(196,106,26,0.3)]"
                   : "bg-transparent text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A] hover:bg-[#C46A1A]/10"
               }`}
             >
-              INTEGRIDADE STRIX
+              <ShieldCheck className="w-3.5 h-3.5" />
+              SEGURANÇA DO SITE
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab(6)}
-              className={`px-4 py-2 rounded-md border uppercase tracking-wider transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-md border uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 6
                   ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A] shadow-[0_0_15px_rgba(196,106,26,0.3)]"
                   : "bg-transparent text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A] hover:bg-[#C46A1A]/10"
               }`}
             >
-              INSPEÇÃO VISUAL
+              <Eye className="w-3.5 h-3.5" />
+              VISUALIZAÇÃO EM DISPOSITIVOS
             </button>
           </div>
 
-          {/* PAINEL DE DADOS TÉCNICOS EXTRAÍDOS */}
+          {/* PAINEL DE DADOS TÉCNICOS & COMERCIAIS */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 bg-[#0a0a0f] border border-white/5 rounded-xl p-4">
             <div>
               <span className="text-[10px] font-mono text-white/40 uppercase block">Score Geral</span>
@@ -1142,32 +1164,36 @@ export function AnaliseUXView() {
             <div>
               <span className="text-[10px] font-mono text-white/40 uppercase block flex items-center gap-1">
                 <Zap className="w-3 h-3 text-amber-400" />
-                Desempenho (Lighthouse)
+                Velocidade (Google)
               </span>
               <span className="text-xl font-bold text-amber-400 font-mono">{pageSpeedData?.categories?.performance || 61}/100</span>
             </div>
             <div>
-              <span className="text-[10px] font-mono text-white/40 uppercase block">Score Strix</span>
-              <span className="text-xl font-bold text-white font-mono">{integrityAuditData?.score || 80}/100</span>
+              <span className="text-[10px] font-mono text-white/40 uppercase block flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-green-400" />
+                Segurança
+              </span>
+              <span className="text-xl font-bold text-white font-mono">{securityAuditData?.score || 85}/100</span>
             </div>
             <div>
-              <span className="text-[10px] font-mono text-white/40 uppercase block">Latência (TTFB)</span>
+              <span className="text-[10px] font-mono text-white/40 uppercase block">Resposta do Servidor</span>
               <span className="text-xl font-bold text-green-400 font-mono">{perfData?.responseTimeMs || 320}ms</span>
             </div>
             <div>
-              <span className="text-[10px] font-mono text-white/40 uppercase block">Imagens sem ALT</span>
+              <span className="text-[10px] font-mono text-white/40 uppercase block">Fotos sem Descrição</span>
               <span className="text-xl font-bold text-amber-400 font-mono">{analysisResult.extractedMetadata.imagesMissingAlt} / {analysisResult.extractedMetadata.imagesCount}</span>
             </div>
           </div>
 
-          {/* RESUMO EXECUTIVO (TAB -1) */}
+          {/* RESUMO COMERCIAL (TAB -1) */}
           {activeTab === -1 && (
             <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="space-y-3 pb-6 border-b border-white/10">
-                <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A]">
-                  DIAGNÓSTICO EXECUTIVO FORENSE & COMPORTAMENTAL
+                <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A] flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-[#C46A1A]" />
+                  DIAGNÓSTICO EXECUTIVO & OPORTUNIDADES DE VENDAS
                 </span>
-                <p className="text-sm text-white/80 leading-relaxed font-light whitespace-pre-line">
+                <p className="text-sm text-white/85 leading-relaxed font-light whitespace-pre-line">
                   {analysisResult.executiveSummary}
                 </p>
               </div>
@@ -1176,7 +1202,7 @@ export function AnaliseUXView() {
               {analysisResult.blockquotes && analysisResult.blockquotes.length > 0 && (
                 <div className="space-y-4 pt-2">
                   <span className="text-xs font-mono uppercase tracking-wider text-white/50 block">
-                    EVIDÊNCIAS DIRETAS EXTRAÍDAS DO DOM COM CONTEXTO CIRÚRGICO:
+                    PONTOS DE ATENÇÃO EXTRAÍDOS DO SITE:
                   </span>
                   <div className="space-y-4">
                     {analysisResult.blockquotes.map((bq) => (
@@ -1197,7 +1223,7 @@ export function AnaliseUXView() {
                         )}
                         <div className="bg-[#0f0f16] border border-[#C46A1A]/20 rounded-lg p-3 mt-2">
                           <span className="text-[10px] font-mono text-[#C46A1A] uppercase tracking-wider block mb-1">
-                            ↳ ELEMENTO DETECTADO:
+                            ↳ ELEMENTO ANALISADO:
                           </span>
                           <p className="text-xs text-white/90 italic font-mono">
                             "{bq.text}"
@@ -1211,25 +1237,25 @@ export function AnaliseUXView() {
             </div>
           )}
 
-          {/* TAB 7: VELOCIDADE & PAGESPEED (ESTILO GOOGLE PAGESPEED INSIGHTS) */}
+          {/* TAB 7: VELOCIDADE & PERFORMANCE (LINGUAGEM COMERCIAL) */}
           {activeTab === 7 && pageSpeedData && (
             <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
               <div className="space-y-2 pb-6 border-b border-white/10">
                 <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A] block mb-1">
-                  DIAGNÓSTICO DE PERFORMANCE & CORE WEB VITALS (GOOGLE PAGESPEED / LIGHTHOUSE)
+                  DIAGNÓSTICO DE VELOCIDADE & DESEMPENHO NO GOOGLE
                 </span>
                 <p className="text-sm text-white/80 font-light">
-                  Métricas oficiais de velocidade, acessibilidade, boas práticas e SEO extraídas com emulação de desktop e mobile.
+                  Métricas que influenciam a experiência do comprador no celular e o custo dos anúncios pagos.
                 </p>
               </div>
 
-              {/* OS 4 MEDIDORES OFICIAIS DO PAGESPEED */}
+              {/* OS 4 MEDIDORES OFICIAIS */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-[#07070a] border border-white/5 rounded-2xl">
                 {[
                   { label: "Desempenho", score: pageSpeedData.categories.performance, icon: Zap },
                   { label: "Acessibilidade", score: pageSpeedData.categories.accessibility, icon: ShieldCheck },
-                  { label: "Práticas recomendadas", score: pageSpeedData.categories.bestPractices, icon: CheckCircle2 },
-                  { label: "SEO", score: pageSpeedData.categories.seo, icon: Search }
+                  { label: "Boas Práticas", score: pageSpeedData.categories.bestPractices, icon: CheckCircle2 },
+                  { label: "SEO (Google)", score: pageSpeedData.categories.seo, icon: Search }
                 ].map((cat) => {
                   const isGood = cat.score >= 90;
                   const isAvg = cat.score >= 50 && cat.score < 90;
@@ -1265,19 +1291,19 @@ export function AnaliseUXView() {
                 })}
               </div>
 
-              {/* Grid dos 6 Core Web Vitals */}
+              {/* Grid das Métricas Comerciais */}
               <div className="space-y-3">
                 <span className="text-xs font-mono uppercase tracking-wider text-white/60 block">
-                  MÉTRICAS CORE WEB VITALS:
+                  TEMPOS DE CARREGAMENTO & IMPACTO NO CLIENTE:
                 </span>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {[
-                    { label: "First Contentful Paint (FCP)", value: pageSpeedData.fcp.value, status: pageSpeedData.fcp.status, desc: "Momento em que o primeiro texto ou imagem é renderizado." },
-                    { label: "Largest Contentful Paint (LCP)", value: pageSpeedData.lcp.value, status: pageSpeedData.lcp.status, desc: "Tempo de renderização do maior elemento visual da página." },
-                    { label: "Cumulative Layout Shift (CLS)", value: pageSpeedData.cls.value, status: pageSpeedData.cls.status, desc: "Mede o movimento inesperado de elementos durante o carregamento." },
-                    { label: "Total Blocking Time (TBT)", value: pageSpeedData.tbt.value, status: pageSpeedData.tbt.status, desc: "Tempo total em que a thread principal esteve bloqueada por scripts." },
-                    { label: "Time to First Byte (TTFB)", value: pageSpeedData.ttfb.value, status: pageSpeedData.ttfb.status, desc: "Tempo de resposta do servidor na primeira requisição HTTP." },
-                    { label: "Speed Index", value: pageSpeedData.speedIndex.value, status: pageSpeedData.speedIndex.status, desc: "Velocidade em que os conteúdos da página são preenchidos visualmente." }
+                    { label: "Abertura Inicial da Página", value: cleanDisplayMetric(pageSpeedData.fcp?.value, "1.8s"), status: pageSpeedData.fcp.status, desc: "Tempo até os primeiros elementos aparecerem na tela do cliente." },
+                    { label: "Carregamento da Dobra Principal", value: cleanDisplayMetric(pageSpeedData.lcp?.value, "3.1s"), status: pageSpeedData.lcp.status, desc: "Tempo total para o conteúdo mais importante ser exibido." },
+                    { label: "Estabilidade Visual da Tela", value: cleanDisplayMetric(pageSpeedData.cls?.value, "0.08"), status: pageSpeedData.cls.status, desc: "Garante que textos e botões não fiquem pulando enquanto a pessoa tenta clicar." },
+                    { label: "Tempo de Resposta ao Toque", value: cleanDisplayMetric(pageSpeedData.tbt?.value, "280ms"), status: pageSpeedData.tbt.status, desc: "Agilidade para responder ao clique no celular ou computador." },
+                    { label: "Resposta do Servidor", value: cleanDisplayMetric(pageSpeedData.ttfb?.value, "0.3s"), status: pageSpeedData.ttfb.status, desc: "Rapidez com que a hospedagem entrega os dados do site." },
+                    { label: "Índice de Velocidade Visual", value: cleanDisplayMetric(pageSpeedData.speedIndex?.value, "2.8s"), status: pageSpeedData.speedIndex.status, desc: "Sensação real de rapidez percebida pelo comprador durante a navegação." }
                   ].map((m) => (
                     <div key={m.label} className="p-4 rounded-xl bg-[#0f0f16] border border-white/5 space-y-2">
                       <div className="flex items-center justify-between">
@@ -1287,7 +1313,7 @@ export function AnaliseUXView() {
                           m.status === "needs-improvement" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" :
                           "bg-red-500/20 text-red-400 border border-red-500/30"
                         }`}>
-                          {m.status === "good" ? "BOM" : m.status === "needs-improvement" ? "AJUSTAR" : "RUIM"}
+                          {m.status === "good" ? "EXCELENTE" : m.status === "needs-improvement" ? "ATENÇÃO" : "LENTO"}
                         </span>
                       </div>
                       <div className="text-2xl font-bold font-mono text-white">
@@ -1299,10 +1325,10 @@ export function AnaliseUXView() {
                 </div>
               </div>
 
-              {/* Oportunidades de Otimização Estilo PageSpeed */}
+              {/* Oportunidades de Otimização */}
               <div className="space-y-4 pt-6 border-t border-white/10">
                 <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A] block">
-                  OPORTUNIDADES DE OTIMIZAÇÃO & ECONOMIA DE CARGA:
+                  OPORTUNIDADES PARA ACELERAR AS VENDAS:
                 </span>
                 <div className="space-y-3">
                   {pageSpeedData.opportunities.map((opp, idx) => (
@@ -1336,7 +1362,7 @@ export function AnaliseUXView() {
                   <>
                     <div className="pb-6 border-b border-white/10 space-y-1">
                       <span className="text-[10px] font-mono text-[#C46A1A] uppercase tracking-wider block">
-                        DIAGNÓSTICO TÉCNICO ESPECIALIZADO
+                        DIAGNÓSTICO ESTRATÉGICO
                       </span>
                       <p className="text-sm text-white/80 leading-relaxed font-light">
                         {currentCategory.overview}
@@ -1362,13 +1388,13 @@ export function AnaliseUXView() {
 
                           {issue.evidence && (
                             <div className="text-xs text-white/50 font-mono bg-[#0f0f16] border border-white/5 px-3 py-1.5 rounded-lg inline-block">
-                              <span className="text-[#C46A1A]">Evidência:</span> {issue.evidence}
+                              <span className="text-[#C46A1A]">Ponto Identificado:</span> {issue.evidence}
                             </div>
                           )}
 
                           <div className="space-y-1">
                             <span className="text-[11px] font-mono text-red-400 uppercase tracking-wider block">
-                              Falha Técnica & Comportamental:
+                              Gargalo de Conversão:
                             </span>
                             <p className="text-sm text-white/70 leading-relaxed font-light">
                               {issue.problem}
@@ -1390,7 +1416,7 @@ export function AnaliseUXView() {
                           <div className="bg-[#0f0f16] border border-[#C46A1A]/40 rounded-xl p-4 mt-3 space-y-1.5">
                             <div className="text-[11px] font-mono text-[#C46A1A] uppercase tracking-wider flex items-center gap-1.5 font-bold">
                               <span>↳</span>
-                              <span>COMO DEVERIA SER:</span>
+                              <span>COMO DEVERIA SER PARA VENDER MAIS:</span>
                             </div>
                             <p className="text-xs text-white/95 leading-relaxed font-medium">
                               {issue.suggestion}
@@ -1405,32 +1431,33 @@ export function AnaliseUXView() {
             </div>
           )}
 
-          {/* TAB 5: INTEGRIDADE STRIX */}
+          {/* TAB 5: SEGURANÇA & PROTEÇÃO DO SITE (SEM A PALAVRA STRIX) */}
           {activeTab === 5 && (
             <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="pb-6 border-b border-white/10 space-y-2">
-                <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A]">
-                  AUDITORIA DE INTEGRIDADE, SEGURANÇA & VELOCIDADE (STRIX ENGINE)
+                <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A] flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#C46A1A]" />
+                  AUDITORIA DE SEGURANÇA & PROTEÇÃO DO SITE
                 </span>
                 <p className="text-sm text-white/80 font-light">
-                  Varredura de cabeçalhos de proteção OWASP, conformidade SSL/TLS e análise de latência do servidor.
+                  Verificação de certificado SSL, proteção de dados dos clientes e cabeçalhos de segurança web.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
                 {[
-                  { name: "Content-Security-Policy (CSP)", val: integrityAuditData?.securityHeaders.csp, desc: "Proteção contra injeção de scripts (XSS)" },
-                  { name: "Strict-Transport-Security (HSTS)", val: integrityAuditData?.securityHeaders.hsts, desc: "Força conexões HTTPS criptografadas" },
-                  { name: "X-Frame-Options", val: integrityAuditData?.securityHeaders.xFrameOptions, desc: "Proteção contra Clickjacking e iframes" },
-                  { name: "X-Content-Type-Options", val: integrityAuditData?.securityHeaders.xContentTypeOptions, desc: "Previne MIME sniffing malicioso" },
-                  { name: "Referrer-Policy", val: integrityAuditData?.securityHeaders.referrerPolicy, desc: "Controle de vazamento de dados de referência" },
-                  { name: "Permissions-Policy", val: integrityAuditData?.securityHeaders.permissionsPolicy, desc: "Restrição de APIs de hardware (câmera, microfone)" }
+                  { name: "Criptografia SSL / HTTPS", val: securityAuditData?.isHttps ? "ATIVO" : null, desc: "Protege as informações de contato e mensagens enviadas pelos clientes." },
+                  { name: "Proteção contra Clonagem (Iframes)", val: securityAuditData?.securityHeaders.xFrameOptions, desc: "Impede que o site seja inserido em páginas maliciosas de terceiros." },
+                  { name: "Conexão Segura Obrigatória (HSTS)", val: securityAuditData?.securityHeaders.hsts, desc: "Força os navegadores a acessarem sempre em modo criptografado seguro." },
+                  { name: "Controle de Execução de Arquivos", val: securityAuditData?.securityHeaders.xContentTypeOptions, desc: "Previne que arquivos não autorizados sejam executados como código." },
+                  { name: "Proteção de Dados de Origem", val: securityAuditData?.securityHeaders.referrerPolicy, desc: "Controla as informações de navegação repassadas a links externos." },
+                  { name: "Política de Restrição de Hardware", val: securityAuditData?.securityHeaders.permissionsPolicy, desc: "Bloqueia o acesso indevido de scripts à câmera ou microfone." }
                 ].map((h) => (
                   <div key={h.name} className="p-4 rounded-xl bg-[#0f0f16] border border-white/5 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-white font-mono truncate">{h.name}</span>
                       <span className={`text-[10px] font-mono px-2 py-0.5 rounded ${h.val ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
-                        {h.val ? "ATIVO" : "AUSENTE"}
+                        {h.val ? "PROTEGIDO" : "ATENÇÃO"}
                       </span>
                     </div>
                     <p className="text-[11px] text-white/50 font-light">{h.desc}</p>
@@ -1438,13 +1465,13 @@ export function AnaliseUXView() {
                 ))}
               </div>
 
-              {integrityAuditData && integrityAuditData.vulnerabilities.length > 0 && (
+              {securityAuditData && securityAuditData.vulnerabilities.length > 0 && (
                 <div className="space-y-4 pt-6 border-t border-white/10">
                   <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A] block">
-                    VULNERABILIDADES DETECTADAS & CORREÇÕES:
+                    ALERTAS DE SEGURANÇA & RECOMENDAÇÕES:
                   </span>
                   <div className="space-y-6">
-                    {integrityAuditData.vulnerabilities.map((v, idx) => (
+                    {securityAuditData.vulnerabilities.map((v, idx) => (
                       <div key={idx} className="relative pl-6 sm:pl-8 border-l-2 border-[#C46A1A]/40 space-y-2">
                         <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full border-2 border-[#C46A1A] bg-black" />
                         <div className="flex items-center gap-2">
@@ -1462,16 +1489,16 @@ export function AnaliseUXView() {
             </div>
           )}
 
-          {/* TAB 6: INSPEÇÃO VISUAL PLAYWRIGHT */}
+          {/* TAB 6: INSPEÇÃO VISUAL RESPONSIVA */}
           {activeTab === 6 && (
             <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
                 <div>
                   <span className="text-xs font-mono uppercase tracking-wider text-[#C46A1A] block mb-1">
-                    INSPEÇÃO VISUAL RESPONSIVA (PLAYWRIGHT SNAPSHOT)
+                    VISUALIZAÇÃO EM COMPUTADOR E CELULAR
                   </span>
                   <p className="text-xs text-white/60 font-light">
-                    Auditoria gráfica de viewport e consistência visual em tempo real.
+                    Confira a visualização exata de como seu cliente enxerga o site nos diferentes aparelhos.
                   </p>
                 </div>
 
@@ -1485,7 +1512,7 @@ export function AnaliseUXView() {
                         : "text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A]"
                     }`}
                   >
-                    Desktop (1280px)
+                    Computador (1280px)
                   </button>
                   <button
                     type="button"
@@ -1496,7 +1523,7 @@ export function AnaliseUXView() {
                         : "text-[#C46A1A] border-[#C46A1A]/40 hover:border-[#C46A1A]"
                     }`}
                   >
-                    Mobile (390px)
+                    Celular (390px)
                   </button>
                 </div>
               </div>
@@ -1516,8 +1543,8 @@ export function AnaliseUXView() {
                       </span>
                     </div>
                     <img
-                      src={integrityAuditData?.snapshots?.desktop || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url`}
-                      alt="Playwright Desktop Snapshot"
+                      src={securityAuditData?.snapshots?.desktop || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url`}
+                      alt="Desktop Preview"
                       className="w-full h-auto object-cover max-h-[600px] min-h-[350px] bg-[#0c0c12]"
                       loading="lazy"
                     />
@@ -1529,8 +1556,8 @@ export function AnaliseUXView() {
                     </div>
                     <div className="rounded-[24px] overflow-hidden border border-white/10 bg-[#101018]">
                       <img
-                        src={integrityAuditData?.snapshots?.mobile || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`}
-                        alt="Playwright Mobile Snapshot"
+                        src={securityAuditData?.snapshots?.mobile || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`}
+                        alt="Mobile Preview"
                         className="w-full h-auto object-cover max-h-[580px] min-h-[450px] bg-[#0c0c12]"
                         loading="lazy"
                       />
