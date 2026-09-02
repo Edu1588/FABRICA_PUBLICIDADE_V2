@@ -34,7 +34,6 @@ interface MoodboardViewProps {
 }
 
 export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, onSaveClient }) => {
-  // Extrair pinterestUrl e moodboardItems do objeto detalhes / descrição do cliente
   const [pinterestUrl, setPinterestUrl] = useState<string>(() => {
     try {
       if (client.detalhes) {
@@ -42,7 +41,6 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
         if (d.pinterestUrl) return d.pinterestUrl;
       }
     } catch {}
-    // Fallback padrão se for azul ou unimais
     if (client.name?.toLowerCase().includes("azul")) {
       return "https://br.pinterest.com/pin/337770040827289945/";
     }
@@ -51,6 +49,7 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
 
   const [pinterestInput, setPinterestInput] = useState(pinterestUrl);
   const [activePinterestBoard, setActivePinterestBoard] = useState(pinterestUrl);
+  const [containerWidth, setContainerWidth] = useState<number>(1150);
   const [items, setItems] = useState<MoodboardItem[]>(() => {
     try {
       if (client.detalhes) {
@@ -72,6 +71,22 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
   const [isSaved, setIsSaved] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<"pinterest" | "galeria">("pinterest");
   const pinterestContainerRef = useRef<HTMLDivElement>(null);
+
+  // Medir largura real do container para o Pinterest renderizar todas as colunas
+  useEffect(() => {
+    const updateWidth = () => {
+      if (pinterestContainerRef.current) {
+        const w = pinterestContainerRef.current.offsetWidth;
+        if (w > 300) {
+          setContainerWidth(w);
+        }
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, [activeSubTab]);
 
   // Carregar script oficial do Pinterest (pinit.js) e recriar widgets
   const reloadPinterestWidget = () => {
@@ -103,7 +118,7 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
 
   useEffect(() => {
     reloadPinterestWidget();
-  }, [activePinterestBoard, activeSubTab]);
+  }, [activePinterestBoard, activeSubTab, containerWidth]);
 
   const handleApplyPinterestUrl = (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,7 +206,20 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
   const isBoardUrl = /pinterest\.[a-z.]+\/[^/]+\/[^/]+/i.test(activePinterestBoard) && !isPinUrl;
 
   return (
-    <div className="space-y-6 animate-fade-in font-sans text-white">
+    <div className="space-y-6 animate-fade-in font-sans text-white w-full">
+      <style>{`
+        .pinterest-embed-box span[data-pin-do="embedBoard"],
+        .pinterest-embed-box span[data-pin-do="embedPin"],
+        .pinterest-embed-box > span,
+        .pinterest-embed-box iframe {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 100% !important;
+          border-radius: 16px !important;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+        }
+      `}</style>
+
       {/* Botão de Voltar */}
       {onBack && (
         <button
@@ -204,7 +232,7 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
       )}
 
       {/* Cabeçalho do Moodboard */}
-      <div className="bg-[#0c0c10] border border-white/5 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
+      <div className="bg-[#0c0c10] border border-white/5 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl w-full">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
           <div className="flex items-center gap-4">
             <div
@@ -254,14 +282,14 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
               Link da Pasta / Painel do Pinterest
             </label>
             <span className="text-[10px] font-mono text-white/40">
-              Cole o link da pasta ou pin para carregar o visualizador
+              Cole o link da pasta para preencher 100% da largura do box
             </span>
           </div>
 
           <form onSubmit={handleApplyPinterestUrl} className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
-              placeholder="https://br.pinterest.com/usuario/nome-da-pasta/ ou pin individual..."
+              placeholder="https://br.pinterest.com/usuario/nome-da-pasta/..."
               value={pinterestInput}
               onChange={(e) => setPinterestInput(e.target.value)}
               className="flex-1 bg-[#08080c] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#E60023] transition-colors font-mono"
@@ -288,7 +316,7 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
               }`}
             >
               <FolderHeart className="w-3.5 h-3.5" />
-              Pasta Pinterest (Embed)
+              Pasta Pinterest (100% Largura)
             </button>
             <button
               onClick={() => setActiveSubTab("galeria")}
@@ -314,18 +342,21 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
           )}
         </div>
 
-        {/* CONTEÚDO 1: EMBED DO PINTEREST */}
+        {/* CONTEÚDO 1: EMBED DO PINTEREST OCUPANDO 100% DO BOX */}
         {activeSubTab === "pinterest" && (
-          <div className="space-y-4">
-            <div className="bg-[#07070a] border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[500px] overflow-hidden relative">
-              <div ref={pinterestContainerRef} className="w-full flex justify-center items-center py-4">
-                {/* Tag de Embed Oficial do Pinterest */}
+          <div className="space-y-4 w-full">
+            <div className="bg-[#07070a] border border-white/10 rounded-2xl p-2 sm:p-4 flex flex-col items-center justify-center min-h-[550px] overflow-hidden relative w-full">
+              <div 
+                ref={pinterestContainerRef} 
+                className="w-full flex justify-center items-center py-2 pinterest-embed-box overflow-hidden"
+              >
+                {/* Tag de Embed Oficial do Pinterest com largura dinâmica de 100% */}
                 {isBoardUrl ? (
                   <a
                     data-pin-do="embedBoard"
-                    data-pin-board-width="950"
-                    data-pin-scale-height="520"
-                    data-pin-scale-width="160"
+                    data-pin-board-width={containerWidth ? String(containerWidth) : "1200"}
+                    data-pin-scale-height="650"
+                    data-pin-scale-width="180"
                     href={activePinterestBoard}
                     className="w-full"
                   >
@@ -342,12 +373,12 @@ export const MoodboardView: React.FC<MoodboardViewProps> = ({ client, onBack, on
                 )}
               </div>
 
-              {/* Botão de recarga rápida caso o script demore */}
-              <div className="w-full pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/40 font-mono">
+              {/* Barra de Status */}
+              <div className="w-full pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/40 font-mono px-2">
                 <span>Pasta vinculada: {activePinterestBoard}</span>
                 <button
                   onClick={reloadPinterestWidget}
-                  className="text-[#E60023] hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-[#E60023] hover:underline flex items-center gap-1 cursor-pointer font-bold"
                 >
                   <RefreshCw className="w-3 h-3" />
                   Atualizar Visualização do Pinterest
