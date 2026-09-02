@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { AdminDashboard } from '../components/AdminDashboard';
 import { DesignBrandbook } from '../components/DesignBrandbook';
+import { MoodboardView } from '../components/MoodboardView';
 import { JornalManager } from '../components/JornalManager';
 import { AnaliseUXView } from '../components/AnaliseUXView';
 import { fetchPresentationsList, syncPresentationsList, PresentationMeta } from '../lib/presentationService';
@@ -155,6 +156,7 @@ export default function Admin() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showCarrosseis, setShowCarrosseis] = useState(false);
   const [showDesign, setShowDesign] = useState(false);
+  const [showMoodboard, setShowMoodboard] = useState(false);
   const [showJornal, setShowJornal] = useState(false);
   const [activeEditor, setActiveEditor] = useState<'destaque' | 'ofertas' | null>(null);
   const [showEditClient, setShowEditClient] = useState(false);
@@ -1253,8 +1255,8 @@ export default function Admin() {
               </div>
             )}
 
-            {/* STEP 2: Selected Client -> Show Option: "Carrossel", "Design" or "Jornal" */}
-            {activeTab === 'clientes' && selectedClientId && !showCarrosseis && !showDesign && !showJornal && !showEditClient && (
+            {/* STEP 2: Selected Client -> Show Option: "Carrossel", "Design", "Jornal" or "Moodboard" */}
+            {activeTab === 'clientes' && selectedClientId && !showCarrosseis && !showDesign && !showJornal && !showMoodboard && !showEditClient && (
               <div className="space-y-6 animate-fade-in">
                 
                 <button 
@@ -1295,7 +1297,7 @@ export default function Admin() {
                   </div>
 
                   {selectedClientData?.name?.toLowerCase().includes('azul') ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       {/* Option: Card Carrosseis */}
                       <div 
                         onClick={() => setShowCarrosseis(true)}
@@ -1330,10 +1332,30 @@ export default function Admin() {
                           Design & Brandbook
                         </h4>
                         <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
-                          Gerencie a identidade visual, paleta de cores e moodboard do cliente.
+                          Gerencie a identidade visual, paleta de cores e tipografia do cliente.
                         </p>
                         <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#3388FF] transition-colors">
                           <span>Acessar Design</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+
+                      {/* Option: Moodboard & Pinterest */}
+                      <div 
+                        onClick={() => setShowMoodboard(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#E60023]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-[#E60023]/10 border border-[#E60023]/20 flex items-center justify-center text-[#E60023] mb-4 group-hover:bg-[#E60023]/20 transition-colors">
+                          <Sparkles className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#E60023] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Moodboard
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Painel de referências visuais e embed de pasta do Pinterest da marca.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#E60023] transition-colors">
+                          <span>Acessar Moodboard</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
@@ -1359,7 +1381,7 @@ export default function Admin() {
                       </div>
                     </div>
                   ) : selectedClientData?.name?.toLowerCase().includes('unimais') ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       {/* Option 1: Cards Instagram */}
                       <div 
                         onClick={() => setShowCarrosseis(true)}
@@ -1443,16 +1465,36 @@ export default function Admin() {
                           Design & Brandbook
                         </h4>
                         <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
-                          Gerencie a identidade visual, paleta de cores e moodboard do cliente.
+                          Gerencie a identidade visual, paleta de cores e tipografia do cliente.
                         </p>
                         <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
                           <span>Acessar Design</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
+
+                      {/* Option 4: Moodboard & Pinterest */}
+                      <div 
+                        onClick={() => setShowMoodboard(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#E60023]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-[#E60023]/10 border border-[#E60023]/20 flex items-center justify-center text-[#E60023] mb-4 group-hover:bg-[#E60023]/20 transition-colors">
+                          <Sparkles className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#E60023] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Moodboard
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Painel de referências visuais e embed de pasta do Pinterest da marca.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#E60023] transition-colors">
+                          <span>Acessar Moodboard</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
                     </div>
-                  ) : selectedClientData?.name?.toLowerCase().includes('meta') || selectedClientData?.name?.toLowerCase().includes('azul') ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  ) : selectedClientData?.name?.toLowerCase().includes('meta') ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                       {/* Option: Cards Instagram */}
                       <div 
                         onClick={() => setShowCarrosseis(true)}
@@ -1487,10 +1529,30 @@ export default function Admin() {
                           Design & Brandbook
                         </h4>
                         <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
-                          Gerencie a identidade visual, paleta de cores e moodboard do cliente.
+                          Gerencie a identidade visual, paleta de cores e tipografia do cliente.
                         </p>
                         <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
                           <span>Acessar Design</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+
+                      {/* Option: Moodboard */}
+                      <div 
+                        onClick={() => setShowMoodboard(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#E60023]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-[#E60023]/10 border border-[#E60023]/20 flex items-center justify-center text-[#E60023] mb-4 group-hover:bg-[#E60023]/20 transition-colors">
+                          <Sparkles className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#E60023] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Moodboard
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Painel de referências visuais e embed de pasta do Pinterest da marca.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#E60023] transition-colors">
+                          <span>Acessar Moodboard</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
@@ -1509,16 +1571,47 @@ export default function Admin() {
                           Design & Brandbook
                         </h4>
                         <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
-                          Gerencie a identidade visual, paleta de cores e moodboard do cliente.
+                          Gerencie a identidade visual, paleta de cores e tipografia do cliente.
                         </p>
                         <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
                           <span>Acessar Design</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
+
+                      {/* Option: Moodboard */}
+                      <div 
+                        onClick={() => setShowMoodboard(true)}
+                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#E60023]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-[#E60023]/10 border border-[#E60023]/20 flex items-center justify-center text-[#E60023] mb-4 group-hover:bg-[#E60023]/20 transition-colors">
+                          <Sparkles className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#E60023] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          Moodboard
+                        </h4>
+                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                          Painel de referências visuais e embed de pasta do Pinterest da marca.
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#E60023] transition-colors">
+                          <span>Acessar Moodboard</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* STEP 3.4: Moodboard */}
+            {activeTab === 'clientes' && selectedClientId && showMoodboard && (
+              <div className="space-y-6">
+                <MoodboardView 
+                  client={selectedClientData!} 
+                  onBack={() => setShowMoodboard(false)}
+                  onSaveClient={updateSelectedClient}
+                />
               </div>
             )}
 
