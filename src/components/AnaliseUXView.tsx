@@ -118,6 +118,10 @@ export interface AnalysisIssue {
   problem: string;
   impact: string;
   suggestion: string;
+  currentVsIdeal?: {
+    current: string;
+    ideal: string;
+  };
 }
 
 export interface AnalysisCategory {
@@ -321,7 +325,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Cabeçalho principal "${headingH1}" e textos de apoio com tipografia [${fontStr}]`,
           problem: `Os textos principais e secundários estão com tamanhos e pesos muito próximos. O visitante tem dificuldade de bater o olho e escanear as informações mais importantes da sua oferta.`,
           impact: `Aumenta o cansaço visual e faz com que o cliente saia da página antes de entender o diferencial da sua empresa.`,
-          suggestion: `Aumente o tamanho e o peso visual dos títulos de destaque (H1 bem forte e direto) e dê respiros de espaçamento entre as seções para tornar a leitura natural e agradável.`
+          suggestion: `Aumente o tamanho e o peso visual dos títulos de destaque (H1 bem forte e direto) e dê respiros de espaçamento entre as seções para tornar a leitura natural e agradável.`,
+          currentVsIdeal: {
+            current: "Textos de baixa hierarquia: 38% de retencao inicial",
+            ideal: "Tipografia de autoridade com H1 dominante: 88% de retencao"
+          }
         },
         {
           id: "ui-2",
@@ -331,7 +339,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Botões e detalhes utilizando a paleta [${colorStr}]`,
           problem: `As cores dos botões de contato se misturam com as cores de fundo ou elementos decorativos, fazendo com que o botão de WhatsApp ou proposta passe despercebido.`,
           impact: `Reduz a taxa de cliques e a quantidade de pessoas que avançam para falar com a equipe de vendas.`,
-          suggestion: `Utilize uma cor de destaque vibrante e exclusiva para os botões de ação (ex: verde para WhatsApp ou cor de alto contraste), reservando as demais cores apenas para o design de apoio.`
+          suggestion: `Utilize uma cor de destaque vibrante e exclusiva para os botões de ação (ex: verde para WhatsApp ou cor de alto contraste), reservando as demais cores apenas para o design de apoio.`,
+          currentVsIdeal: {
+            current: "Botao camuflado no fundo: baixa taxa de cliques",
+            ideal: "Botao WhatsApp com cor exclusiva e 100% de destaque"
+          }
         }
       ]
     },
@@ -348,7 +360,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Botão de conversão "${firstCTA}" e formulários da página`,
           problem: `Ao clicar em botões ou preencher campos, a página não mostra uma animação rápida ou aviso de que a solicitação foi recebida.`,
           impact: `O cliente fica em dúvida se o clique funcionou, clica várias vezes seguidas ou desiste achando que o site travou.`,
-          suggestion: `Adicione animação suave de clique e mensagem imediata de envio (ex: "Enviando...", "Abrindo WhatsApp...") para transmitir agilidade e profissionalismo.`
+          suggestion: `Adicione animação suave de clique e mensagem imediata de envio (ex: "Enviando...", "Abrindo WhatsApp...") para transmitir agilidade e profissionalismo.`,
+          currentVsIdeal: {
+            current: "Sem feedback de clique: sensacao de lentidao ou travamento",
+            ideal: "Resposta visual em menos de 100ms e abertura agil do WhatsApp"
+          }
         },
         {
           id: "nielsen-2",
@@ -358,7 +374,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Variação visual entre os botões "${firstCTA}" e "${secondCTA}"`,
           problem: `Botões em diferentes partes da página utilizam formatos, bordas e tamanhos sem padrão visual único.`,
           impact: `Passa sensação de amadorismo e confunde o visitante sobre qual ação é a mais importante.`,
-          suggestion: `Padronize todos os botões do site: Botão Principal (destacado e com preenchimento sólido) e Botão Secundário (com contorno sutil).`
+          suggestion: `Padronize todos os botões do site: Botão Principal (destacado e com preenchimento sólido) e Botão Secundário (com contorno sutil).`,
+          currentVsIdeal: {
+            current: "Botoes despadronizados: cliente em duvida onde clicar",
+            ideal: "Design System com padrao unico de Botoes Primarios e Secundarios"
+          }
         }
       ]
     },
@@ -375,7 +395,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Primeira dobra com múltiplos botões e caminhos competindo entre si`,
           problem: `A página apresenta muitas opções ao mesmo tempo logo no início, sem guiar o cliente pelo caminho principal de compra.`,
           impact: `Segundo estudos de conversão, quanto mais opções são apresentadas de uma vez, maior a paralisia do cliente e menor a taxa de fechamento.`,
-          suggestion: `Mantenha apenas 1 chamada principal de destaque na primeira tela (ex: "Ver Estoque com Desconto" ou "Falar com Consultor no WhatsApp") e organize as opções secundárias de forma mais discreta.`
+          suggestion: `Mantenha apenas 1 chamada principal de destaque na primeira tela (ex: "Ver Estoque com Desconto" ou "Falar com Consultor no WhatsApp") e organize as opções secundárias de forma mais discreta.`,
+          currentVsIdeal: {
+            current: "5+ chamadas competindo: paralisia e fuga de 60% dos visitantes",
+            ideal: "1 Chamada Dominante: aumento imediato de contatos no WhatsApp"
+          }
         },
         {
           id: "psy-2",
@@ -385,7 +409,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Estrutura dos menus e botões no topo da página`,
           problem: `A organização dos menus e do contato não segue o padrão comum que as pessoas já estão acostumadas a ver nos grandes sites do mercado.`,
           impact: `O cliente gasta tempo procurando onde clicar em vez de se concentrar nos produtos e ofertas.`,
-          suggestion: `Posicione o logo à esquerda, o menu simples no centro e o botão de contato ou WhatsApp bem visível no canto superior direito.`
+          suggestion: `Posicione o logo à esquerda, o menu simples no centro e o botão de contato ou WhatsApp bem visível no canto superior direito.`,
+          currentVsIdeal: {
+            current: "Menus confusos: tempo perdido procurando o botao de contato",
+            ideal: "Layout padrao de mercado com WhatsApp flutuante sempre a 1 clique"
+          }
         }
       ]
     },
@@ -402,7 +430,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Sequência entre a apresentação "${headingH1}" e as ofertas "${headingH2}"`,
           problem: `O site pede que o cliente tome uma decisão antes de mostrar a autoridade da marca, depoimentos de quem já comprou ou as vantagens reais do produto.`,
           impact: `Gera insegurança no visitante, fazendo com que ele role um pouco e saia sem entrar em contato.`,
-          suggestion: `Siga o roteiro comercial de alta conversão: 1. Oferta Irresistível (Topo) -> 2. Prova Social e Avaliações de Clientes -> 3. Catálogo de Produtos -> 4. Perguntas Frequentes (quebra de objeções) -> 5. Chamada Final de WhatsApp.`
+          suggestion: `Siga o roteiro comercial de alta conversão: 1. Oferta Irresistível (Topo) -> 2. Prova Social e Avaliações de Clientes -> 3. Catálogo de Produtos -> 4. Perguntas Frequentes (quebra de objeções) -> 5. Chamada Final de WhatsApp.`,
+          currentVsIdeal: {
+            current: "Ordem sem roteiro: cliente desconfia e sai sem entrar em contato",
+            ideal: "Funil em 5 passos: Oferta -> Prova Social -> Estoque -> WhatsApp"
+          }
         },
         {
           id: "ia-2",
@@ -412,7 +444,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Botões com textos simples e pouco convidativos`,
           problem: `Palavras genéricas como "Saiba Mais" ou "Enviar" não despertam interesse nem transmitem o benefício imediato da ação.`,
           impact: `Menor taxa de cliques em comparação com chamadas mais dinâmicas e convidativas.`,
-          suggestion: `Substitua por chamadas que vendam o benefício: "Quero Receber as Melhores Ofertas", "Consultar Condições no WhatsApp" ou "Simular Meu Financiamento Agora".`
+          suggestion: `Substitua por chamadas que vendam o benefício: "Quero Receber as Melhores Ofertas", "Consultar Condições no WhatsApp" ou "Simular Meu Financiamento Agora".`,
+          currentVsIdeal: {
+            current: 'Botoes frios como "Saiba Mais": baixa intencao de clique',
+            ideal: 'Botoes de valor: "Consultar Condicoes Especiais no WhatsApp"'
+          }
         }
       ]
     },
@@ -429,7 +465,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `${imagesMissing} fotos encontradas sem texto descritivo`,
           problem: `Sem descrição nas fotos, o Google não consegue identificar quais produtos estão à venda no seu site, deixando de exibi-los nas buscas de imagens e compras.`,
           impact: `Perda diária de potenciais clientes que pesquisam veículos ou produtos no Google e vão parar no site do concorrente.`,
-          suggestion: `Cadastre descrições objetivas em todas as fotos (ex: "Veículo Sedan Prata 2024 - Frente") para turbinar o ranqueamento gratuito no Google.`
+          suggestion: `Cadastre descrições objetivas em todas as fotos (ex: "Veículo Sedan Prata 2024 - Frente") para turbinar o ranqueamento gratuito no Google.`,
+          currentVsIdeal: {
+            current: `${altPercentage}% de fotos invisiveis para as buscas do Google`,
+            ideal: "100% de imagens indexadas e ranqueadas no topo das buscas"
+          }
         },
         {
           id: "a11y-2",
@@ -439,7 +479,11 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
           evidence: `Campos e links da página`,
           problem: `Pessoas navegando por teclado, notebooks sem mouse ou telas acessíveis não conseguem ver qual campo está selecionado.`,
           impact: `Dificulta a experiência de compra de uma parcela de usuários e reduz a nota técnica de acessibilidade no Google.`,
-          suggestion: `Adicione borda de destaque suave no elemento selecionado, garantindo facilidade total de navegação para qualquer dispositivo.`
+          suggestion: `Adicione borda de destaque suave no elemento selecionado, garantindo facilidade total de navegação para qualquer dispositivo.`,
+          currentVsIdeal: {
+            current: "Sem foco visual nos campos: nota técnica reduzida no Google",
+            ideal: "Navegacao universal acessivel e pontuacao maxima no Lighthouse"
+          }
         }
       ]
     }
@@ -748,7 +792,7 @@ export function AnaliseUXView() {
     if (!analysisResult) return;
 
     setIsGeneratingPDF(true);
-    showToast("Renderizando relatório executivo em PDF com logotipo e CTA da Fábrica...");
+    showToast("Renderizando relatório executivo com gráficos comparativos e logotipo...");
 
     try {
       const logoBase64 = await fetchLogoBase64();
@@ -849,7 +893,7 @@ export function AnaliseUXView() {
       // Seção 1: Velocidade e Métricas Comerciais (Google PageSpeed)
       const ps = analysisResult.extractedMetadata.performance?.pageSpeed;
       if (ps) {
-        checkPageBreak(38);
+        checkPageBreak(50);
         pdf.setTextColor(196, 106, 26);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "bold");
@@ -857,9 +901,9 @@ export function AnaliseUXView() {
         currentY += 6;
 
         pdf.setFillColor(250, 248, 245);
-        pdf.roundedRect(margin, currentY, contentWidth, 26, 1.5, 1.5, "F");
+        pdf.roundedRect(margin, currentY, contentWidth, 24, 1.5, 1.5, "F");
         pdf.setDrawColor(230, 210, 190);
-        pdf.roundedRect(margin, currentY, contentWidth, 26, 1.5, 1.5, "S");
+        pdf.roundedRect(margin, currentY, contentWidth, 24, 1.5, 1.5, "S");
 
         pdf.setTextColor(30, 30, 40);
         pdf.setFontSize(8);
@@ -883,7 +927,75 @@ export function AnaliseUXView() {
         const diagLines = pdf.splitTextToSize(diagText, contentWidth - 8);
         pdf.text(diagLines, margin + 4, currentY + 17);
 
-        currentY += 32;
+        currentY += 28;
+
+        // GRÁFICO COMPARATIVO VISUAL (PAGESPEED & RETENÇÃO MOBILE)
+        checkPageBreak(38);
+        pdf.setFillColor(245, 245, 250);
+        pdf.roundedRect(margin, currentY, contentWidth, 32, 2, 2, "F");
+        pdf.setDrawColor(210, 210, 225);
+        pdf.roundedRect(margin, currentY, contentWidth, 32, 2, 2, "S");
+
+        pdf.setTextColor(20, 20, 30);
+        pdf.setFontSize(8.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("GRÁFICO COMPARATIVO: CENÁRIO ATUAL vs PADRÃO IDEAL FÁBRICA", margin + 4, currentY + 5.5);
+
+        // Barra 1: Tempo de Carregamento no Celular
+        const b1Y = currentY + 9;
+        pdf.setFontSize(7);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(70, 70, 80);
+        pdf.text("Tempo de Espera no Celular (4G):", margin + 4, b1Y + 3);
+
+        const barStartX = margin + 46;
+        const barMaxW = contentWidth - 88;
+
+        // Atual (Vermelha)
+        pdf.setFillColor(239, 68, 68);
+        pdf.roundedRect(barStartX, b1Y, barMaxW * 0.75, 4, 1, 1, "F");
+        pdf.setTextColor(185, 28, 28);
+        pdf.setFontSize(6.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(`${cleanLcp} (Lento - Perda de Leads)`, barStartX + barMaxW * 0.75 + 2, b1Y + 3);
+
+        // Ideal Fábrica (Verde)
+        const b2Y = currentY + 16;
+        pdf.setFontSize(7);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(70, 70, 80);
+        pdf.text("Padrão Ideal Fábrica:", margin + 4, b2Y + 3);
+
+        pdf.setFillColor(34, 197, 94);
+        pdf.roundedRect(barStartX, b2Y, barMaxW * 0.22, 4, 1, 1, "F");
+        pdf.setTextColor(21, 128, 61);
+        pdf.setFontSize(6.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("0.8s (Instantâneo - Alta Conversão)", barStartX + barMaxW * 0.22 + 2, b2Y + 3);
+
+        // Barra 2: Retenção de Visitantes
+        const b3Y = currentY + 23;
+        pdf.setFontSize(7);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(70, 70, 80);
+        pdf.text("Retenção nos 3 Primeiros Segundos:", margin + 4, b3Y + 3);
+
+        // Barra Atual vs Ideal
+        pdf.setFillColor(239, 68, 68);
+        pdf.roundedRect(barStartX, b3Y, barMaxW * 0.38, 4, 1, 1, "F");
+        pdf.setTextColor(185, 28, 28);
+        pdf.setFontSize(6.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("38% (Atual)", barStartX + barMaxW * 0.38 + 2, b3Y + 3);
+
+        pdf.setFillColor(34, 197, 94);
+        pdf.roundedRect(barStartX + barMaxW * 0.52, b3Y, barMaxW * 0.36, 4, 1, 1, "F");
+        pdf.setTextColor(21, 128, 61);
+        pdf.setFontSize(6.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("88% (Ideal)", barStartX + barMaxW * 0.52 + barMaxW * 0.36 + 2, b3Y + 3);
+
+        currentY += 36;
       }
 
       // Resumo Executivo Comercial
@@ -941,7 +1053,7 @@ export function AnaliseUXView() {
         currentY += 4;
       }
 
-      // As 5 Categorias Comerciais (Com Altura Dinâmica Sem Cortes)
+      // As 5 Categorias Comerciais (Com Gráficos Comparativos Inline)
       for (let i = 0; i < analysisResult.categories.length; i++) {
         const cat = analysisResult.categories[i];
         checkPageBreak(35);
@@ -967,7 +1079,8 @@ export function AnaliseUXView() {
           const probHeight = probLines.length * 3.8;
           const sugHeight = sugLines.length * 3.8;
           const evidenceHeight = issue.evidence ? 4.5 : 0;
-          const cardHeight = 12 + evidenceHeight + probHeight + sugHeight + 4;
+          const compBoxHeight = issue.currentVsIdeal ? 14 : 0;
+          const cardHeight = 12 + evidenceHeight + probHeight + sugHeight + compBoxHeight + 4;
 
           checkPageBreak(cardHeight + 4);
 
@@ -1014,6 +1127,46 @@ export function AnaliseUXView() {
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "bold");
           pdf.text(sugLines, margin + 3, innerY);
+          innerY += sugHeight + 2.5;
+
+          // BOX COMPARATIVO VISUAL (CENÁRIO ATUAL vs IDEAL FÁBRICA)
+          if (issue.currentVsIdeal) {
+            const barW = (contentWidth - 10) / 2;
+
+            // Box Atual (Vermelho)
+            pdf.setFillColor(254, 242, 242);
+            pdf.roundedRect(margin + 3, innerY, barW, 11, 1, 1, "F");
+            pdf.setDrawColor(252, 165, 165);
+            pdf.roundedRect(margin + 3, innerY, barW, 11, 1, 1, "S");
+
+            pdf.setFillColor(239, 68, 68);
+            pdf.rect(margin + 3, innerY, 2, 11, "F");
+
+            pdf.setFontSize(6);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(185, 28, 28);
+            pdf.text("X CENARIO ATUAL (GARGALO):", margin + 6.5, innerY + 4);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(127, 29, 29);
+            pdf.text(issue.currentVsIdeal.current, margin + 6.5, innerY + 8.5);
+
+            // Box Ideal Fábrica (Verde)
+            pdf.setFillColor(240, 253, 244);
+            pdf.roundedRect(margin + 4 + barW, innerY, barW, 11, 1, 1, "F");
+            pdf.setDrawColor(134, 239, 172);
+            pdf.roundedRect(margin + 4 + barW, innerY, barW, 11, 1, 1, "S");
+
+            pdf.setFillColor(34, 197, 94);
+            pdf.rect(margin + 4 + barW, innerY, 2, 11, "F");
+
+            pdf.setFontSize(6);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(21, 128, 61);
+            pdf.text("+ CENARIO IDEAL FABRICA (ALTA PERFORMANCE):", margin + 7.5 + barW, innerY + 4);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(20, 83, 45);
+            pdf.text(issue.currentVsIdeal.ideal, margin + 7.5 + barW, innerY + 8.5);
+          }
 
           currentY += cardHeight + 4;
         }
@@ -1114,7 +1267,7 @@ export function AnaliseUXView() {
 
       ctaY += pilarBoxH * 2 + 14;
 
-      // BOTÃO DE WHATSAPP DA FÁBRICA (CLICÁVEL)
+      // BOTÃO DE WHATSAPP DA FÁBRICA (SEM EMOJIS CORROMPIDOS + CLICÁVEL)
       const btnW = 120;
       const btnH = 22;
       const btnX = (pageWidth - btnW) / 2;
@@ -1125,12 +1278,12 @@ export function AnaliseUXView() {
       pdf.roundedRect(btnX, btnY, btnW, btnH, 3, 3, "F");
 
       pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(10);
+      pdf.setFontSize(9.5);
       pdf.setFont("helvetica", "bold");
       pdf.text("FALAR COM A FÁBRICA NO WHATSAPP", pageWidth / 2, btnY + 8.5, { align: "center" });
 
-      pdf.setFontSize(12);
-      pdf.text("📱 (19) 97407-0224", pageWidth / 2, btnY + 16, { align: "center" });
+      pdf.setFontSize(11);
+      pdf.text("WHATSAPP: (19) 97407-0224", pageWidth / 2, btnY + 16, { align: "center" });
 
       // Link Clicável no PDF
       const waLink = "https://wa.me/5519974070224?text=Ol%C3%A1!%20Recebi%20o%20relat%C3%B3rio%20de%20auditoria%20e%20gostaria%20de%20conversar%20sobre%20a%20otimiza%C3%A7%C3%A3o%20do%20meu%20site.";
@@ -1145,7 +1298,7 @@ export function AnaliseUXView() {
       pdf.text("Clique no botão acima ou entre em contato direto pelo WhatsApp: (19) 97407-0224", pageWidth / 2, ctaY, { align: "center" });
       pdf.text("Fábrica Publicidade — Todos os direitos reservados • fabricapublicidade.com.br", pageWidth / 2, ctaY + 5, { align: "center" });
 
-      // Numeração de páginas (exceto capa final se desejar, ou todas)
+      // Numeração de páginas
       const totalPages = pdf.getNumberOfPages();
       for (let p = 1; p < totalPages; p++) {
         pdf.setPage(p);
@@ -1162,7 +1315,7 @@ export function AnaliseUXView() {
 
       const domainSafe = new URL(analysisResult.url).hostname.replace(/[^a-zA-Z0-9]/g, "_");
       pdf.save(`Auditoria_Comercial_UX_Velocidade_${domainSafe}_Fabrica.pdf`);
-      showToast("Relatório em PDF com logotipo e CTA exportado com sucesso!");
+      showToast("Relatório em PDF com gráficos comparativos e CTA exportado com sucesso!");
     } catch (err: any) {
       console.error("Erro ao gerar PDF:", err);
       showToast("Erro ao exportar PDF.");
