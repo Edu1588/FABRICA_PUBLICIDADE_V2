@@ -333,75 +333,77 @@ export default function BrotasSlideRenderer({
         // Se tem 3 ou mais textos e não há foto customizada carregada -> NUMBERED STEP CARDS (IMAGE 2 REFERENCE)
         if (hasManyTexts && !hasPhoto) {
           return (
-            <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col md:flex-row p-8 md:p-14 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
-              {/* Left Column: Big Editorial Serif Statement with Bold and Italic contrasts */}
-              <div className="w-full md:w-1/2 flex flex-col justify-center max-w-xl pl-2 md:pl-6 space-y-5 z-10">
-                <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
-                  {slide.categoryLabel || 'Diagnóstico'}
-                </span>
+            <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col justify-center items-center p-6 md:p-12 overflow-hidden select-none">
+              <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-10 lg:gap-16 my-auto z-10">
+                {/* Left Column: Big Editorial Serif Statement with Bold and Italic contrasts */}
+                <div className="w-full md:w-[48%] flex flex-col justify-center space-y-5">
+                  <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                    {slide.categoryLabel || 'Diagnóstico'}
+                  </span>
 
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.12] tracking-tight"
-                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-                >
-                  <SplitText
-                    text={slide.title}
-                    splitType="words"
-                    delay={35}
-                    duration={0.7}
-                    from={{ opacity: 0, y: 30 }}
-                    to={{ opacity: 1, y: 0 }}
-                  />
-                </h2>
+                  <h2
+                    className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.12] tracking-tight"
+                    style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                  >
+                    <SplitText
+                      text={slide.title}
+                      splitType="words"
+                      delay={35}
+                      duration={0.7}
+                      from={{ opacity: 0, y: 30 }}
+                      to={{ opacity: 1, y: 0 }}
+                    />
+                  </h2>
 
-                {slide.subtitle && (
-                  <p className="text-lg md:text-xl font-serif italic text-gray-700 leading-snug">
-                    {slide.subtitle}
+                  {slide.subtitle && (
+                    <p className="text-lg md:text-xl font-serif italic text-gray-700 leading-snug">
+                      {slide.subtitle}
+                    </p>
+                  )}
+
+                  <p className="text-sm md:text-base text-gray-500 font-light leading-relaxed max-w-md">
+                    Para que a população valorize cada entrega, a comunicação pública municipal precisa de estratégia, presença constante e narrativa de impacto.
                   </p>
-                )}
 
-                <p className="text-sm md:text-base text-gray-500 font-light leading-relaxed max-w-md">
-                  Para que a população valorize cada entrega, a comunicação pública municipal precisa de estratégia, presença constante e narrativa de impacto.
-                </p>
-
-                <div className="text-xs font-serif italic text-[#062a1d]/40 pt-4">
-                  Brotas 360° · Comunicação Pública & Governança
+                  <div className="text-xs font-serif italic text-[#062a1d]/40 pt-2">
+                    Brotas 360° · Comunicação Pública & Governança
+                  </div>
                 </div>
-              </div>
 
-              {/* Right Column: Numbered Step Cards (Card 02 highlighted in deep forest green!) */}
-              <div className="w-full md:w-1/2 max-w-xl flex flex-col gap-3.5 my-auto z-10">
-                {slide.texts?.slice(0, 4).map((text, idx) => {
-                  const isFeatured = idx === 1; // Card 02 highlighted in deep green from user reference!
-                  const stepNum = String(idx + 1).padStart(2, '0');
+                {/* Right Column: Numbered Step Cards (Card 02 highlighted in deep forest green!) */}
+                <div className="w-full md:w-[52%] flex flex-col gap-3.5 my-auto">
+                  {slide.texts?.slice(0, 4).map((text, idx) => {
+                    const isFeatured = idx === 1; // Card 02 highlighted in deep green from user reference!
+                    const stepNum = String(idx + 1).padStart(2, '0');
 
-                  return (
-                    <motion.div
-                      key={idx}
-                      {...getAnim(idx)}
-                      className={`p-5 md:p-6 rounded-2xl transition-all duration-300 flex items-start gap-4 md:gap-6 shadow-sm ${
-                        isFeatured
-                          ? 'bg-[#062a1d] text-white shadow-xl shadow-[#062a1d]/25 scale-[1.02]'
-                          : 'bg-white text-gray-800 border border-gray-200/80 hover:border-gray-300'
-                      }`}
-                    >
-                      <span
-                        className={`text-3xl md:text-4xl font-serif font-bold leading-none shrink-0 ${
-                          isFeatured ? 'text-[#FFC20E]' : 'text-[#062a1d]'
+                    return (
+                      <motion.div
+                        key={idx}
+                        {...getAnim(idx)}
+                        className={`p-5 md:p-6 rounded-2xl transition-all duration-300 flex items-start gap-4 md:gap-6 shadow-sm ${
+                          isFeatured
+                            ? 'bg-[#062a1d] text-white shadow-xl shadow-[#062a1d]/25 scale-[1.02]'
+                            : 'bg-white text-gray-800 border border-gray-200/80 hover:border-gray-300'
                         }`}
-                        style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
                       >
-                        {stepNum}
-                      </span>
+                        <span
+                          className={`text-3xl md:text-4xl font-serif font-bold leading-none shrink-0 ${
+                            isFeatured ? 'text-[#FFC20E]' : 'text-[#062a1d]'
+                          }`}
+                          style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                        >
+                          {stepNum}
+                        </span>
 
-                      <div className="space-y-1 flex-1">
-                        <p className={`text-sm md:text-base leading-relaxed ${isFeatured ? 'text-white font-medium' : 'text-gray-700 font-normal'}`}>
-                          {text}
-                        </p>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                        <div className="space-y-1 flex-1">
+                          <p className={`text-sm md:text-base leading-relaxed ${isFeatured ? 'text-white font-medium' : 'text-gray-700 font-normal'}`}>
+                            {text}
+                          </p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Footer */}
@@ -415,55 +417,57 @@ export default function BrotasSlideRenderer({
 
         // Caso tenha foto ou texto explicativo: Clean Editorial Split (Text Left, Framed Photo Right)
         return (
-          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col md:flex-row p-8 md:p-14 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
-            {/* Left Column: Heading + Amber Label + Body */}
-            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl pl-2 md:pl-6 space-y-4">
-              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
-                {slide.categoryLabel || 'Brotas 360°'}
-              </span>
+          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col justify-center items-center p-6 md:p-12 overflow-hidden select-none">
+            <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-10 lg:gap-16 my-auto z-10">
+              {/* Left Column: Heading + Amber Label + Body */}
+              <div className="w-full md:w-1/2 flex flex-col justify-center space-y-4">
+                <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                  {slide.categoryLabel || 'Brotas 360°'}
+                </span>
 
-              <h2
-                className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.15] tracking-tight"
-                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-              >
-                <SplitText
-                  text={slide.title}
-                  splitType="words"
-                  delay={35}
-                  duration={0.7}
-                  from={{ opacity: 0, y: 30 }}
-                  to={{ opacity: 1, y: 0 }}
-                />
-              </h2>
+                <h2
+                  className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.15] tracking-tight"
+                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                >
+                  <SplitText
+                    text={slide.title}
+                    splitType="words"
+                    delay={35}
+                    duration={0.7}
+                    from={{ opacity: 0, y: 30 }}
+                    to={{ opacity: 1, y: 0 }}
+                  />
+                </h2>
 
-              {slide.subtitle && (
-                <p className="text-xl md:text-2xl font-serif italic text-[#062a1d]/85 font-normal leading-snug">
-                  {slide.subtitle}
-                </p>
-              )}
+                {slide.subtitle && (
+                  <p className="text-xl md:text-2xl font-serif italic text-[#062a1d]/85 font-normal leading-snug">
+                    {slide.subtitle}
+                  </p>
+                )}
 
-              <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed pt-2">
-                {slide.texts?.map((item, idx) => (
-                  <motion.p key={idx} {...getAnim(2 + idx)}>
-                    {item}
-                  </motion.p>
-                ))}
+                <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed pt-2">
+                  {slide.texts?.map((item, idx) => (
+                    <motion.p key={idx} {...getAnim(2 + idx)}>
+                      {item}
+                    </motion.p>
+                  ))}
+                </div>
+
+                <div className="text-xs font-serif italic text-[#062a1d]/40 pt-4">
+                  Brotas 360° · Cidade Inteligente & Conectada
+                </div>
               </div>
 
-              <div className="text-xs font-serif italic text-[#062a1d]/40 pt-4">
-                Brotas 360° · Cidade Inteligente & Conectada
-              </div>
-            </div>
-
-            {/* Right Column: Clean Framed Photograph */}
-            <div className="w-full md:w-1/2 h-[340px] md:h-[480px] z-10 relative flex items-center justify-center pr-2 md:pr-6">
-              <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
-                <ImageSlot
-                  slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
-                  defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
-                  label={slide.imageSlots?.[0]?.label || 'Fotografia Territorial'}
-                  className="w-full h-full"
-                />
+              {/* Right Column: Clean Framed Photograph */}
+              <div className="w-full md:w-1/2 h-[340px] md:h-[460px] relative flex items-center justify-center">
+                <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
+                  <ImageSlot
+                    slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
+                    defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
+                    label={slide.imageSlots?.[0]?.label || 'Fotografia Territorial'}
+                    className="w-full h-full"
+                  />
+                </div>
               </div>
             </div>
 
@@ -479,43 +483,45 @@ export default function BrotasSlideRenderer({
       // 3. BEFORE AFTER
       case 'before_after':
         return (
-          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col md:flex-row p-8 md:p-14 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
-            <div className="w-full md:w-1/2 h-[340px] md:h-[480px] z-10 relative flex items-center justify-center pl-2 md:pl-6">
-              <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
-                <ImageSlot
-                  slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
-                  defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
-                  label={slide.imageSlots?.[0]?.label || 'Foto'}
-                  className="w-full h-full"
-                />
+          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col justify-center items-center p-6 md:p-12 overflow-hidden select-none">
+            <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-10 lg:gap-16 my-auto z-10">
+              <div className="w-full md:w-1/2 h-[340px] md:h-[460px] relative flex items-center justify-center">
+                <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
+                  <ImageSlot
+                    slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
+                    defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
+                    label={slide.imageSlots?.[0]?.label || 'Foto'}
+                    className="w-full h-full"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl pr-2 md:pr-6 space-y-4">
-              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
-                {slide.categoryLabel || 'Visão'}
-              </span>
+              <div className="w-full md:w-1/2 flex flex-col justify-center space-y-4">
+                <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                  {slide.categoryLabel || 'Visão'}
+                </span>
 
-              <h2
-                className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.15] tracking-tight"
-                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-              >
-                <SplitText
-                  text={slide.title}
-                  splitType="words"
-                  delay={35}
-                  duration={0.7}
-                  from={{ opacity: 0, y: 30 }}
-                  to={{ opacity: 1, y: 0 }}
-                />
-              </h2>
+                <h2
+                  className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.15] tracking-tight"
+                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                >
+                  <SplitText
+                    text={slide.title}
+                    splitType="words"
+                    delay={35}
+                    duration={0.7}
+                    from={{ opacity: 0, y: 30 }}
+                    to={{ opacity: 1, y: 0 }}
+                  />
+                </h2>
 
-              <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed">
-                {slide.texts?.map((item, idx) => (
-                  <motion.p key={idx} {...getAnim(2 + idx)}>
-                    {item}
-                  </motion.p>
-                ))}
+                <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed">
+                  {slide.texts?.map((item, idx) => (
+                    <motion.p key={idx} {...getAnim(2 + idx)}>
+                      {item}
+                    </motion.p>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -703,65 +709,67 @@ export default function BrotasSlideRenderer({
         ];
 
         return (
-          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col md:flex-row p-8 md:p-14 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
-            {/* Left Column: Asymmetrical 4-Photo Masonry Grid (Image 1 reference) */}
-            <div className="w-full md:w-1/2 h-[380px] md:h-[500px] grid grid-cols-2 gap-3 md:gap-4 my-auto z-10">
-              {/* Left Sub-Column */}
-              <div className="flex flex-col gap-3 md:gap-4 h-full">
-                <div className="h-[44%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
-                  <ImageSlot slotId={slots[0]?.id || 'grid-1'} defaultUrl={slots[0]?.defaultUrl} label={slots[0]?.label} className="w-full h-full object-cover" />
+          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col justify-center items-center p-6 md:p-12 overflow-hidden select-none">
+            <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-10 lg:gap-14 my-auto z-10">
+              {/* Left Column: Asymmetrical 4-Photo Masonry Grid (Image 1 reference) */}
+              <div className="w-full md:w-1/2 h-[380px] md:h-[480px] grid grid-cols-2 gap-3 md:gap-4 my-auto">
+                {/* Left Sub-Column */}
+                <div className="flex flex-col gap-3 md:gap-4 h-full">
+                  <div className="h-[44%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                    <ImageSlot slotId={slots[0]?.id || 'grid-1'} defaultUrl={slots[0]?.defaultUrl} label={slots[0]?.label} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="h-[56%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                    <ImageSlot slotId={slots[1]?.id || 'grid-2'} defaultUrl={slots[1]?.defaultUrl} label={slots[1]?.label} className="w-full h-full object-cover" />
+                  </div>
                 </div>
-                <div className="h-[56%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
-                  <ImageSlot slotId={slots[1]?.id || 'grid-2'} defaultUrl={slots[1]?.defaultUrl} label={slots[1]?.label} className="w-full h-full object-cover" />
+                {/* Right Sub-Column */}
+                <div className="flex flex-col gap-3 md:gap-4 h-full">
+                  <div className="h-[56%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                    <ImageSlot slotId={slots[2]?.id || 'grid-3'} defaultUrl={slots[2]?.defaultUrl} label={slots[2]?.label} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="h-[44%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                    <ImageSlot slotId={slots[3]?.id || 'grid-4'} defaultUrl={slots[3]?.defaultUrl} label={slots[3]?.label} className="w-full h-full object-cover" />
+                  </div>
                 </div>
               </div>
-              {/* Right Sub-Column */}
-              <div className="flex flex-col gap-3 md:gap-4 h-full">
-                <div className="h-[56%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
-                  <ImageSlot slotId={slots[2]?.id || 'grid-3'} defaultUrl={slots[2]?.defaultUrl} label={slots[2]?.label} className="w-full h-full object-cover" />
+
+              {/* Right Column: Editorial Serif Typography (Image 1 match) */}
+              <div className="w-full md:w-1/2 flex flex-col justify-between h-[380px] md:h-[480px] py-2 max-w-lg">
+                <div className="space-y-4">
+                  <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                    {slide.categoryLabel || 'Território & Presença'}
+                  </span>
+
+                  <h2
+                    className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.12] tracking-tight"
+                    style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                  >
+                    <SplitText
+                      text={slide.title}
+                      splitType="words"
+                      delay={35}
+                      duration={0.7}
+                      from={{ opacity: 0, y: 30 }}
+                      to={{ opacity: 1, y: 0 }}
+                    />
+                  </h2>
+
+                  <p className="text-xl md:text-2xl font-serif italic text-[#062a1d]/85 font-normal leading-snug">
+                    Presença territorial forte, estratégica e multiplataforma para Brotas
+                  </p>
                 </div>
-                <div className="h-[44%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
-                  <ImageSlot slotId={slots[3]?.id || 'grid-4'} defaultUrl={slots[3]?.defaultUrl} label={slots[3]?.label} className="w-full h-full object-cover" />
+
+                {slide.texts && (
+                  <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed">
+                    {slide.texts.map((t, idx) => (
+                      <p key={idx}>{t}</p>
+                    ))}
+                  </div>
+                )}
+
+                <div className="text-xs font-serif italic text-[#062a1d]/40 pt-2">
+                  Brotas 360° · Presença Territorial e Audiovisual
                 </div>
-              </div>
-            </div>
-
-            {/* Right Column: Editorial Serif Typography (Image 1 match) */}
-            <div className="w-full md:w-1/2 flex flex-col justify-between h-[380px] md:h-[500px] py-4 max-w-xl z-10">
-              <div className="space-y-4">
-                <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
-                  {slide.categoryLabel || 'Território & Presença'}
-                </span>
-
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.12] tracking-tight"
-                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-                >
-                  <SplitText
-                    text={slide.title}
-                    splitType="words"
-                    delay={35}
-                    duration={0.7}
-                    from={{ opacity: 0, y: 30 }}
-                    to={{ opacity: 1, y: 0 }}
-                  />
-                </h2>
-
-                <p className="text-xl md:text-2xl font-serif italic text-[#062a1d]/85 font-normal leading-snug">
-                  Presença territorial forte, estratégica e multiplataforma para Brotas
-                </p>
-              </div>
-
-              {slide.texts && (
-                <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed max-w-md">
-                  {slide.texts.map((t, idx) => (
-                    <p key={idx}>{t}</p>
-                  ))}
-                </div>
-              )}
-
-              <div className="text-xs font-serif italic text-[#062a1d]/40 pt-4">
-                Brotas 360° · Presença Territorial e Audiovisual
               </div>
             </div>
 
@@ -1281,73 +1289,73 @@ export default function BrotasSlideRenderer({
       case 'mockup_system':
       case 'dashboard':
         return (
-          <div className="relative w-full h-full bg-[#062a1d] text-white p-8 md:p-14 flex flex-col md:flex-row items-center justify-between overflow-hidden select-none">
-            {/* Left Side: Realistic MacBook Laptop Mockup (Image 3 Match) */}
-            <div className="w-full md:w-3/5 h-[340px] md:h-[480px] flex items-center justify-center z-10">
-              <div className="w-full max-w-xl flex flex-col items-center">
-                {/* Laptop Screen Bezel */}
-                <div className="w-full bg-[#111] rounded-t-2xl p-2.5 pb-0 border-2 border-gray-700 shadow-2xl relative">
-                  {/* Top Notch / Camera */}
-                  <div className="w-20 h-3 bg-black rounded-b-md mx-auto flex items-center justify-center mb-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/80"></div>
+          <div className="relative w-full h-full bg-[#062a1d] text-white flex flex-col justify-center items-center p-6 md:p-12 overflow-hidden select-none">
+            <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-10 lg:gap-14 my-auto z-10">
+              {/* Left Side: Realistic MacBook Laptop Mockup (Image 3 Match) */}
+              <div className="w-full md:w-3/5 h-[340px] md:h-[460px] flex items-center justify-center">
+                <div className="w-full max-w-lg flex flex-col items-center">
+                  {/* Laptop Screen Bezel */}
+                  <div className="w-full bg-[#111] rounded-t-2xl p-2.5 pb-0 border-2 border-gray-700 shadow-2xl relative">
+                    <div className="w-20 h-3 bg-black rounded-b-md mx-auto flex items-center justify-center mb-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-400/80"></div>
+                    </div>
+                    <div className="w-full h-60 md:h-68 bg-black rounded-t-lg overflow-hidden relative">
+                      <ImageSlot
+                        slotId={slide.imageSlots?.[0]?.id || `laptop-${slide.id}`}
+                        defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
+                        label={slide.imageSlots?.[0]?.label || 'Dashboard / Sistema'}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
-                  {/* Screen Content */}
-                  <div className="w-full h-64 md:h-72 bg-black rounded-t-lg overflow-hidden relative">
-                    <ImageSlot
-                      slotId={slide.imageSlots?.[0]?.id || `laptop-${slide.id}`}
-                      defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
-                      label={slide.imageSlots?.[0]?.label || 'Dashboard / Sistema'}
-                      className="w-full h-full object-cover"
+                  {/* Laptop Base */}
+                  <div className="w-[108%] h-3.5 bg-gradient-to-b from-gray-300 to-gray-500 rounded-b-xl shadow-2xl relative flex items-center justify-center">
+                    <div className="w-16 h-1 bg-gray-600 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side: High Technology Headline + Stat (Image 3 Match) */}
+              <div className="w-full md:w-2/5 flex flex-col justify-center space-y-5 max-w-md">
+                <div className="space-y-2">
+                  <span className="text-[#FFC20E] uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                    {slide.categoryLabel || 'Tecnologia'}
+                  </span>
+                  <h2
+                    className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-white leading-tight"
+                    style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                  >
+                    <SplitText
+                      text={slide.title}
+                      splitType="words"
+                      delay={35}
+                      duration={0.7}
+                      from={{ opacity: 0, y: 30 }}
+                      to={{ opacity: 1, y: 0 }}
                     />
-                  </div>
+                  </h2>
+                  <p className="text-xl md:text-2xl font-serif italic text-white/80 font-normal">
+                    gestão inteligente & alta tecnologia
+                  </p>
                 </div>
-                {/* Laptop Base (Aluminum edge & notch) */}
-                <div className="w-[108%] h-3.5 bg-gradient-to-b from-gray-300 to-gray-500 rounded-b-xl shadow-2xl relative flex items-center justify-center">
-                  <div className="w-16 h-1 bg-gray-600 rounded-full"></div>
-                </div>
-              </div>
-            </div>
 
-            {/* Right Side: High Technology Headline + Stat (Image 3 Match) */}
-            <div className="w-full md:w-2/5 flex flex-col justify-center pl-4 md:pl-8 space-y-5 z-10 max-w-lg">
-              <div className="space-y-2">
-                <span className="text-[#FFC20E] uppercase tracking-[0.25em] text-xs font-mono font-bold block">
-                  {slide.categoryLabel || 'Tecnologia'}
-                </span>
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-white leading-tight"
-                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-                >
-                  <SplitText
-                    text={slide.title}
-                    splitType="words"
-                    delay={35}
-                    duration={0.7}
-                    from={{ opacity: 0, y: 30 }}
-                    to={{ opacity: 1, y: 0 }}
-                  />
-                </h2>
-                <p className="text-xl md:text-2xl font-serif italic text-white/80 font-normal">
-                  gestão inteligente & alta tecnologia
+                <p className="text-sm md:text-base text-gray-300 font-light leading-relaxed">
+                  {slide.texts?.join(' ') || 'Plataforma integrada de dados, monitoramento e inteligência artificial para aproximar a prefeitura dos cidadãos de Brotas em tempo real.'}
                 </p>
-              </div>
 
-              <p className="text-sm md:text-base text-gray-300 font-light leading-relaxed">
-                {slide.texts?.join(' ') || 'Plataforma integrada de dados, monitoramento e inteligência artificial para aproximar a prefeitura dos cidadãos de Brotas em tempo real.'}
-              </p>
-
-              {/* Big Metric Display */}
-              <div className="pt-3 border-t border-white/15 flex items-baseline gap-4">
-                <span className="text-5xl md:text-6xl font-serif font-black text-[#FFC20E]" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                  360°
-                </span>
-                <div>
-                  <span className="text-sm font-bold text-white uppercase tracking-wide block">
-                    Visão Completa
+                {/* Big Metric Display */}
+                <div className="pt-3 border-t border-white/15 flex items-baseline gap-4">
+                  <span className="text-5xl md:text-6xl font-serif font-black text-[#FFC20E]" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+                    360°
                   </span>
-                  <span className="text-xs text-gray-300 font-light block">
-                    Monitoramento e resposta ágil
-                  </span>
+                  <div>
+                    <span className="text-sm font-bold text-white uppercase tracking-wide block">
+                      Visão Completa
+                    </span>
+                    <span className="text-xs text-gray-300 font-light block">
+                      Monitoramento e resposta ágil
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

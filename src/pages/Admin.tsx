@@ -2945,7 +2945,7 @@ export default function Admin() {
                     {presentations.map((pres) => (
                       <div
                         key={pres.id}
-                        className="bg-[#111116] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 transition-all duration-300 group flex flex-col justify-between"
+                        className="bg-[#111116] border-2 border-[#C46A1A]/50 hover:border-[#C46A1A] rounded-2xl p-6 transition-all duration-300 group flex flex-col justify-between shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.22)]"
                       >
                         <div>
                           {/* Top Tag & Slide Count */}
@@ -2979,7 +2979,7 @@ export default function Admin() {
                             <a
                               href={`/${pres.slug}`}
                               target="_blank"
-                              rel="noreferrer"
+                              rel="noopener noreferrer"
                               className="text-white/40 hover:text-white transition-colors"
                               title="Abrir em nova aba"
                             >
@@ -2992,8 +2992,10 @@ export default function Admin() {
                         <div className="pt-6 border-t border-white/5 mt-6 grid grid-cols-4 gap-2">
                           <a
                             href={`/${pres.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="flex items-center justify-center gap-1 bg-[#1B9C4F]/10 hover:bg-[#1B9C4F]/20 border border-[#1B9C4F]/30 text-[#1B9C4F] font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all text-center font-bold"
-                            title="Ver apresentação em tela cheia"
+                            title="Ver apresentação em nova aba"
                           >
                             <Play className="w-3 h-3" />
                             Ver
@@ -3001,8 +3003,10 @@ export default function Admin() {
 
                           <a
                             href={`/${pres.slug}?edit=true`}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="flex items-center justify-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-outfit text-[9px] uppercase tracking-widest py-2 rounded-lg transition-all text-center font-bold"
-                            title="Editar textos, cores e mídias da apresentação"
+                            title="Editar textos, cores e mídias da apresentação em nova aba"
                           >
                             <Edit3 className="w-3 h-3" />
                             Editar
