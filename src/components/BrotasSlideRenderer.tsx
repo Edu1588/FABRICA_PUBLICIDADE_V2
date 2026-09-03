@@ -532,21 +532,41 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
-      // 4. DATA PERFORMANCE CONCENTRIC GAUGE ARCH (IMAGE 5 REFERENCE)
+      // 4. DATA PERFORMANCE CONCENTRIC GAUGE ARCH (EXACT MATCH TO ATTACHMENT)
       case 'funnel_vertical': {
-        const funnelData = slide.funnelItems || [
-          { label: 'Ações realizadas', width: '100%', color: '#062a1d' },
-          { label: 'Divulgadas oficialmente', width: '70%', color: '#00A859' },
-          { label: 'Compreendidas pela população', width: '50%', color: '#0074BC' },
-          { label: 'Lembradas pelo eleitor', width: '30%', color: '#E53E3E' }
+        const metrics = [
+          {
+            value: '100%',
+            title: 'Ações Realizadas',
+            desc: 'Todas as obras, serviços e melhorias executadas pela gestão municipal.',
+            color: '#062a1d'
+          },
+          {
+            value: '40%',
+            title: 'Divulgadas Oficialmente',
+            desc: 'Parcela que chega a ser publicada nos canais sem um fluxo integrado.',
+            color: '#00A859'
+          },
+          {
+            value: '15%',
+            title: 'Compreendidas na Ponta',
+            desc: 'Mensagens que a população realmente assimila e entende o impacto.',
+            color: '#0074BC'
+          },
+          {
+            value: '5%',
+            title: 'Lembradas pelo Cidadão',
+            desc: 'O que de fato vira aprovação da gestão e capital político duradouro.',
+            color: '#D49A00'
+          }
         ];
 
         return (
-          <div className="relative w-full h-full bg-[#FBFBFA] p-8 md:p-14 flex flex-col justify-between items-center overflow-hidden select-none">
-            {/* Top Centered Header */}
-            <div className="text-center max-w-3xl mx-auto space-y-2 z-10">
+          <div className="relative w-full h-full bg-[#FBFBFA] p-6 md:p-12 flex flex-col justify-between items-center overflow-hidden select-none">
+            {/* Top Centered Header Matching Reference */}
+            <div className="text-center max-w-3xl mx-auto space-y-2 z-10 pt-2">
               <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
-                {slide.categoryLabel || 'Diagnóstico & Métricas'}
+                {slide.categoryLabel || 'Problema'}
               </span>
               <h2
                 className="text-3xl md:text-5xl font-serif font-black text-[#062a1d] tracking-tight"
@@ -561,73 +581,83 @@ export default function BrotasSlideRenderer({
                   to={{ opacity: 1, y: 0 }}
                 />
               </h2>
-              {slide.texts && (
-                <p className="text-sm md:text-base text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-                  {slide.texts.join(' ')}
-                </p>
-              )}
+              <p className="text-sm md:text-base text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
+                Diagnóstico de Percepção: onde a comunicação pública municipal perde alcance e como estruturar a retenção de imagem da prefeitura.
+              </p>
             </div>
 
-            {/* Center Concentric Arch Stage (Exact Image 5 match) */}
-            <div className="relative w-full max-w-4xl mx-auto my-auto flex items-center justify-center h-[340px] md:h-[400px]">
-              <svg viewBox="0 0 500 280" className="w-full max-w-[560px] h-auto drop-shadow-md">
-                {/* Arc 1 (Outer - Deep Forest Green) */}
-                <path d="M 50 250 A 200 200 0 0 1 450 250" fill="none" stroke="#062a1d" strokeWidth="18" strokeLinecap="round" />
-                {/* Arc 2 (Middle - Emerald Green) */}
-                <path d="M 90 250 A 160 160 0 0 1 410 250" fill="none" stroke="#00A859" strokeWidth="16" strokeLinecap="round" />
-                {/* Arc 3 (Inner - Deep Teal) */}
-                <path d="M 130 250 A 120 120 0 0 1 370 250" fill="none" stroke="#0074BC" strokeWidth="14" strokeLinecap="round" />
-                {/* Central Dome (Golden Yellow) */}
-                <path d="M 175 250 A 75 75 0 0 1 325 250 Z" fill="#D49A00" />
-              </svg>
+            {/* Center Concentric Arch Stage (Exact Reference Match) */}
+            <div className="w-full max-w-5xl mx-auto my-auto flex flex-col md:flex-row items-center justify-between gap-6 px-4 z-10">
+              {/* Left Side Metrics (100% Top, 40% Bottom) */}
+              <div className="w-full md:w-1/4 flex flex-col gap-10 md:gap-14 justify-center">
+                <motion.div {...getAnim(0)} className="flex items-start gap-3">
+                  <span className="text-[#062a1d] text-xl font-bold mt-1">▲</span>
+                  <div>
+                    <span className="text-3xl md:text-4xl font-sans font-black text-[#062a1d] block tracking-tight">
+                      {metrics[0].value}
+                    </span>
+                    <h4 className="text-sm font-bold text-gray-900 mt-0.5">{metrics[0].title}</h4>
+                    <p className="text-xs text-gray-500 font-light leading-relaxed mt-0.5">
+                      {metrics[0].desc}
+                    </p>
+                  </div>
+                </motion.div>
 
-              {/* 4 Metric Callouts with Triangles (Exact Image 5 match) */}
-              <div className="absolute top-8 left-4 md:left-12 flex items-start gap-2.5 max-w-[200px]">
-                <span className="text-[#062a1d] text-xl font-bold">▲</span>
-                <div>
-                  <span className="text-2xl md:text-3xl font-serif font-black text-[#062a1d] block">
-                    100
-                  </span>
-                  <span className="text-xs text-gray-600 font-medium leading-tight block">
-                    {funnelData[0]?.label || 'Ações realizadas'}
-                  </span>
-                </div>
+                <motion.div {...getAnim(1)} className="flex items-start gap-3">
+                  <span className="text-[#062a1d] text-xl font-bold mt-1">▲</span>
+                  <div>
+                    <span className="text-3xl md:text-4xl font-sans font-black text-[#062a1d] block tracking-tight">
+                      {metrics[1].value}
+                    </span>
+                    <h4 className="text-sm font-bold text-gray-900 mt-0.5">{metrics[1].title}</h4>
+                    <p className="text-xs text-gray-500 font-light leading-relaxed mt-0.5">
+                      {metrics[1].desc}
+                    </p>
+                  </div>
+                </motion.div>
               </div>
 
-              <div className="absolute bottom-6 left-2 md:left-8 flex items-start gap-2.5 max-w-[200px]">
-                <span className="text-[#062a1d] text-xl font-bold">▲</span>
-                <div>
-                  <span className="text-2xl md:text-3xl font-serif font-black text-[#062a1d] block">
-                    40
-                  </span>
-                  <span className="text-xs text-gray-600 font-medium leading-tight block">
-                    {funnelData[1]?.label || 'Divulgadas'}
-                  </span>
-                </div>
+              {/* Center Concentric Arc Chart */}
+              <div className="w-full md:w-2/4 flex items-center justify-center">
+                <svg viewBox="0 0 500 280" className="w-full max-w-[480px] h-auto drop-shadow-md">
+                  {/* Outer Arc - Deep Forest Green (100%) */}
+                  <path d="M 50 250 A 200 200 0 0 1 450 250" fill="none" stroke="#062a1d" strokeWidth="20" strokeLinecap="round" />
+                  {/* Middle Arc - Emerald Green (40%) */}
+                  <path d="M 95 250 A 155 155 0 0 1 405 250" fill="none" stroke="#00A859" strokeWidth="18" strokeLinecap="round" />
+                  {/* Inner Arc - Deep Teal (15%) */}
+                  <path d="M 140 250 A 110 110 0 0 1 360 250" fill="none" stroke="#0074BC" strokeWidth="16" strokeLinecap="round" />
+                  {/* Central Dome - Warm Golden Dome (5%) */}
+                  <path d="M 185 250 A 65 65 0 0 1 315 250 Z" fill="#D49A00" />
+                </svg>
               </div>
 
-              <div className="absolute top-8 right-4 md:right-12 flex items-start gap-2.5 max-w-[200px] text-left">
-                <span className="text-[#062a1d] text-xl font-bold">▲</span>
-                <div>
-                  <span className="text-2xl md:text-3xl font-serif font-black text-[#062a1d] block">
-                    15
-                  </span>
-                  <span className="text-xs text-gray-600 font-medium leading-tight block">
-                    {funnelData[2]?.label || 'Compreendidas'}
-                  </span>
-                </div>
-              </div>
+              {/* Right Side Metrics (15% Top, 5% Bottom) */}
+              <div className="w-full md:w-1/4 flex flex-col gap-10 md:gap-14 justify-center">
+                <motion.div {...getAnim(2)} className="flex items-start gap-3 text-left">
+                  <span className="text-[#062a1d] text-xl font-bold mt-1">▲</span>
+                  <div>
+                    <span className="text-3xl md:text-4xl font-sans font-black text-[#062a1d] block tracking-tight">
+                      {metrics[2].value}
+                    </span>
+                    <h4 className="text-sm font-bold text-gray-900 mt-0.5">{metrics[2].title}</h4>
+                    <p className="text-xs text-gray-500 font-light leading-relaxed mt-0.5">
+                      {metrics[2].desc}
+                    </p>
+                  </div>
+                </motion.div>
 
-              <div className="absolute bottom-6 right-2 md:right-8 flex items-start gap-2.5 max-w-[200px] text-left">
-                <span className="text-[#062a1d] text-xl font-bold">▲</span>
-                <div>
-                  <span className="text-2xl md:text-3xl font-serif font-black text-[#062a1d] block">
-                    5
-                  </span>
-                  <span className="text-xs text-gray-600 font-medium leading-tight block">
-                    {funnelData[3]?.label || 'Lembradas pelo eleitor'}
-                  </span>
-                </div>
+                <motion.div {...getAnim(3)} className="flex items-start gap-3 text-left">
+                  <span className="text-[#062a1d] text-xl font-bold mt-1">▲</span>
+                  <div>
+                    <span className="text-3xl md:text-4xl font-sans font-black text-[#062a1d] block tracking-tight">
+                      {metrics[3].value}
+                    </span>
+                    <h4 className="text-sm font-bold text-gray-900 mt-0.5">{metrics[3].title}</h4>
+                    <p className="text-xs text-gray-500 font-light leading-relaxed mt-0.5">
+                      {metrics[3].desc}
+                    </p>
+                  </div>
+                </motion.div>
               </div>
             </div>
 
