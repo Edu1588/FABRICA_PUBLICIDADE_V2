@@ -1194,41 +1194,29 @@ export default function Admin() {
                     Selecione o Cliente para Configurar
                   </h3>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                     {clients.filter(c => c.active).map(client => (
                     <div 
                       key={client.id}
                       onClick={() => setSelectedClientId(client.id)}
-                      className={`bg-[#111116] hover:bg-[#161620] border border-white/5 rounded-xl p-6 cursor-pointer transition-all duration-300 group relative overflow-hidden client-card-${client.id}`}
+                      className={`bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/50 hover:border-[#C46A1A] rounded-2xl p-7 cursor-pointer transition-all duration-300 group relative overflow-hidden shadow-[0_0_22px_rgba(196,106,26,0.14)] hover:shadow-[0_0_35px_rgba(196,106,26,0.32)] hover:-translate-y-1 client-card-${client.id}`}
                     >
-                      <style>{`
-                        .client-card-${client.id}:hover {
-                          border-color: ${client.corCliente ? `${client.corCliente}60` : '#C46A1A60'} !important;
-                        }
-                        .client-card-${client.id}:hover .client-name-${client.id} {
-                          color: ${client.corCliente || '#FF7A00'} !important;
-                        }
-                        .client-card-${client.id}:hover .client-blur-${client.id} {
-                          background-color: ${client.corCliente ? `${client.corCliente}15` : '#C46A1A15'} !important;
-                        }
-                      `}</style>
-                      <div className={`absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl transition-colors pointer-events-none client-blur-${client.id}`}></div>
+                      <div className="absolute top-0 right-0 w-36 h-36 bg-[#C46A1A]/10 rounded-full blur-2xl transition-colors pointer-events-none group-hover:bg-[#C46A1A]/20"></div>
                       
                       <div className="flex justify-between items-start">
-                        <span className="text-[9px] font-outfit bg-white/10 text-white/70 px-2 py-0.5 rounded uppercase tracking-wider">
+                        <span className="text-[10px] font-outfit font-semibold bg-[#C46A1A]/20 text-[#FF9D42] border border-[#C46A1A]/40 px-2.5 py-1 rounded uppercase tracking-wider">
                           Ativo
                         </span>
                         {client.logoUrl ? (
-                          <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden p-2 shadow-sm">
+                          <div className="w-16 h-16 rounded-xl bg-black/40 border border-[#C46A1A]/40 flex items-center justify-center overflow-hidden p-2 shadow-sm group-hover:border-[#C46A1A] transition-colors">
                             <img src={client.logoUrl} alt={client.name} className="w-full h-full object-contain" />
                           </div>
                         ) : (
                           <div 
-                            className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold font-outfit shadow-sm"
+                            className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold font-outfit shadow-sm border border-[#C46A1A]/50 group-hover:border-[#C46A1A] transition-colors"
                             style={{ 
-                              backgroundColor: `${client.corCliente || '#FF7A00'}15`, 
-                              color: client.corCliente || '#FF7A00',
-                              border: `1px solid ${client.corCliente || '#FF7A00'}30`
+                              backgroundColor: `${client.corCliente || '#C46A1A'}20`, 
+                              color: client.corCliente || '#FF9D42'
                             }}
                           >
                             {client.name ? client.name.charAt(0).toUpperCase() : 'C'}
@@ -1236,7 +1224,7 @@ export default function Admin() {
                         )}
                       </div>
                       
-                      <h4 className={`text-2xl font-light tracking-wide uppercase mt-4 mb-2 text-[#F5F2EC] transition-colors client-name-${client.id}`} style={{ fontFamily: 'var(--font-outfit)' }}>
+                      <h4 className="text-2xl font-light tracking-wide uppercase mt-5 mb-2 text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                         {client.name || 'Sem Nome'}
                       </h4>
                       
@@ -1244,9 +1232,9 @@ export default function Admin() {
                         {client.description || 'Sem descrição cadastrada.'}
                       </p>
                       
-                      <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white/40 group-hover:text-white transition-colors">
+                      <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                         <span>Acessar Cliente</span>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-4 h-4 text-[#FF9D42] group-hover:translate-x-1.5 transition-transform" />
                       </div>
                     </div>
                     ))}
@@ -1301,20 +1289,20 @@ export default function Admin() {
                       {/* Option: Card Carrosseis */}
                       <div 
                         onClick={() => setShowCarrosseis(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#0055FF]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#3388FF] mb-4 group-hover:bg-[#0055FF]/10 transition-colors">
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF9D42] mb-4 group-hover:bg-[#C46A1A]/20 transition-colors">
                           <ImageIcon className="w-5 h-5" />
                         </div>
                         
-                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#3388FF] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Card Carrosseis
                         </h4>
                         
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Selecione entre o Carrossel Destaque e o Carrossel Ofertas para realizar as edições.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#3388FF] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Carrosseis</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1323,18 +1311,18 @@ export default function Admin() {
                       {/* Option: Design */}
                       <div 
                         onClick={() => setShowDesign(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#0055FF]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#3388FF] mb-4 group-hover:bg-[#0055FF]/10 transition-colors">
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF9D42] mb-4 group-hover:bg-[#C46A1A]/20 transition-colors">
                           <Palette className="w-5 h-5" />
                         </div>
-                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#3388FF] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Design & Brandbook
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Gerencie a identidade visual, paleta de cores e tipografia do cliente.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#3388FF] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Design</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1343,7 +1331,7 @@ export default function Admin() {
                       {/* Option: Moodboard & Pinterest */}
                       <div 
                         onClick={() => setShowMoodboard(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#E60023]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
                         <div className="w-10 h-10 rounded-lg bg-[#E60023]/10 border border-[#E60023]/20 flex items-center justify-center text-[#E60023] mb-4 group-hover:bg-[#E60023]/20 transition-colors">
                           <Sparkles className="w-5 h-5" />
@@ -1351,10 +1339,10 @@ export default function Admin() {
                         <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#E60023] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Moodboard
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Painel de referências visuais e embed de pasta do Pinterest da marca.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#E60023] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Moodboard</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1363,7 +1351,7 @@ export default function Admin() {
                       {/* Option: Card Jornal */}
                       <div 
                         onClick={() => setShowJornal(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#0055FF]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
                         <div className="w-10 h-10 rounded-lg bg-[#0055FF]/10 border border-[#0055FF]/20 flex items-center justify-center text-[#3388FF] mb-4 group-hover:bg-[#0055FF]/20 transition-colors">
                           <Newspaper className="w-5 h-5" />
@@ -1371,10 +1359,10 @@ export default function Admin() {
                         <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#3388FF] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Card Jornal
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Gerencie as edições do jornal impresso, tablóides digitais, encartes e ofertas de veículos.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#3388FF] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Jornal</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1385,20 +1373,20 @@ export default function Admin() {
                       {/* Option 1: Cards Instagram */}
                       <div 
                         onClick={() => setShowCarrosseis(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF9D42] mb-4 group-hover:bg-[#C46A1A]/20 transition-colors">
                           <ImageIcon className="w-5 h-5" />
                         </div>
                         
-                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Cards Instagram
                         </h4>
                         
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Selecione entre o Carrossel Carros e o Carrossel Ofertas para realizar as edições.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Cards Instagram</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1431,7 +1419,7 @@ export default function Admin() {
                           setShowCarrosseis(true);
                           setActiveEditor('destaque');
                         }}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#FFD000]/60 rounded-xl p-6 cursor-pointer transition-all duration-300 group relative overflow-hidden"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group relative overflow-hidden shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
                         <div className="absolute top-3 right-3 bg-[#FFD000] text-black text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
                           NOVO
@@ -1444,10 +1432,10 @@ export default function Admin() {
                           Carros Destaque
                         </h4>
                         
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Lâmina com moldura Destaque Unimais, especificações e preço promocional.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FFD000] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FFD000] transition-colors font-medium">
                           <span>Acessar Carros Destaque</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1456,18 +1444,18 @@ export default function Admin() {
                       {/* Option 3: Design & Brandbook */}
                       <div 
                         onClick={() => setShowDesign(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF9D42] mb-4 group-hover:bg-[#C46A1A]/20 transition-colors">
                           <Palette className="w-5 h-5" />
                         </div>
-                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Design & Brandbook
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Gerencie a identidade visual, paleta de cores e tipografia do cliente.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Design</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1476,7 +1464,7 @@ export default function Admin() {
                       {/* Option 4: Moodboard & Pinterest */}
                       <div 
                         onClick={() => setShowMoodboard(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#E60023]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
                         <div className="w-10 h-10 rounded-lg bg-[#E60023]/10 border border-[#E60023]/20 flex items-center justify-center text-[#E60023] mb-4 group-hover:bg-[#E60023]/20 transition-colors">
                           <Sparkles className="w-5 h-5" />
@@ -1484,10 +1472,10 @@ export default function Admin() {
                         <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#E60023] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Moodboard
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Painel de referências visuais e embed de pasta do Pinterest da marca.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#E60023] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#E60023] transition-colors font-medium">
                           <span>Acessar Moodboard</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1498,20 +1486,20 @@ export default function Admin() {
                       {/* Option: Cards Instagram */}
                       <div 
                         onClick={() => setShowCarrosseis(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF9D42] mb-4 group-hover:bg-[#C46A1A]/20 transition-colors">
                           <ImageIcon className="w-5 h-5" />
                         </div>
                         
-                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Cards Instagram
                         </h4>
                         
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Selecione entre o Carrossel Carros e o Carrossel Ofertas para realizar as edições.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Cards Instagram</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1520,18 +1508,18 @@ export default function Admin() {
                       {/* Option: Design */}
                       <div 
                         onClick={() => setShowDesign(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF9D42] mb-4 group-hover:bg-[#C46A1A]/20 transition-colors">
                           <Palette className="w-5 h-5" />
                         </div>
-                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Design & Brandbook
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Gerencie a identidade visual, paleta de cores e tipografia do cliente.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Design</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1540,7 +1528,7 @@ export default function Admin() {
                       {/* Option: Moodboard */}
                       <div 
                         onClick={() => setShowMoodboard(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#E60023]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
                         <div className="w-10 h-10 rounded-lg bg-[#E60023]/10 border border-[#E60023]/20 flex items-center justify-center text-[#E60023] mb-4 group-hover:bg-[#E60023]/20 transition-colors">
                           <Sparkles className="w-5 h-5" />
@@ -1548,10 +1536,10 @@ export default function Admin() {
                         <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#E60023] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Moodboard
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Painel de referências visuais e embed de pasta do Pinterest da marca.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#E60023] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#E60023] transition-colors font-medium">
                           <span>Acessar Moodboard</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1562,18 +1550,18 @@ export default function Admin() {
                       {/* Option: Design */}
                       <div 
                         onClick={() => setShowDesign(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#C46A1A]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF7A00] mb-4 group-hover:bg-[#C46A1A]/10 transition-colors">
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#FF9D42] mb-4 group-hover:bg-[#C46A1A]/20 transition-colors">
                           <Palette className="w-5 h-5" />
                         </div>
-                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF7A00] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Design & Brandbook
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Gerencie a identidade visual, paleta de cores e tipografia do cliente.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#FF7A00] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
                           <span>Acessar Design</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1582,7 +1570,7 @@ export default function Admin() {
                       {/* Option: Moodboard */}
                       <div 
                         onClick={() => setShowMoodboard(true)}
-                        className="bg-[#111116] hover:bg-[#161620] border border-white/5 hover:border-[#E60023]/40 rounded-xl p-6 cursor-pointer transition-all duration-300 group"
+                        className="bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/40 hover:border-[#C46A1A] rounded-2xl p-6 cursor-pointer transition-all duration-300 group shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.28)] hover:-translate-y-1"
                       >
                         <div className="w-10 h-10 rounded-lg bg-[#E60023]/10 border border-[#E60023]/20 flex items-center justify-center text-[#E60023] mb-4 group-hover:bg-[#E60023]/20 transition-colors">
                           <Sparkles className="w-5 h-5" />
@@ -1590,10 +1578,10 @@ export default function Admin() {
                         <h4 className="text-lg font-light tracking-wide uppercase text-white group-hover:text-[#E60023] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                           Moodboard
                         </h4>
-                        <p className="text-xs text-white font-light leading-relaxed mt-2 mb-6">
+                        <p className="text-xs text-white/60 font-light leading-relaxed mt-2 mb-6">
                           Painel de referências visuais e embed de pasta do Pinterest da marca.
                         </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 font-outfit text-[10px] uppercase tracking-widest text-white group-hover:text-[#E60023] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#E60023] transition-colors font-medium">
                           <span>Acessar Moodboard</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </div>
