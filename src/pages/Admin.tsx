@@ -1207,7 +1207,8 @@ export default function Admin() {
                       <div className="absolute -top-12 -right-12 w-40 h-40 bg-[#FF7A00]/15 rounded-full blur-3xl pointer-events-none group-hover:bg-[#FF7A00]/25 transition-all"></div>
                       
                       <div className="flex justify-between items-start">
-                        <span className="text-[10px] font-outfit font-bold bg-[#FF7A00]/20 text-[#FFA040] border border-[#FF7A00]/60 px-3 py-1 rounded-md uppercase tracking-wider shadow-sm">
+                        <span className="text-[10px] font-outfit font-bold bg-[#1B9C4F]/20 text-[#22C55E] border border-[#22C55E]/50 px-3 py-1 rounded-md uppercase tracking-wider shadow-sm flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse"></span>
                           Ativo
                         </span>
                         {client.logoUrl ? (
