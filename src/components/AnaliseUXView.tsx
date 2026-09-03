@@ -863,9 +863,19 @@ export function AnaliseUXView() {
 
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 14;
+      const margin = 16; // Margem de segurança global em todo o PDF (16mm)
       const contentWidth = pageWidth - margin * 2;
+      const cardInnerPadding = 6; // Margem interna de proteção dentro de cards (6mm de cada lado)
+      const safeCardTextWidth = contentWidth - cardInnerPadding * 2; // 166mm protegidos
       let currentY = 18;
+
+      // FUNÇÃO GLOBAL DE QUEBRA DE TEXTO COM MARGEM DE SEGURANÇA INTEGRADA
+      // Aplica os estilos no PDF antes de calcular a largura e subtrai 2mm extras para nunca vazar
+      const safeSplit = (text: string, maxWidth: number, fontSize: number, fontStyle: "normal" | "bold" = "normal"): string[] => {
+        pdf.setFontSize(fontSize);
+        pdf.setFont("helvetica", fontStyle);
+        return pdf.splitTextToSize(text, Math.max(10, maxWidth - 2));
+      };
 
       const drawHeader = () => {
         pdf.setFillColor(10, 10, 15);
@@ -923,36 +933,37 @@ export function AnaliseUXView() {
       drawHeader();
       currentY = 48;
 
-      // Metadados visuais e estruturais
-      checkPageBreak(30);
-      pdf.setFillColor(245, 245, 248);
-      pdf.roundedRect(margin, currentY, contentWidth, 24, 2, 2, "F");
-      pdf.setDrawColor(220, 220, 230);
-      pdf.roundedRect(margin, currentY, contentWidth, 24, 2, 2, "S");
-
-      pdf.setTextColor(20, 20, 30);
-      pdf.setFontSize(9);
-      pdf.setFont("helvetica", "bold");
-      pdf.text("DADOS VISUAIS & ESTRUTURAIS IDENTIFICADOS NO SITE:", margin + 4, currentY + 6);
-
-      pdf.setFontSize(8);
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor(70, 70, 80);
+      // Metadados visuais e estruturais com altura calculada e margem interna de segurança
       const colorsText = `Cores da Marca: ${analysisResult.extractedMetadata.colors.join(", ")}`;
       const fontsText = `Fontes Utilizadas: ${analysisResult.extractedMetadata.fonts.join(", ")}`;
       const structText = `Título: ${analysisResult.extractedMetadata.pageTitle} | Fotos: ${analysisResult.extractedMetadata.imagesCount} (Sem Desc: ${analysisResult.extractedMetadata.imagesMissingAlt}) | Servidor: ${analysisResult.extractedMetadata.performance?.responseTimeMs || 320}ms`;
 
-      const colorsLines = pdf.splitTextToSize(colorsText, contentWidth - 8);
-      const fontsLines = pdf.splitTextToSize(fontsText, contentWidth - 8);
-      const structLines = pdf.splitTextToSize(structText, contentWidth - 8);
+      const colorsLines = safeSplit(colorsText, safeCardTextWidth, 7.5, "normal");
+      const fontsLines = safeSplit(fontsText, safeCardTextWidth, 7.5, "normal");
+      const structLines = safeSplit(structText, safeCardTextWidth, 7.5, "normal");
+      const metaBoxH = 12 + (colorsLines.length + fontsLines.length + structLines.length) * 3.8;
 
-      pdf.text(colorsLines, margin + 4, currentY + 11);
-      const fontsStartY = currentY + 11 + colorsLines.length * 3.8;
-      pdf.text(fontsLines, margin + 4, fontsStartY);
+      checkPageBreak(metaBoxH + 4);
+      pdf.setFillColor(245, 245, 248);
+      pdf.roundedRect(margin, currentY, contentWidth, metaBoxH, 2, 2, "F");
+      pdf.setDrawColor(220, 220, 230);
+      pdf.roundedRect(margin, currentY, contentWidth, metaBoxH, 2, 2, "S");
+
+      pdf.setTextColor(20, 20, 30);
+      pdf.setFontSize(8.5);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("DADOS VISUAIS & ESTRUTURAIS IDENTIFICADOS NO SITE:", margin + cardInnerPadding, currentY + 5.5);
+
+      pdf.setTextColor(70, 70, 80);
+      pdf.setFontSize(7.5);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(colorsLines, margin + cardInnerPadding, currentY + 10.5);
+      const fontsStartY = currentY + 10.5 + colorsLines.length * 3.8;
+      pdf.text(fontsLines, margin + cardInnerPadding, fontsStartY);
       const structStartY = fontsStartY + fontsLines.length * 3.8;
-      pdf.text(structLines, margin + 4, structStartY);
+      pdf.text(structLines, margin + cardInnerPadding, structStartY);
 
-      currentY += 30;
+      currentY += metaBoxH + 6;
 
       // Seção 1: Velocidade e Métricas Comerciais (Google PageSpeed)
       const ps = analysisResult.extractedMetadata.performance?.pageSpeed;
@@ -1012,15 +1023,14 @@ export function AnaliseUXView() {
         const cleanTtfb = cleanDisplayMetric(ps.ttfb?.value, "0.3s");
 
         const metricsLine = `Abertura: ${cleanFcp} | Principal: ${cleanLcp} | Estabilidade: ${cleanCls} | Toque: ${cleanTbt} | Servidor: ${cleanTtfb}`;
-        const metricsLines = pdf.splitTextToSize(metricsLine, contentWidth - 8);
-        pdf.text(metricsLines, margin + 4, currentY + 6);
+        const metricsLines = safeSplit(metricsLine, safeCardTextWidth, 7, "normal");
+        pdf.setTextColor(80, 80, 90);
+        pdf.text(metricsLines, margin + cardInnerPadding, currentY + 6);
         
-        pdf.setFontSize(7.5);
-        pdf.setFont("helvetica", "bold");
         pdf.setTextColor(16, 120, 60);
         const diagText = `Diagnóstico Comercial: Otimizar o peso das fotos e carregar scripts de atendimento em segundo plano. Isso acelera o site no 4G/5G, reduz a perda de clientes no celular e aumenta o envio de mensagens no WhatsApp.`;
-        const diagLines = pdf.splitTextToSize(diagText, contentWidth - 14);
-        pdf.text(diagLines, margin + 4, currentY + 11.5);
+        const diagLines = safeSplit(diagText, safeCardTextWidth, 7.5, "bold");
+        pdf.text(diagLines, margin + cardInnerPadding, currentY + 11.5);
 
         currentY += 26;
 
@@ -1185,7 +1195,7 @@ export function AnaliseUXView() {
         .replace(/\*\*/g, "")
         .replace(/\*/g, "");
 
-      const summaryLines = pdf.splitTextToSize(cleanSummary, contentWidth);
+      const summaryLines = safeSplit(cleanSummary, contentWidth - 4, 8.5, "normal");
       pdf.text(summaryLines, margin, currentY);
       currentY += summaryLines.length * 4.2 + 6;
 
@@ -1200,23 +1210,23 @@ export function AnaliseUXView() {
 
         for (const bq of analysisResult.blockquotes) {
           const fullQuoteText = `"${bq.text}" ${bq.contextNote ? `— ${bq.contextNote}` : ""}`;
-          const quoteLines = pdf.splitTextToSize(fullQuoteText, contentWidth - 10);
-          const bqHeight = Math.max(12, 7 + quoteLines.length * 3.8);
+          const quoteLines = safeSplit(fullQuoteText, safeCardTextWidth, 7.5, "normal");
+          const bqHeight = Math.max(13, 7 + quoteLines.length * 3.8);
 
           checkPageBreak(bqHeight + 2);
           pdf.setFillColor(250, 248, 245);
           pdf.roundedRect(margin, currentY, contentWidth, bqHeight, 1, 1, "F");
           pdf.setFillColor(196, 106, 26);
-          pdf.rect(margin, currentY, 2, bqHeight, "F");
+          pdf.rect(margin, currentY, 2.5, bqHeight, "F");
 
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "bold");
           pdf.setTextColor(196, 106, 26);
-          pdf.text(`[${bq.id}] ${bq.issueTitle || bq.location}:`, margin + 4, currentY + 4.5);
+          pdf.text(`[${bq.id}] ${bq.issueTitle || bq.location}:`, margin + cardInnerPadding, currentY + 4.5);
 
           pdf.setFont("helvetica", "normal");
           pdf.setTextColor(60, 60, 70);
-          pdf.text(quoteLines, margin + 4, currentY + 8.5);
+          pdf.text(quoteLines, margin + cardInnerPadding, currentY + 8.5);
 
           currentY += bqHeight + 3;
         }
@@ -1237,46 +1247,40 @@ export function AnaliseUXView() {
         pdf.setFontSize(8);
         pdf.setFont("helvetica", "normal");
         pdf.setTextColor(90, 90, 100);
-        const overviewLines = pdf.splitTextToSize(cat.overview.replace(/\*\*/g, ""), contentWidth);
+        const overviewLines = safeSplit(cat.overview.replace(/\*\*/g, ""), contentWidth - 4, 8, "normal");
         pdf.text(overviewLines, margin, currentY);
         currentY += overviewLines.length * 4 + 4;
 
         for (const issue of cat.issues) {
           const isCritical = issue.severity === "Crítico";
-          const safeInnerW = contentWidth - 16; 
 
-          pdf.setFontSize(8.5);
-          pdf.setFont("helvetica", "bold");
-          const titleLines = pdf.splitTextToSize(issue.title, safeInnerW - 22);
+          // 1. Título com respiro
+          const titleLines = safeSplit(issue.title, safeCardTextWidth - 22, 8.5, "bold");
           const titleHeight = titleLines.length * 4.2;
 
-          pdf.setFontSize(7);
-          pdf.setFont("helvetica", "normal");
+          // 2. Evidência com respiro
           const evidLines = issue.evidence
-            ? pdf.splitTextToSize(`Foco: ${issue.principle} | Ponto: ${issue.evidence}`, safeInnerW)
+            ? safeSplit(`Foco: ${issue.principle} | Ponto: ${issue.evidence}`, safeCardTextWidth, 7, "normal")
             : [];
           const evidHeight = evidLines.length > 0 ? evidLines.length * 3.6 + 1 : 0;
 
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "normal");
-          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, safeInnerW);
+          // 3. Gargalo com respiro
+          const probLines = safeSplit(`Gargalo: ${issue.problem}`, safeCardTextWidth, 7.5, "normal");
           const probHeight = probLines.length * 3.8;
 
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "bold");
-          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, safeInnerW);
+          // 4. Como Resolver com respiro rigoroso em BOLD
+          const sugLines = safeSplit(`Como Resolver: ${issue.suggestion}`, safeCardTextWidth, 7.5, "bold");
           const sugHeight = sugLines.length * 4.0;
 
+          // 5. Boxes Comparativos com respiro
           const hasComp = !!issue.currentVsIdeal;
           let compBoxHeight = 0;
           let curTextLines: string[] = [];
           let idlTextLines: string[] = [];
           if (hasComp && issue.currentVsIdeal) {
-            pdf.setFontSize(6.5);
-            pdf.setFont("helvetica", "bold");
-            const compInnerW = safeInnerW - 12;
-            curTextLines = pdf.splitTextToSize(`X CENARIO ATUAL: ${issue.currentVsIdeal.current}`, compInnerW);
-            idlTextLines = pdf.splitTextToSize(`+ IDEAL FABRICA: ${issue.currentVsIdeal.ideal}`, compInnerW);
+            const compInnerW = safeCardTextWidth - 10;
+            curTextLines = safeSplit(`X CENARIO ATUAL: ${issue.currentVsIdeal.current}`, compInnerW, 6.5, "bold");
+            idlTextLines = safeSplit(`+ IDEAL FABRICA: ${issue.currentVsIdeal.ideal}`, compInnerW, 6.5, "bold");
             compBoxHeight = 6 + curTextLines.length * 3.3 + 3 + idlTextLines.length * 3.3 + 4;
           }
 
@@ -1307,48 +1311,48 @@ export function AnaliseUXView() {
             pdf.setTextColor(110, 110, 120);
             pdf.setFontSize(7);
             pdf.setFont("helvetica", "normal");
-            pdf.text(evidLines, margin + 5, innerY);
+            pdf.text(evidLines, margin + cardInnerPadding, innerY);
             innerY += evidHeight;
           }
 
           pdf.setTextColor(60, 60, 70);
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "normal");
-          pdf.text(probLines, margin + 5, innerY);
+          pdf.text(probLines, margin + cardInnerPadding, innerY);
           innerY += probHeight + 2;
 
           pdf.setTextColor(16, 120, 60);
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "bold");
-          pdf.text(sugLines, margin + 5, innerY);
+          pdf.text(sugLines, margin + cardInnerPadding, innerY);
           innerY += sugHeight + 2.5;
 
           if (hasComp && issue.currentVsIdeal) {
-            const compW = contentWidth - 10;
+            const compW = contentWidth - 12;
             const curBoxH = 4 + curTextLines.length * 3.3;
             const idlBoxH = 4 + idlTextLines.length * 3.3;
 
             pdf.setFillColor(254, 242, 242);
-            pdf.roundedRect(margin + 5, innerY, compW, curBoxH, 1, 1, "F");
+            pdf.roundedRect(margin + cardInnerPadding, innerY, compW, curBoxH, 1, 1, "F");
             pdf.setFillColor(239, 68, 68);
-            pdf.rect(margin + 5, innerY, 2, curBoxH, "F");
+            pdf.rect(margin + cardInnerPadding, innerY, 2, curBoxH, "F");
 
             pdf.setFontSize(6.5);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(185, 28, 28);
-            pdf.text(curTextLines, margin + 9, innerY + 3.5);
+            pdf.text(curTextLines, margin + cardInnerPadding + 4, innerY + 3.5);
 
             innerY += curBoxH + 2;
 
             pdf.setFillColor(240, 253, 244);
-            pdf.roundedRect(margin + 5, innerY, compW, idlBoxH, 1, 1, "F");
+            pdf.roundedRect(margin + cardInnerPadding, innerY, compW, idlBoxH, 1, 1, "F");
             pdf.setFillColor(34, 197, 94);
-            pdf.rect(margin + 5, innerY, 2, idlBoxH, "F");
+            pdf.rect(margin + cardInnerPadding, innerY, 2, idlBoxH, "F");
 
             pdf.setFontSize(6.5);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(21, 128, 61);
-            pdf.text(idlTextLines, margin + 9, innerY + 3.5);
+            pdf.text(idlTextLines, margin + cardInnerPadding + 4, innerY + 3.5);
           }
 
           currentY += cardHeight + 4;
@@ -1404,9 +1408,9 @@ export function AnaliseUXView() {
       // Parágrafo de Apoio
       pdf.setTextColor(180, 180, 195);
       pdf.setFontSize(9);
-      pdf.setFont("helvetica", "normal");
       const ctaDesc = "A Fábrica Publicidade desenvolve ecossistemas digitais de alta conversão, unindo design de autoridade, máxima velocidade no celular e estratégias validadas para transformar visitantes em clientes reais.";
-      const ctaDescLines = pdf.splitTextToSize(ctaDesc, contentWidth - 10);
+      const ctaDescLines = safeSplit(ctaDesc, contentWidth - 16, 8.5, "normal");
+      pdf.setTextColor(180, 180, 195);
       pdf.text(ctaDescLines, pageWidth / 2, ctaY, { align: "center" });
 
       ctaY += ctaDescLines.length * 4.5 + 8;
@@ -1442,9 +1446,7 @@ export function AnaliseUXView() {
         pdf.text(p.title, bx + 9, by + 7);
 
         pdf.setTextColor(140, 140, 155);
-        pdf.setFontSize(7);
-        pdf.setFont("helvetica", "normal");
-        const pLines = pdf.splitTextToSize(p.desc, pilarBoxW - 8);
+        const pLines = safeSplit(p.desc, pilarBoxW - 10, 6.5, "normal");
         pdf.text(pLines, bx + 5, by + 12);
       });
 
