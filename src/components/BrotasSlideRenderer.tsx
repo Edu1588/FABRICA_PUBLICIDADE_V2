@@ -88,24 +88,15 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
   Globe
 };
 
-// Official Brotas Pinwheel Logo Component
+// Official Brotas Logo Component
 function BrotasLogoBadge({ className = '' }: { className?: string }) {
   return (
-    <div className={`bg-white rounded-2xl shadow-xl px-5 py-3 flex flex-col items-center justify-center border border-black/5 ${className}`}>
-      <svg viewBox="0 0 100 70" className="w-14 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M42 22C35 14 24 16 28 8C32 0 46 10 42 22Z" fill="#0074BC" />
-        <circle cx="27" cy="10" r="3.5" fill="#0074BC" />
-        <path d="M58 22C65 14 76 16 72 8C68 0 54 10 58 22Z" fill="#ED1C24" />
-        <circle cx="73" cy="10" r="3.5" fill="#ED1C24" />
-        <path d="M42 36C35 44 24 42 28 50C32 58 46 48 42 36Z" fill="#00A651" />
-        <circle cx="27" cy="48" r="3.5" fill="#00A651" />
-        <path d="M58 36C65 44 76 42 72 50C68 58 54 48 58 36Z" fill="#FFC20E" />
-        <circle cx="73" cy="48" r="3.5" fill="#FFC20E" />
-        <circle cx="50" cy="29" r="3" fill="#0074BC" />
-      </svg>
-      <span className="text-[#0074BC] font-black text-sm tracking-tight -mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-        Brotas
-      </span>
+    <div className={`bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl px-4 py-2 flex items-center justify-center border border-black/5 ${className}`}>
+      <img 
+        src="https://res.cloudinary.com/ifuatk2z/image/upload/v1788459496/APRESENTACAO_BROTAS.png" 
+        alt="Brotas 360°" 
+        className="h-10 md:h-12 w-auto object-contain"
+      />
     </div>
   );
 }
@@ -532,138 +523,343 @@ export default function BrotasSlideRenderer({
           </div>
         );
 
-      // 4. DATA PERFORMANCE CONCENTRIC GAUGE ARCH (EXACT MATCH TO ATTACHMENT)
+      // 4. FUNNEL DIAGRAM 3D WITH TREE & HORIZONTAL BARS (EXACT MATCH TO USER ATTACHMENT)
       case 'funnel_vertical': {
-        const metrics = [
+        const isSolutionFunnel = slide.id === 11 || slide.category === 'metodologia';
+
+        const funnelRows = isSolutionFunnel ? [
           {
-            value: '100%',
+            pct: '100%',
+            barText: 'Pesquisa & Diagnóstico',
+            title: 'Pesquisa Quantitativa & Qualitativa',
+            desc: 'Levantamento de dados, mapa de calor dos bairros e percepção popular.',
+          },
+          {
+            pct: '75%',
+            barText: 'Planejamento Estratégico',
+            title: 'Linha Editorial & Tom de Voz',
+            desc: 'Definição de narrativas-chave, matriz de canais e calendário oficial.',
+          },
+          {
+            pct: '50%',
+            barText: 'Produção de Conteúdo',
+            title: 'Criação Visual & Audiovisual',
+            desc: 'Vídeos em campo, enxoval gráfico, redes sociais e assessoria de imprensa.',
+          },
+          {
+            pct: '25%',
+            barText: 'Distribuição & Impacto',
+            title: 'Entrega na Ponta & Retenção',
+            desc: 'Informação que chega e transforma entregas em aprovação da gestão.',
+          }
+        ] : [
+          {
+            pct: '100%',
+            barText: 'Ações Realizadas',
             title: 'Ações Realizadas',
             desc: 'Todas as obras, serviços e melhorias executadas pela gestão municipal.',
-            color: '#062a1d'
           },
           {
-            value: '40%',
+            pct: '40%',
+            barText: 'Divulgadas Oficialmente',
             title: 'Divulgadas Oficialmente',
             desc: 'Parcela que chega a ser publicada nos canais sem um fluxo integrado.',
-            color: '#00A859'
           },
           {
-            value: '15%',
+            pct: '15%',
+            barText: 'Compreendidas na Ponta',
             title: 'Compreendidas na Ponta',
             desc: 'Mensagens que a população realmente assimila e entende o impacto.',
-            color: '#0074BC'
           },
           {
-            value: '5%',
+            pct: '5%',
+            barText: 'Lembradas pelo Cidadão',
             title: 'Lembradas pelo Cidadão',
             desc: 'O que de fato vira aprovação da gestão e capital político duradouro.',
-            color: '#D49A00'
           }
         ];
 
         return (
-          <div className="relative w-full h-full bg-[#FBFBFA] p-6 md:p-12 flex flex-col justify-between items-center overflow-hidden select-none">
-            {/* Top Centered Header Matching Reference */}
-            <div className="text-center max-w-3xl mx-auto space-y-2 z-10 pt-2">
-              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
-                {slide.categoryLabel || 'Problema'}
-              </span>
-              <h2
-                className="text-3xl md:text-5xl font-serif font-black text-[#062a1d] tracking-tight"
-                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-              >
-                <SplitText
-                  text={slide.title}
-                  splitType="words"
-                  delay={35}
-                  duration={0.7}
-                  from={{ opacity: 0, y: 30 }}
-                  to={{ opacity: 1, y: 0 }}
-                />
-              </h2>
-              <p className="text-sm md:text-base text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-                Diagnóstico de Percepção: onde a comunicação pública municipal perde alcance e como estruturar a retenção de imagem da prefeitura.
-              </p>
+          <div className="relative w-full h-full bg-[#FAF9F6] p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none">
+            {/* Top Right Header Section (Exact Match to Attachment) */}
+            <div className="w-full flex flex-col md:flex-row items-start md:items-end justify-between gap-4 z-10 pt-1 pb-3 border-b border-black/5">
+              <div>
+                <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                  {slide.categoryLabel || (isSolutionFunnel ? 'Metodologia' : 'Diagnóstico & Percepção')}
+                </span>
+                <span className="text-xs font-serif italic text-[#062a1d]/70">
+                  Brotas 360° · Sistema Integrado de Comunicação
+                </span>
+              </div>
+              
+              <div className="text-left md:text-right max-w-lg">
+                <h2
+                  className="text-2xl md:text-4xl font-serif font-black text-[#062a1d] tracking-tight"
+                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                >
+                  <SplitText
+                    text={slide.title}
+                    splitType="words"
+                    delay={30}
+                    duration={0.6}
+                    from={{ opacity: 0, y: 20 }}
+                    to={{ opacity: 1, y: 0 }}
+                  />
+                </h2>
+                <p className="text-xs md:text-sm text-gray-500 font-light mt-1 leading-relaxed">
+                  {isSolutionFunnel
+                    ? 'Do diagnóstico profundo até a distribuição multicanal de alto impacto.'
+                    : 'Onde a comunicação municipal perde alcance e como estruturar a retenção de imagem.'}
+                </p>
+              </div>
             </div>
 
-            {/* Center Concentric Arch Stage (Exact Reference Match) */}
-            <div className="w-full max-w-5xl mx-auto my-auto flex flex-col md:flex-row items-center justify-between gap-6 px-4 z-10">
-              {/* Left Side Metrics (100% Top, 40% Bottom) */}
-              <div className="w-full md:w-1/4 flex flex-col gap-10 md:gap-14 justify-center">
-                <motion.div {...getAnim(0)} className="flex items-start gap-3">
-                  <span className="text-[#062a1d] text-xl font-bold mt-1">▲</span>
-                  <div>
-                    <span className="text-3xl md:text-4xl font-sans font-black text-[#062a1d] block tracking-tight">
-                      {metrics[0].value}
-                    </span>
-                    <h4 className="text-sm font-bold text-gray-900 mt-0.5">{metrics[0].title}</h4>
-                    <p className="text-xs text-gray-500 font-light leading-relaxed mt-0.5">
-                      {metrics[0].desc}
-                    </p>
-                  </div>
-                </motion.div>
+            {/* Central Funnel Diagram Stage matching Attachment */}
+            <div className="w-full max-w-6xl mx-auto my-auto flex items-center justify-center z-10 py-2">
+              <svg
+                viewBox="0 0 1020 460"
+                className="w-full h-auto max-h-[460px] drop-shadow-sm select-none"
+                style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
+              >
+                <defs>
+                  {/* Tree Foliage Gradients */}
+                  <radialGradient id="foliageGrad1" cx="40%" cy="40%" r="60%">
+                    <stop offset="0%" stopColor="#0f4534" />
+                    <stop offset="100%" stopColor="#06261c" />
+                  </radialGradient>
+                  <radialGradient id="foliageGrad2" cx="35%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#145943" />
+                    <stop offset="100%" stopColor="#093526" />
+                  </radialGradient>
+                  <radialGradient id="foliageGrad3" cx="45%" cy="45%" r="55%">
+                    <stop offset="0%" stopColor="#1a6e54" />
+                    <stop offset="100%" stopColor="#0b3e2d" />
+                  </radialGradient>
 
-                <motion.div {...getAnim(1)} className="flex items-start gap-3">
-                  <span className="text-[#062a1d] text-xl font-bold mt-1">▲</span>
-                  <div>
-                    <span className="text-3xl md:text-4xl font-sans font-black text-[#062a1d] block tracking-tight">
-                      {metrics[1].value}
-                    </span>
-                    <h4 className="text-sm font-bold text-gray-900 mt-0.5">{metrics[1].title}</h4>
-                    <p className="text-xs text-gray-500 font-light leading-relaxed mt-0.5">
-                      {metrics[1].desc}
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
+                  {/* Cutaway Dirt Wall Texture */}
+                  <linearGradient id="cutawayDirt" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#6e4632" />
+                    <stop offset="60%" stopColor="#87573e" />
+                    <stop offset="100%" stopColor="#553625" />
+                  </linearGradient>
 
-              {/* Center Concentric Arc Chart */}
-              <div className="w-full md:w-2/4 flex items-center justify-center">
-                <svg viewBox="0 0 500 280" className="w-full max-w-[480px] h-auto drop-shadow-md">
-                  {/* Outer Arc - Deep Forest Green (100%) */}
-                  <path d="M 50 250 A 200 200 0 0 1 450 250" fill="none" stroke="#062a1d" strokeWidth="20" strokeLinecap="round" />
-                  {/* Middle Arc - Emerald Green (40%) */}
-                  <path d="M 95 250 A 155 155 0 0 1 405 250" fill="none" stroke="#00A859" strokeWidth="18" strokeLinecap="round" />
-                  {/* Inner Arc - Deep Teal (15%) */}
-                  <path d="M 140 250 A 110 110 0 0 1 360 250" fill="none" stroke="#0074BC" strokeWidth="16" strokeLinecap="round" />
-                  {/* Central Dome - Warm Golden Dome (5%) */}
-                  <path d="M 185 250 A 65 65 0 0 1 315 250 Z" fill="#D49A00" />
-                </svg>
-              </div>
+                  {/* Soil Surface Gradient */}
+                  <linearGradient id="soilTop" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#3d2417" />
+                    <stop offset="100%" stopColor="#5a3826" />
+                  </linearGradient>
+                </defs>
 
-              {/* Right Side Metrics (15% Top, 5% Bottom) */}
-              <div className="w-full md:w-1/4 flex flex-col gap-10 md:gap-14 justify-center">
-                <motion.div {...getAnim(2)} className="flex items-start gap-3 text-left">
-                  <span className="text-[#062a1d] text-xl font-bold mt-1">▲</span>
-                  <div>
-                    <span className="text-3xl md:text-4xl font-sans font-black text-[#062a1d] block tracking-tight">
-                      {metrics[2].value}
-                    </span>
-                    <h4 className="text-sm font-bold text-gray-900 mt-0.5">{metrics[2].title}</h4>
-                    <p className="text-xs text-gray-500 font-light leading-relaxed mt-0.5">
-                      {metrics[2].desc}
-                    </p>
-                  </div>
-                </motion.div>
+                {/* ================= 1. TREE ON TOP ================= */}
+                <g id="funnel-tree">
+                  {/* Tree Trunk */}
+                  <path
+                    d="M 128 95 Q 128 128 123 148 L 143 148 Q 138 128 138 95 Z"
+                    fill="#543525"
+                  />
+                  {/* Trunk Roots */}
+                  <path d="M 123 144 Q 115 148 108 149" stroke="#543525" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                  <path d="M 143 144 Q 151 148 158 149" stroke="#543525" strokeWidth="2.5" strokeLinecap="round" fill="none" />
 
-                <motion.div {...getAnim(3)} className="flex items-start gap-3 text-left">
-                  <span className="text-[#062a1d] text-xl font-bold mt-1">▲</span>
-                  <div>
-                    <span className="text-3xl md:text-4xl font-sans font-black text-[#062a1d] block tracking-tight">
-                      {metrics[3].value}
-                    </span>
-                    <h4 className="text-sm font-bold text-gray-900 mt-0.5">{metrics[3].title}</h4>
-                    <p className="text-xs text-gray-500 font-light leading-relaxed mt-0.5">
-                      {metrics[3].desc}
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
+                  {/* Bushy Foliage Clusters */}
+                  <circle cx="133" cy="50" r="32" fill="url(#foliageGrad1)" />
+                  <circle cx="104" cy="65" r="28" fill="url(#foliageGrad2)" />
+                  <circle cx="162" cy="65" r="28" fill="url(#foliageGrad2)" />
+                  <circle cx="120" cy="85" r="26" fill="url(#foliageGrad3)" />
+                  <circle cx="146" cy="85" r="26" fill="url(#foliageGrad3)" />
+                  <circle cx="133" cy="70" r="24" fill="#07291e" />
+                </g>
+
+                {/* ================= 2. SOIL ELLIPSE ON CONE TOP ================= */}
+                <ellipse cx="133" cy="150" rx="82" ry="11" fill="url(#soilTop)" />
+                <ellipse cx="133" cy="150" rx="76" ry="8" fill="#442a1c" opacity="0.7" />
+
+                {/* ================= 3. 3D CUTAWAY DIRT WEDGE (RIGHT SIDE) ================= */}
+                {/* Shows the inner soil cross-section in 3D perspective */}
+                <path
+                  d="M 133 150 L 153 152 L 150 420 L 133 420 Z"
+                  fill="url(#cutawayDirt)"
+                />
+                <line x1="133" y1="150" x2="133" y2="420" stroke="#3b2317" strokeWidth="1.5" />
+                <line x1="153" y1="152" x2="150" y2="420" stroke="#3b2317" strokeWidth="1.5" />
+
+                {/* ================= 4. SLICED CONE TIERS (LEFT HALF) ================= */}
+                {/* TIER 1 (TOP) - Dark Forest Green */}
+                <path
+                  d="M 51 150 L 133 150 L 133 218 L 72 218 Z"
+                  fill="#0b4535"
+                />
+                {/* Line Separator between tiers */}
+                <line x1="72" y1="218" x2="133" y2="218" stroke="#FAF9F6" strokeWidth="1.5" />
+                
+                {/* Icon Tier 1: 3-Circle Symbol */}
+                <g transform="translate(100, 184) scale(0.9)">
+                  <circle cx="0" cy="-7" r="4" fill="none" stroke="white" strokeWidth="1.8" />
+                  <circle cx="-6" cy="5" r="4" fill="none" stroke="white" strokeWidth="1.8" />
+                  <circle cx="6" cy="5" r="4" fill="none" stroke="white" strokeWidth="1.8" />
+                  <circle cx="0" cy="0" r="1.5" fill="white" />
+                </g>
+
+                {/* TIER 2 - Emerald Green */}
+                <path
+                  d="M 72 218 L 133 218 L 133 286 L 92 286 Z"
+                  fill="#0f5a45"
+                />
+                <line x1="92" y1="286" x2="133" y2="286" stroke="#FAF9F6" strokeWidth="1.5" />
+                
+                {/* Icon Tier 2: Honeycomb / Hexagons */}
+                <g transform="translate(112, 252) scale(0.9)">
+                  <polygon points="0,-7 6,-3 6,4 0,8 -6,4 -6,-3" fill="none" stroke="white" strokeWidth="1.6" />
+                  <polygon points="7,4 13,8 13,15 7,19 1,15 1,8" fill="none" stroke="white" strokeWidth="1.6" />
+                  <polygon points="-7,4 -1,8 -1,15 -7,19 -13,15 -13,8" fill="none" stroke="white" strokeWidth="1.6" />
+                </g>
+
+                {/* TIER 3 - Ocean Teal */}
+                <path
+                  d="M 92 286 L 133 286 L 133 354 L 113 354 Z"
+                  fill="#126e55"
+                />
+                <line x1="113" y1="354" x2="133" y2="354" stroke="#FAF9F6" strokeWidth="1.5" />
+                
+                {/* Icon Tier 3: Sprout / Leaf */}
+                <g transform="translate(122, 320) scale(0.9)">
+                  <path d="M 0 -8 C 6 -8 9 -2 9 4 C 5 4 0 1 0 -8 Z" fill="none" stroke="white" strokeWidth="1.6" />
+                  <path d="M 0 -8 C -6 -8 -9 -2 -9 4 C -5 4 0 1 0 -8 Z" fill="none" stroke="white" strokeWidth="1.6" />
+                  <line x1="0" y1="-8" x2="0" y2="8" stroke="white" strokeWidth="1.6" strokeLinecap="round" />
+                </g>
+
+                {/* TIER 4 (TIP) - Mint Teal */}
+                <path
+                  d="M 113 354 L 133 354 L 133 420 Z"
+                  fill="#168567"
+                />
+                
+                {/* Icon Tier 4: Hand with Seedling */}
+                <g transform="translate(125, 382) scale(0.85)">
+                  <path d="M 0 -6 Q 0 -1 4 -1 Q 4 -6 0 -6 Z" fill="none" stroke="white" strokeWidth="1.4" />
+                  <path d="M 0 -6 Q 0 -1 -4 -1 Q -4 -6 0 -6 Z" fill="none" stroke="white" strokeWidth="1.4" />
+                  <path d="M -7 4 C -4 1 0 2 3 3 L 7 5 C 9 6 11 4 9 2 L 5 0" fill="none" stroke="white" strokeWidth="1.4" strokeLinecap="round" />
+                </g>
+
+                {/* ================= 5. HORIZONTAL DARK GREEN BARS ================= */}
+                {/* Connected seamlessly to the cutaway edge at x=153 */}
+
+                {/* Bar 1 */}
+                <rect x="153" y="168" width="310" height="42" fill="#06261c" />
+                <text x="175" y="194" fill="#ffffff" fontSize="13" fontWeight="500" letterSpacing="0.03em">
+                  {funnelRows[0].barText}
+                </text>
+
+                {/* Bar 2 */}
+                <rect x="152" y="236" width="280" height="42" fill="#06261c" />
+                <text x="174" y="262" fill="#ffffff" fontSize="13" fontWeight="500" letterSpacing="0.03em">
+                  {funnelRows[1].barText}
+                </text>
+
+                {/* Bar 3 */}
+                <rect x="151" y="304" width="250" height="42" fill="#06261c" />
+                <text x="173" y="330" fill="#ffffff" fontSize="13" fontWeight="500" letterSpacing="0.03em">
+                  {funnelRows[2].barText}
+                </text>
+
+                {/* Bar 4 */}
+                <rect x="150" y="372" width="220" height="42" fill="#06261c" />
+                <text x="172" y="398" fill="#ffffff" fontSize="13" fontWeight="500" letterSpacing="0.03em">
+                  {funnelRows[3].barText}
+                </text>
+
+                {/* ================= 6. PERCENTAGE & DESCRIPTIONS (RIGHT SIDE) ================= */}
+                {/* Row 1 Metrics */}
+                <g transform="translate(485, 170)">
+                  <text
+                    x="0"
+                    y="31"
+                    fill="#06261c"
+                    fontSize="36"
+                    fontFamily="Playfair Display, Georgia, serif"
+                    fontWeight="800"
+                    letterSpacing="-0.02em"
+                  >
+                    {funnelRows[0].pct}
+                  </text>
+                  <text x="110" y="18" fill="#06261c" fontSize="13.5" fontWeight="700">
+                    {funnelRows[0].title}
+                  </text>
+                  <text x="110" y="34" fill="#6b7280" fontSize="11" fontWeight="300">
+                    {funnelRows[0].desc}
+                  </text>
+                </g>
+
+                {/* Row 2 Metrics */}
+                <g transform="translate(455, 238)">
+                  <text
+                    x="0"
+                    y="31"
+                    fill="#06261c"
+                    fontSize="36"
+                    fontFamily="Playfair Display, Georgia, serif"
+                    fontWeight="800"
+                    letterSpacing="-0.02em"
+                  >
+                    {funnelRows[1].pct}
+                  </text>
+                  <text x="110" y="18" fill="#06261c" fontSize="13.5" fontWeight="700">
+                    {funnelRows[1].title}
+                  </text>
+                  <text x="110" y="34" fill="#6b7280" fontSize="11" fontWeight="300">
+                    {funnelRows[1].desc}
+                  </text>
+                </g>
+
+                {/* Row 3 Metrics */}
+                <g transform="translate(425, 306)">
+                  <text
+                    x="0"
+                    y="31"
+                    fill="#06261c"
+                    fontSize="36"
+                    fontFamily="Playfair Display, Georgia, serif"
+                    fontWeight="800"
+                    letterSpacing="-0.02em"
+                  >
+                    {funnelRows[2].pct}
+                  </text>
+                  <text x="110" y="18" fill="#06261c" fontSize="13.5" fontWeight="700">
+                    {funnelRows[2].title}
+                  </text>
+                  <text x="110" y="34" fill="#6b7280" fontSize="11" fontWeight="300">
+                    {funnelRows[2].desc}
+                  </text>
+                </g>
+
+                {/* Row 4 Metrics */}
+                <g transform="translate(395, 374)">
+                  <text
+                    x="0"
+                    y="31"
+                    fill="#06261c"
+                    fontSize="36"
+                    fontFamily="Playfair Display, Georgia, serif"
+                    fontWeight="800"
+                    letterSpacing="-0.02em"
+                  >
+                    {funnelRows[3].pct}
+                  </text>
+                  <text x="110" y="18" fill="#06261c" fontSize="13.5" fontWeight="700">
+                    {funnelRows[3].title}
+                  </text>
+                  <text x="110" y="34" fill="#6b7280" fontSize="11" fontWeight="300">
+                    {funnelRows[3].desc}
+                  </text>
+                </g>
+              </svg>
             </div>
 
             {/* Footer */}
             <div className="flex items-center justify-between text-xs text-gray-400 font-mono w-full pt-3 border-t border-gray-200/60 z-10">
-              <span className="font-serif italic text-gray-500">Brotas 360° · Diagnóstico de Percepção</span>
+              <span className="font-serif italic text-gray-500">
+                Brotas 360° · {isSolutionFunnel ? 'Funil de Ação Estratégica' : 'Funil de Percepção'}
+              </span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>

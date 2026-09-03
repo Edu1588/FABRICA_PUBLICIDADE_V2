@@ -1015,10 +1015,11 @@ export function AnaliseUXView() {
         const metricsLines = pdf.splitTextToSize(metricsLine, contentWidth - 8);
         pdf.text(metricsLines, margin + 4, currentY + 6);
         
+        pdf.setFontSize(7.5);
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(16, 120, 60);
         const diagText = `Diagnóstico Comercial: Otimizar o peso das fotos e carregar scripts de atendimento em segundo plano. Isso acelera o site no 4G/5G, reduz a perda de clientes no celular e aumenta o envio de mensagens no WhatsApp.`;
-        const diagLines = pdf.splitTextToSize(diagText, contentWidth - 8);
+        const diagLines = pdf.splitTextToSize(diagText, contentWidth - 14);
         pdf.text(diagLines, margin + 4, currentY + 11.5);
 
         currentY += 26;
@@ -1242,46 +1243,52 @@ export function AnaliseUXView() {
 
         for (const issue of cat.issues) {
           const isCritical = issue.severity === "Crítico";
-          const innerTextW = contentWidth - 8;
+          const safeInnerW = contentWidth - 16; 
 
-          // Medir todas as linhas com splitTextToSize para calcular altura real
-          const titleLines = pdf.splitTextToSize(issue.title, innerTextW - 22);
-          const titleHeight = titleLines.length * 4;
+          pdf.setFontSize(8.5);
+          pdf.setFont("helvetica", "bold");
+          const titleLines = pdf.splitTextToSize(issue.title, safeInnerW - 22);
+          const titleHeight = titleLines.length * 4.2;
 
+          pdf.setFontSize(7);
+          pdf.setFont("helvetica", "normal");
           const evidLines = issue.evidence
-            ? pdf.splitTextToSize(`Foco: ${issue.principle} | Ponto: ${issue.evidence}`, innerTextW)
+            ? pdf.splitTextToSize(`Foco: ${issue.principle} | Ponto: ${issue.evidence}`, safeInnerW)
             : [];
-          const evidHeight = evidLines.length > 0 ? evidLines.length * 3.5 + 1 : 0;
+          const evidHeight = evidLines.length > 0 ? evidLines.length * 3.6 + 1 : 0;
 
-          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, innerTextW);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "normal");
+          const probLines = pdf.splitTextToSize(`Gargalo: ${issue.problem}`, safeInnerW);
           const probHeight = probLines.length * 3.8;
 
-          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, innerTextW);
-          const sugHeight = sugLines.length * 3.8;
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "bold");
+          const sugLines = pdf.splitTextToSize(`Como Resolver: ${issue.suggestion}`, safeInnerW);
+          const sugHeight = sugLines.length * 4.0;
 
-          // Boxes comparativos: empilhados verticalmente para não estourar
           const hasComp = !!issue.currentVsIdeal;
           let compBoxHeight = 0;
           let curTextLines: string[] = [];
           let idlTextLines: string[] = [];
           if (hasComp && issue.currentVsIdeal) {
-            const compInnerW = contentWidth - 14;
+            pdf.setFontSize(6.5);
+            pdf.setFont("helvetica", "bold");
+            const compInnerW = safeInnerW - 12;
             curTextLines = pdf.splitTextToSize(`X CENARIO ATUAL: ${issue.currentVsIdeal.current}`, compInnerW);
             idlTextLines = pdf.splitTextToSize(`+ IDEAL FABRICA: ${issue.currentVsIdeal.ideal}`, compInnerW);
-            compBoxHeight = 6 + curTextLines.length * 3.2 + 3 + idlTextLines.length * 3.2 + 4;
+            compBoxHeight = 6 + curTextLines.length * 3.3 + 3 + idlTextLines.length * 3.3 + 4;
           }
 
           const cardHeight = 10 + titleHeight + evidHeight + probHeight + 2 + sugHeight + 2.5 + compBoxHeight + 4;
 
           checkPageBreak(cardHeight + 4);
 
-          // Fundo do card
           pdf.setFillColor(isCritical ? 255 : 248, isCritical ? 245 : 248, isCritical ? 245 : 252);
           pdf.roundedRect(margin, currentY, contentWidth, cardHeight, 1.5, 1.5, "F");
           pdf.setDrawColor(isCritical ? 240 : 220, isCritical ? 180 : 220, isCritical ? 180 : 230);
           pdf.roundedRect(margin, currentY, contentWidth, cardHeight, 1.5, 1.5, "S");
 
-          // Badge de Severidade
           pdf.setFillColor(isCritical ? 220 : 196, isCritical ? 38 : 106, isCritical ? 38 : 26);
           pdf.roundedRect(margin + 3, currentY + 3, 16, 4.5, 1, 1, "F");
           pdf.setTextColor(255, 255, 255);
@@ -1289,7 +1296,6 @@ export function AnaliseUXView() {
           pdf.setFont("helvetica", "bold");
           pdf.text(issue.severity.toUpperCase(), margin + 4.5, currentY + 6.3);
 
-          // Título (com quebra de linha)
           pdf.setTextColor(20, 20, 30);
           pdf.setFontSize(8.5);
           pdf.setFont("helvetica", "bold");
@@ -1297,56 +1303,52 @@ export function AnaliseUXView() {
 
           let innerY = currentY + 10 + titleHeight;
 
-          // Evidência (com quebra de linha)
           if (evidLines.length > 0) {
             pdf.setTextColor(110, 110, 120);
             pdf.setFontSize(7);
             pdf.setFont("helvetica", "normal");
-            pdf.text(evidLines, margin + 4, innerY);
+            pdf.text(evidLines, margin + 5, innerY);
             innerY += evidHeight;
           }
 
-          // Problema (Linhas Completas)
           pdf.setTextColor(60, 60, 70);
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "normal");
-          pdf.text(probLines, margin + 4, innerY);
+          pdf.text(probLines, margin + 5, innerY);
           innerY += probHeight + 2;
 
-          // Sugestão de Vendas (Linhas Completas)
           pdf.setTextColor(16, 120, 60);
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "bold");
-          pdf.text(sugLines, margin + 4, innerY);
+          pdf.text(sugLines, margin + 5, innerY);
           innerY += sugHeight + 2.5;
 
-          // BOXES COMPARATIVOS EMPILHADOS VERTICALMENTE (nunca ultrapassam margem)
           if (hasComp && issue.currentVsIdeal) {
-            const compW = contentWidth - 8;
+            const compW = contentWidth - 10;
+            const curBoxH = 4 + curTextLines.length * 3.3;
+            const idlBoxH = 4 + idlTextLines.length * 3.3;
 
-            // Box Atual (Vermelho) — largura total
             pdf.setFillColor(254, 242, 242);
-            pdf.roundedRect(margin + 4, innerY, compW, 4 + curTextLines.length * 3.2, 1, 1, "F");
+            pdf.roundedRect(margin + 5, innerY, compW, curBoxH, 1, 1, "F");
             pdf.setFillColor(239, 68, 68);
-            pdf.rect(margin + 4, innerY, 2, 4 + curTextLines.length * 3.2, "F");
+            pdf.rect(margin + 5, innerY, 2, curBoxH, "F");
 
             pdf.setFontSize(6.5);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(185, 28, 28);
-            pdf.text(curTextLines, margin + 8, innerY + 3.5);
+            pdf.text(curTextLines, margin + 9, innerY + 3.5);
 
-            innerY += 4 + curTextLines.length * 3.2 + 2;
+            innerY += curBoxH + 2;
 
-            // Box Ideal Fábrica (Verde) — largura total
             pdf.setFillColor(240, 253, 244);
-            pdf.roundedRect(margin + 4, innerY, compW, 4 + idlTextLines.length * 3.2, 1, 1, "F");
+            pdf.roundedRect(margin + 5, innerY, compW, idlBoxH, 1, 1, "F");
             pdf.setFillColor(34, 197, 94);
-            pdf.rect(margin + 4, innerY, 2, 4 + idlTextLines.length * 3.2, "F");
+            pdf.rect(margin + 5, innerY, 2, idlBoxH, "F");
 
             pdf.setFontSize(6.5);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(21, 128, 61);
-            pdf.text(idlTextLines, margin + 8, innerY + 3.5);
+            pdf.text(idlTextLines, margin + 9, innerY + 3.5);
           }
 
           currentY += cardHeight + 4;
