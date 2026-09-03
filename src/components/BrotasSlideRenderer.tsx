@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
   Calendar,
   Layout,
@@ -38,7 +38,6 @@ import {
   PiggyBank,
   Upload,
   Layers,
-  ArrowRight,
   Check,
   Smartphone,
   Globe
@@ -47,7 +46,6 @@ import { BrotasSlideData } from '../data/brotasSlidesData';
 import { generateSeoAltText } from '../lib/imageOptimizer';
 import SplitText from './SplitText';
 import RadialOrbitalTimeline, { TimelineItem } from './ui/radial-orbital-timeline';
-import FunnelChart, { FunnelStage } from './ui/funnel-chart';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number; style?: React.CSSProperties }>> = {
   Calendar,
@@ -95,19 +93,14 @@ function BrotasLogoBadge({ className = '' }: { className?: string }) {
   return (
     <div className={`bg-white rounded-2xl shadow-xl px-5 py-3 flex flex-col items-center justify-center border border-black/5 ${className}`}>
       <svg viewBox="0 0 100 70" className="w-14 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Top-Left: Blue */}
         <path d="M42 22C35 14 24 16 28 8C32 0 46 10 42 22Z" fill="#0074BC" />
         <circle cx="27" cy="10" r="3.5" fill="#0074BC" />
-        {/* Top-Right: Red */}
         <path d="M58 22C65 14 76 16 72 8C68 0 54 10 58 22Z" fill="#ED1C24" />
         <circle cx="73" cy="10" r="3.5" fill="#ED1C24" />
-        {/* Bottom-Left: Green */}
         <path d="M42 36C35 44 24 42 28 50C32 58 46 48 42 36Z" fill="#00A651" />
         <circle cx="27" cy="48" r="3.5" fill="#00A651" />
-        {/* Bottom-Right: Yellow */}
         <path d="M58 36C65 44 76 42 72 50C68 58 54 48 58 36Z" fill="#FFC20E" />
         <circle cx="73" cy="48" r="3.5" fill="#FFC20E" />
-        {/* Center core */}
         <circle cx="50" cy="29" r="3" fill="#0074BC" />
       </svg>
       <span className="text-[#0074BC] font-black text-sm tracking-tight -mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -121,7 +114,6 @@ function BrotasLogoBadge({ className = '' }: { className?: string }) {
 function CircularArrow360() {
   return (
     <svg viewBox="0 0 340 90" className="w-full max-w-[340px] md:max-w-[400px] h-14 md:h-16 mx-auto -mt-6 md:-mt-8" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Outer sweeping curved path */}
       <path
         d="M 50 25 C 20 58, 80 82, 170 82 C 260 82, 320 58, 290 25"
         stroke="white"
@@ -129,11 +121,7 @@ function CircularArrow360() {
         strokeLinecap="round"
         fill="none"
       />
-      {/* Arrowhead pointing right */}
-      <path
-        d="M 155 74 L 180 82 L 155 90 Z"
-        fill="white"
-      />
+      <path d="M 155 74 L 180 82 L 155 90 Z" fill="white" />
     </svg>
   );
 }
@@ -187,12 +175,12 @@ export default function BrotasSlideRenderer({
         ) : (
           <div
             onClick={() => isEditing && fileInputRef.current?.click()}
-            className={`w-full h-full border-2 border-dashed flex flex-col items-center justify-center p-6 text-center transition-all ${
+            className={`w-full h-full border border-dashed flex flex-col items-center justify-center p-6 text-center transition-all ${
               isEditing ? 'cursor-pointer hover:bg-[#00A859]/10 hover:border-[#00A859]' : ''
             } ${
               slide.isDark
-                ? 'bg-[#111827]/70 border-white/20 text-white/40'
-                : 'bg-gray-50/90 border-gray-300 text-gray-400'
+                ? 'bg-[#062a1d]/60 border-white/20 text-white/40'
+                : 'bg-[#F2F4F2] border-gray-300 text-gray-400'
             }`}
           >
             <Upload className="w-8 h-8 mb-2 opacity-40" />
@@ -238,11 +226,10 @@ export default function BrotasSlideRenderer({
 
   const renderLayout = () => {
     switch (slide.layoutType) {
-      // 1. EXACT COVER SLIDE MATCHING USER REFERENCE
+      // 1. EXACT COVER SLIDE
       case 'hero_cover':
         return (
           <div className="relative w-full h-full flex flex-col justify-between p-8 md:p-12 bg-black overflow-hidden select-none">
-            {/* Background Photography with Warm Sunset Lighting */}
             <div className="absolute inset-0 z-0">
               <ImageSlot
                 slotId={slide.imageSlots?.[0]?.id || 'cover-bg'}
@@ -250,36 +237,29 @@ export default function BrotasSlideRenderer({
                 label="Foto Territorial Brotas"
                 className="w-full h-full brightness-[0.95]"
               />
-              {/* Subtle dark bottom vignette for crisp text contrast */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/70 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/15 to-black/75 pointer-events-none"></div>
             </div>
 
-            {/* Top Bar: Floating Brotas Logo on Left + Glass Nav Capsule in Center */}
             <div className="relative z-20 flex items-start justify-between w-full">
-              {/* Top Left Brotas Logo Badge */}
               <motion.div {...getAnim(0)}>
                 <BrotasLogoBadge />
               </motion.div>
 
-              {/* Top Center Frosted Glass Navigation Pill */}
               <motion.div
                 {...getAnim(1)}
                 className="hidden md:flex items-center gap-8 px-8 py-2.5 rounded-full border border-white/25 bg-white/10 backdrop-blur-md text-white text-xs font-semibold tracking-wide shadow-lg mx-auto"
               >
-                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Home</span>
-                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">About Us</span>
-                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Team</span>
-                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Service</span>
-                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Portfolio</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Diagnóstico</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Estratégia</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Produção</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Canais</span>
+                <span className="hover:text-[#FFC20E] transition-colors cursor-pointer">Resultados</span>
               </motion.div>
 
-              {/* Top Right Spacer for symmetry */}
               <div className="w-24 hidden md:block"></div>
             </div>
 
-            {/* Center Area: BROTAS 360° Wordmark + Circular Arrow + 4 Colors + Yellow Text */}
             <div className="relative z-20 my-auto text-center flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
-              {/* BROTAS serif wordmark with SplitText */}
               <h1
                 className="text-7xl sm:text-8xl md:text-9xl font-black text-white uppercase tracking-tight leading-none drop-shadow-2xl"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
@@ -294,7 +274,6 @@ export default function BrotasSlideRenderer({
                 />
               </h1>
 
-              {/* 360° text with sweeping circular arrow */}
               <motion.div {...getAnim(2)} className="relative flex flex-col items-center justify-center -mt-2 md:-mt-4">
                 <span
                   className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight drop-shadow-2xl"
@@ -302,11 +281,9 @@ export default function BrotasSlideRenderer({
                 >
                   {slide.subtitle || '360°'}
                 </span>
-                {/* Sweeping 360 arrow icon */}
                 <CircularArrow360 />
               </motion.div>
 
-              {/* 4-Color Segment Bar (Google/Brotas palette) */}
               <motion.div {...getAnim(3)} className="flex items-center justify-center gap-2 my-2">
                 <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#0074BC] shadow-sm"></div>
                 <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#FFC20E] shadow-sm"></div>
@@ -314,7 +291,6 @@ export default function BrotasSlideRenderer({
                 <div className="w-8 md:w-10 h-1.5 rounded-full bg-[#ED1C24] shadow-sm"></div>
               </motion.div>
 
-              {/* Yellow / Golden Slogan with Leading Dots and SplitText */}
               <div
                 className="text-[#FFD000] text-sm sm:text-base md:text-lg font-bold tracking-wide text-center space-y-1 drop-shadow-md mt-1"
                 style={{ fontFamily: 'Inter, sans-serif' }}
@@ -338,43 +314,116 @@ export default function BrotasSlideRenderer({
               </div>
             </div>
 
-            {/* Bottom Area: Social Icons + Green Corner Protruding Tabs */}
             <div className="relative z-20 flex flex-col items-center justify-end w-full">
-              {/* Social links f, in, X */}
               <motion.div {...getAnim(4)} className="flex items-center justify-center gap-6 text-white text-xs font-bold opacity-80 mb-2">
-                <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">f</span>
-                <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">in</span>
-                <span className="cursor-pointer hover:text-[#FFC20E] transition-colors">𝕏</span>
+                <span>Prefeitura Municipal de Brotas</span>
+                <span>·</span>
+                <span>Fábrica Publicidade & Digital</span>
               </motion.div>
-
-              {/* Bottom-Left Protruding Green Pill Tab */}
-              <div className="absolute -bottom-8 md:-bottom-12 left-0 w-40 md:w-56 h-10 md:h-14 bg-[#00A859] rounded-t-3xl pointer-events-none"></div>
-
-              {/* Bottom-Right Protruding Green Pill Tab */}
-              <div className="absolute -bottom-8 md:-bottom-12 right-0 w-40 md:w-56 h-10 md:h-14 bg-[#00A859] rounded-t-3xl pointer-events-none"></div>
             </div>
           </div>
         );
 
-      // 2. SPLIT LAYOUT (TEXT LEFT, PHOTO RIGHT) MATCHING REFERENCE
+      // 2. SPLIT LAYOUT / NUMBERED CARDS (IMAGE 2 REFERENCE)
       case 'split_text_photo':
-      case 'dark_centered':
+      case 'dark_centered': {
+        const hasManyTexts = slide.texts && slide.texts.length >= 3;
+        const hasPhoto = slide.imageSlots && slide.imageSlots.length > 0 && uploadedImages[slide.imageSlots[0]?.id];
+
+        // Se tem 3 ou mais textos e não há foto customizada carregada -> NUMBERED STEP CARDS (IMAGE 2 REFERENCE)
+        if (hasManyTexts && !hasPhoto) {
+          return (
+            <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col md:flex-row p-8 md:p-14 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
+              {/* Left Column: Big Editorial Serif Statement with Bold and Italic contrasts */}
+              <div className="w-full md:w-1/2 flex flex-col justify-center max-w-xl pl-2 md:pl-6 space-y-5 z-10">
+                <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                  {slide.categoryLabel || 'Diagnóstico'}
+                </span>
+
+                <h2
+                  className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.12] tracking-tight"
+                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                >
+                  <SplitText
+                    text={slide.title}
+                    splitType="words"
+                    delay={35}
+                    duration={0.7}
+                    from={{ opacity: 0, y: 30 }}
+                    to={{ opacity: 1, y: 0 }}
+                  />
+                </h2>
+
+                {slide.subtitle && (
+                  <p className="text-lg md:text-xl font-serif italic text-gray-700 leading-snug">
+                    {slide.subtitle}
+                  </p>
+                )}
+
+                <p className="text-sm md:text-base text-gray-500 font-light leading-relaxed max-w-md">
+                  Para que a população valorize cada entrega, a comunicação pública municipal precisa de estratégia, presença constante e narrativa de impacto.
+                </p>
+
+                <div className="text-xs font-serif italic text-[#062a1d]/40 pt-4">
+                  Brotas 360° · Comunicação Pública & Governança
+                </div>
+              </div>
+
+              {/* Right Column: Numbered Step Cards (Card 02 highlighted in deep forest green!) */}
+              <div className="w-full md:w-1/2 max-w-xl flex flex-col gap-3.5 my-auto z-10">
+                {slide.texts?.slice(0, 4).map((text, idx) => {
+                  const isFeatured = idx === 1; // Card 02 highlighted in deep green from user reference!
+                  const stepNum = String(idx + 1).padStart(2, '0');
+
+                  return (
+                    <motion.div
+                      key={idx}
+                      {...getAnim(idx)}
+                      className={`p-5 md:p-6 rounded-2xl transition-all duration-300 flex items-start gap-4 md:gap-6 shadow-sm ${
+                        isFeatured
+                          ? 'bg-[#062a1d] text-white shadow-xl shadow-[#062a1d]/25 scale-[1.02]'
+                          : 'bg-white text-gray-800 border border-gray-200/80 hover:border-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`text-3xl md:text-4xl font-serif font-bold leading-none shrink-0 ${
+                          isFeatured ? 'text-[#FFC20E]' : 'text-[#062a1d]'
+                        }`}
+                        style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                      >
+                        {stepNum}
+                      </span>
+
+                      <div className="space-y-1 flex-1">
+                        <p className={`text-sm md:text-base leading-relaxed ${isFeatured ? 'text-white font-medium' : 'text-gray-700 font-normal'}`}>
+                          {text}
+                        </p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Footer */}
+              <div className="absolute bottom-3 left-8 right-8 flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+                <span className="font-serif italic text-gray-500">{slide.categoryLabel} · Brotas 360°</span>
+                <span>{slide.slideNumber}</span>
+              </div>
+            </div>
+          );
+        }
+
+        // Caso tenha foto ou texto explicativo: Clean Editorial Split (Text Left, Framed Photo Right)
         return (
-          <div className="relative w-full h-full bg-white flex flex-col md:flex-row p-10 md:p-16 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
-            {/* Far-Left Dark Vertical Accent Border */}
-            <div className="absolute left-0 top-0 bottom-0 w-2 bg-[#1A1A24] z-10 pointer-events-none"></div>
-
-            {/* Bottom-Left Deep Forest Green Corner Curve (#0B4D3C) */}
-            <div className="absolute bottom-0 left-0 w-44 md:w-56 h-44 md:h-56 bg-[#0B4D3C] rounded-tr-full z-0 pointer-events-none"></div>
-
-            {/* Top-Right Bright Vibrant Green Corner Curve (#00A859) */}
-            <div className="absolute top-0 right-0 w-52 md:w-72 h-52 md:h-72 bg-[#00A859] rounded-bl-full z-0 pointer-events-none"></div>
-
+          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col md:flex-row p-8 md:p-14 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
             {/* Left Column: Heading + Amber Label + Body */}
-            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl pl-4">
-              {/* Big Bold Headline in Playfair Serif with SplitText */}
+            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl pl-2 md:pl-6 space-y-4">
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                {slide.categoryLabel || 'Brotas 360°'}
+              </span>
+
               <h2
-                className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-950 leading-[1.15] mb-5 tracking-tight"
+                className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.15] tracking-tight"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
                 <SplitText
@@ -387,54 +436,51 @@ export default function BrotasSlideRenderer({
                 />
               </h2>
 
-              {/* Amber / Yellow Category Label */}
-              <motion.div
-                {...getAnim(1)}
-                className="text-[#FFB800] text-sm md:text-base font-bold tracking-wide mb-5"
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                {slide.categoryLabel || 'Problema'}
-              </motion.div>
+              {slide.subtitle && (
+                <p className="text-xl md:text-2xl font-serif italic text-[#062a1d]/85 font-normal leading-snug">
+                  {slide.subtitle}
+                </p>
+              )}
 
-              {/* Body Texts / Paragraphs */}
-              <div className="space-y-4 text-gray-600 text-sm md:text-base font-normal leading-relaxed">
+              <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed pt-2">
                 {slide.texts?.map((item, idx) => (
                   <motion.p key={idx} {...getAnim(2 + idx)}>
                     {item}
                   </motion.p>
                 ))}
               </div>
+
+              <div className="text-xs font-serif italic text-[#062a1d]/40 pt-4">
+                Brotas 360° · Cidade Inteligente & Conectada
+              </div>
             </div>
 
-            {/* Right Column: Square / Rectangular Photo Frame with Green Background Shape */}
-            <div className="w-full md:w-1/2 h-[340px] md:h-[480px] z-10 relative flex items-center justify-center">
+            {/* Right Column: Clean Framed Photograph */}
+            <div className="w-full md:w-1/2 h-[340px] md:h-[480px] z-10 relative flex items-center justify-center pr-2 md:pr-6">
               <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
                 <ImageSlot
                   slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
                   defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
-                  label={slide.imageSlots?.[0]?.label || 'Fotografia'}
+                  label={slide.imageSlots?.[0]?.label || 'Fotografia Territorial'}
                   className="w-full h-full"
                 />
               </div>
             </div>
+
+            {/* Footer */}
+            <div className="absolute bottom-3 left-8 right-8 flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">{slide.categoryLabel} · Brotas 360°</span>
+              <span>{slide.slideNumber}</span>
+            </div>
           </div>
         );
+      }
 
-      // 3. SPLIT PHOTO LEFT, TEXT RIGHT (WITH BLUE & RED ACCENTS AS IN REFERENCE)
+      // 3. BEFORE AFTER
       case 'before_after':
         return (
-          <div className="relative w-full h-full bg-white flex flex-col md:flex-row p-10 md:p-16 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
-            {/* Left Green Curve behind Photo */}
-            <div className="absolute top-12 left-0 w-44 md:w-56 h-80 bg-[#00A859] rounded-r-3xl z-0 pointer-events-none"></div>
-
-            {/* Top-Right Blue Accent Shape */}
-            <div className="absolute top-0 right-0 w-40 md:w-52 h-14 bg-[#1E88E5] rounded-bl-3xl z-0 pointer-events-none"></div>
-
-            {/* Bottom-Right Red Accent Shape */}
-            <div className="absolute bottom-0 right-0 w-48 md:w-64 h-14 bg-[#D32F2F] rounded-tl-3xl z-0 pointer-events-none"></div>
-
-            {/* Left Column: Photo Frame */}
-            <div className="w-full md:w-1/2 h-[340px] md:h-[480px] z-10 relative flex items-center justify-center">
+          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col md:flex-row p-8 md:p-14 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
+            <div className="w-full md:w-1/2 h-[340px] md:h-[480px] z-10 relative flex items-center justify-center pl-2 md:pl-6">
               <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gray-100">
                 <ImageSlot
                   slotId={slide.imageSlots?.[0]?.id || `img-${slide.id}`}
@@ -445,10 +491,13 @@ export default function BrotasSlideRenderer({
               </div>
             </div>
 
-            {/* Right Column: Heading + Yellow Label + Text */}
-            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl">
+            <div className="w-full md:w-1/2 z-10 flex flex-col justify-center max-w-xl pr-2 md:pr-6 space-y-4">
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                {slide.categoryLabel || 'Visão'}
+              </span>
+
               <h2
-                className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-950 leading-[1.15] mb-5 tracking-tight"
+                className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.15] tracking-tight"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
                 <SplitText
@@ -461,14 +510,7 @@ export default function BrotasSlideRenderer({
                 />
               </h2>
 
-              <motion.div
-                {...getAnim(1)}
-                className="text-[#FFB800] text-sm md:text-base font-bold tracking-wide mb-4"
-              >
-                {slide.categoryLabel || 'Visão'}
-              </motion.div>
-
-              <div className="space-y-4 text-gray-600 text-sm md:text-base leading-relaxed">
+              <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed">
                 {slide.texts?.map((item, idx) => (
                   <motion.p key={idx} {...getAnim(2 + idx)}>
                     {item}
@@ -476,45 +518,32 @@ export default function BrotasSlideRenderer({
                 ))}
               </div>
             </div>
+
+            <div className="absolute bottom-3 left-8 right-8 flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Transformação Visual Brotas 360°</span>
+              <span>{slide.slideNumber}</span>
+            </div>
           </div>
         );
 
-      // 4. FUNNEL ANIMATED 3D SVG CHART LAYOUT
+      // 4. DATA PERFORMANCE CONCENTRIC GAUGE ARCH (IMAGE 5 REFERENCE)
       case 'funnel_vertical': {
-        const funnelData: FunnelStage[] = (slide.funnelItems || [
-          { label: '100 ações realizadas', width: '100%', color: '#1B9C4F' },
-          { label: '40 divulgadas', width: '70%', color: '#22C55E' },
-          { label: '15 compreendidas', width: '50%', color: '#FFB800' },
-          { label: '5 lembradas pelo eleitor', width: '30%', color: '#E53E3E' }
-        ]).map((item, idx) => {
-          const numMatch = item.label.match(/^(\d+)/);
-          const parsedVal = numMatch ? parseInt(numMatch[1], 10) : (100 - idx * 25);
-          return {
-            label: item.label,
-            value: parsedVal,
-            displayValue: `${parsedVal}`,
-            color: item.color || '#00A859',
-            gradient: [
-              { offset: 0, color: item.color || '#00A859' },
-              { offset: 1, color: item.color ? `${item.color}DD` : '#0074BCDD' }
-            ]
-          };
-        });
+        const funnelData = slide.funnelItems || [
+          { label: 'Ações realizadas', width: '100%', color: '#062a1d' },
+          { label: 'Divulgadas oficialmente', width: '70%', color: '#00A859' },
+          { label: 'Compreendidas pela população', width: '50%', color: '#0074BC' },
+          { label: 'Lembradas pelo eleitor', width: '30%', color: '#E53E3E' }
+        ];
 
         return (
-          <div className="relative w-full h-full bg-white p-6 md:p-10 flex flex-col items-center justify-between overflow-hidden select-none">
-            {/* Corner Decorative Elements */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/10 rounded-tr-full pointer-events-none"></div>
-
-            {/* Top Centered Title & Category */}
-            <div className="z-10 text-center flex flex-col items-center max-w-4xl mx-auto w-full">
-              <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 inline-block">
-                {slide.categoryLabel || 'Diagnóstico & Percepção'}
-              </motion.span>
-
+          <div className="relative w-full h-full bg-[#FBFBFA] p-8 md:p-14 flex flex-col justify-between items-center overflow-hidden select-none">
+            {/* Top Centered Header */}
+            <div className="text-center max-w-3xl mx-auto space-y-2 z-10">
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                {slide.categoryLabel || 'Diagnóstico & Métricas'}
+              </span>
               <h2
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-950 text-center mb-2 tracking-tight"
+                className="text-3xl md:text-5xl font-serif font-black text-[#062a1d] tracking-tight"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
                 <SplitText
@@ -526,35 +555,86 @@ export default function BrotasSlideRenderer({
                   to={{ opacity: 1, y: 0 }}
                 />
               </h2>
+              {slide.texts && (
+                <p className="text-sm md:text-base text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
+                  {slide.texts.join(' ')}
+                </p>
+              )}
             </div>
 
-            {/* Animated Funnel Chart SVG Stage */}
-            <div className="w-full max-w-2xl mx-auto my-auto flex items-center justify-center z-10 px-4 h-[280px] sm:h-[320px] md:h-[360px]">
-              <FunnelChart
-                data={funnelData}
-                orientation="vertical"
-                layers={3}
-                edges="curved"
-                staggerDelay={0.14}
-                showPercentage={true}
-                showValues={true}
-                showLabels={true}
-                labelLayout="grouped"
-                labelAlign="center"
-                className="w-full h-full"
-              />
+            {/* Center Concentric Arch Stage (Exact Image 5 match) */}
+            <div className="relative w-full max-w-4xl mx-auto my-auto flex items-center justify-center h-[340px] md:h-[400px]">
+              <svg viewBox="0 0 500 280" className="w-full max-w-[560px] h-auto drop-shadow-md">
+                {/* Arc 1 (Outer - Deep Forest Green) */}
+                <path d="M 50 250 A 200 200 0 0 1 450 250" fill="none" stroke="#062a1d" strokeWidth="18" strokeLinecap="round" />
+                {/* Arc 2 (Middle - Emerald Green) */}
+                <path d="M 90 250 A 160 160 0 0 1 410 250" fill="none" stroke="#00A859" strokeWidth="16" strokeLinecap="round" />
+                {/* Arc 3 (Inner - Deep Teal) */}
+                <path d="M 130 250 A 120 120 0 0 1 370 250" fill="none" stroke="#0074BC" strokeWidth="14" strokeLinecap="round" />
+                {/* Central Dome (Golden Yellow) */}
+                <path d="M 175 250 A 75 75 0 0 1 325 250 Z" fill="#D49A00" />
+              </svg>
+
+              {/* 4 Metric Callouts with Triangles (Exact Image 5 match) */}
+              <div className="absolute top-8 left-4 md:left-12 flex items-start gap-2.5 max-w-[200px]">
+                <span className="text-[#062a1d] text-xl font-bold">▲</span>
+                <div>
+                  <span className="text-2xl md:text-3xl font-serif font-black text-[#062a1d] block">
+                    100
+                  </span>
+                  <span className="text-xs text-gray-600 font-medium leading-tight block">
+                    {funnelData[0]?.label || 'Ações realizadas'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="absolute bottom-6 left-2 md:left-8 flex items-start gap-2.5 max-w-[200px]">
+                <span className="text-[#062a1d] text-xl font-bold">▲</span>
+                <div>
+                  <span className="text-2xl md:text-3xl font-serif font-black text-[#062a1d] block">
+                    40
+                  </span>
+                  <span className="text-xs text-gray-600 font-medium leading-tight block">
+                    {funnelData[1]?.label || 'Divulgadas'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="absolute top-8 right-4 md:right-12 flex items-start gap-2.5 max-w-[200px] text-left">
+                <span className="text-[#062a1d] text-xl font-bold">▲</span>
+                <div>
+                  <span className="text-2xl md:text-3xl font-serif font-black text-[#062a1d] block">
+                    15
+                  </span>
+                  <span className="text-xs text-gray-600 font-medium leading-tight block">
+                    {funnelData[2]?.label || 'Compreendidas'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="absolute bottom-6 right-2 md:right-8 flex items-start gap-2.5 max-w-[200px] text-left">
+                <span className="text-[#062a1d] text-xl font-bold">▲</span>
+                <div>
+                  <span className="text-2xl md:text-3xl font-serif font-black text-[#062a1d] block">
+                    5
+                  </span>
+                  <span className="text-xs text-gray-600 font-medium leading-tight block">
+                    {funnelData[3]?.label || 'Lembradas pelo eleitor'}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Bottom Footer Details */}
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 w-full z-10">
-              <span>{slide.texts?.[0] || 'Diagnóstico de Percepção e Fixação de Marca'}</span>
+            {/* Footer */}
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono w-full pt-3 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Brotas 360° · Diagnóstico de Percepção</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
       }
 
-      // 5. FLOW & HORIZONTAL STEPS / RADIAL ORBITAL TIMELINE
+      // 5. FLOW HORIZONTAL
       case 'flow_horizontal': {
         const flowSteps = slide.diagramData?.flowItems || slide.diagramData?.steps || [];
         const iconsList = [Calendar, Search, Palette, Play, Rocket, Award, Zap, CheckCircle, Target, TrendingUp];
@@ -576,17 +656,14 @@ export default function BrotasSlideRenderer({
         });
 
         return (
-          <div className="relative w-full h-full bg-white p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none">
-            <div className="absolute top-0 right-0 w-52 h-52 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/10 rounded-tr-full pointer-events-none"></div>
-
+          <div className="relative w-full h-full bg-[#FBFBFA] p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none">
             <div className="max-w-5xl mx-auto w-full z-10 text-center flex flex-col items-center">
-              <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold mb-1 block">
                 {slide.categoryLabel || 'Metodologia'}
-              </motion.span>
+              </span>
 
               <h2
-                className="text-2xl md:text-4xl font-black text-gray-950 mb-1"
+                className="text-2xl md:text-4xl font-serif font-black text-[#062a1d] mb-1"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
                 <SplitText
@@ -600,7 +677,6 @@ export default function BrotasSlideRenderer({
               </h2>
             </div>
 
-            {/* Radial Orbital Flow Presentation */}
             <div className="flex-1 w-full max-w-6xl mx-auto relative flex items-center justify-center my-auto min-h-[480px] md:min-h-[520px] z-10">
               <RadialOrbitalTimeline
                 timelineData={timelineData}
@@ -609,137 +685,112 @@ export default function BrotasSlideRenderer({
               />
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
-              <span>{slide.texts?.join(' · ') || 'Fluxo Integrado Brotas 360°'}</span>
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">{slide.texts?.join(' · ') || 'Fluxo Integrado Brotas 360°'}</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
       }
 
-      // 6. PHOTO GRID (CURVED 3D OVERLAPPING CAROUSEL / FAN-OUT)
+      // 6. PHOTO GRID / ASYMMETRICAL 4-PHOTO MASONRY (IMAGE 1 REFERENCE)
       case 'photo_grid': {
         const slots = slide.imageSlots || [
-          { id: 'grid-1', label: 'Photo of Brotas 1' },
-          { id: 'grid-2', label: 'Photo of Brotas 2' },
-          { id: 'grid-3', label: 'Photo of Brotas 3' },
-          { id: 'grid-4', label: 'Photo of Brotas 4' },
-          { id: 'grid-5', label: 'Photo of Brotas 5' }
-        ];
-
-        // 3D Arc layout parameters matching the reference image
-        const cardConfigs = [
-          { rotate: -13, translateY: 36, translateX: -8, scale: 0.88, zIndex: 10 },
-          { rotate: -6, translateY: 14, translateX: -4, scale: 0.96, zIndex: 20 },
-          { rotate: 0, translateY: -14, translateX: 0, scale: 1.16, zIndex: 30 },
-          { rotate: 6, translateY: 14, translateX: 4, scale: 0.96, zIndex: 20 },
-          { rotate: 13, translateY: 36, translateX: 8, scale: 0.88, zIndex: 10 }
+          { id: 'grid-1', label: 'Foto Brotas 1' },
+          { id: 'grid-2', label: 'Foto Brotas 2' },
+          { id: 'grid-3', label: 'Foto Brotas 3' },
+          { id: 'grid-4', label: 'Foto Brotas 4' }
         ];
 
         return (
-          <div className="relative w-full h-full bg-[#0A0F1A] p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none text-white">
-            {/* Cinematic Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-r from-[#00A859]/20 via-[#0074BC]/20 to-[#FFB800]/15 blur-3xl pointer-events-none rounded-full"></div>
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/15 rounded-tr-full pointer-events-none"></div>
-
-            {/* Top Header & Category */}
-            <div className="z-10 text-center max-w-4xl mx-auto">
-              <motion.span {...getAnim(0)} className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 inline-block">
-                {slide.categoryLabel || 'Território & Presença'}
-              </motion.span>
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                <SplitText
-                  text={slide.title}
-                  splitType="words"
-                  delay={35}
-                  duration={0.7}
-                  from={{ opacity: 0, y: 30 }}
-                  to={{ opacity: 1, y: 0 }}
-                />
-              </h2>
-              {slide.texts && (
-                <p className="text-gray-300 text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">
-                  {slide.texts.join(' ')}
-                </p>
-              )}
-            </div>
-
-            {/* 3D Overlapping Curved Card Carousel */}
-            <div className="relative w-full max-w-6xl mx-auto my-auto h-[320px] sm:h-[360px] md:h-[400px] flex items-center justify-center z-10 px-4">
-              <div className="flex items-center justify-center -space-x-8 sm:-space-x-12 md:-space-x-16 perspective-[1200px] w-full">
-                {slots.map((slot, idx) => {
-                  const cfg = cardConfigs[idx % cardConfigs.length];
-                  return (
-                    <motion.div
-                      key={slot.id}
-                      initial={{ opacity: 0, y: 60, scale: 0.8 }}
-                      animate={{
-                        opacity: 1,
-                        y: cfg.translateY,
-                        x: cfg.translateX,
-                        rotate: cfg.rotate,
-                        scale: cfg.scale,
-                        zIndex: cfg.zIndex
-                      }}
-                      whileHover={{
-                        scale: 1.22,
-                        zIndex: 50,
-                        rotate: 0,
-                        y: -28,
-                        transition: { type: "spring", stiffness: 400, damping: 22 }
-                      }}
-                      transition={{
-                        delay: 0.15 + idx * 0.08,
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 24
-                      }}
-                      className="relative w-44 sm:w-56 md:w-64 h-56 sm:h-72 md:h-80 rounded-[28px] md:rounded-[36px] overflow-hidden shadow-2xl border-2 border-white/20 bg-gray-900 flex-shrink-0 cursor-pointer backdrop-blur-sm"
-                      style={{
-                        boxShadow: idx === 2
-                          ? "0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 168, 89, 0.35)"
-                          : "0 20px 40px -12px rgba(0, 0, 0, 0.6)"
-                      }}
-                    >
-                      <ImageSlot
-                        slotId={slot.id}
-                        label={slot.label}
-                        defaultUrl={slot.defaultUrl}
-                        className="w-full h-full object-cover"
-                      />
-                      {/* Subtle Glass Gradient Overlay on Card Bottom */}
-                      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
-                    </motion.div>
-                  );
-                })}
+          <div className="relative w-full h-full bg-[#FBFBFA] flex flex-col md:flex-row p-8 md:p-14 gap-8 md:gap-14 items-center justify-between overflow-hidden select-none">
+            {/* Left Column: Asymmetrical 4-Photo Masonry Grid (Image 1 reference) */}
+            <div className="w-full md:w-1/2 h-[380px] md:h-[500px] grid grid-cols-2 gap-3 md:gap-4 my-auto z-10">
+              {/* Left Sub-Column */}
+              <div className="flex flex-col gap-3 md:gap-4 h-full">
+                <div className="h-[44%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                  <ImageSlot slotId={slots[0]?.id || 'grid-1'} defaultUrl={slots[0]?.defaultUrl} label={slots[0]?.label} className="w-full h-full object-cover" />
+                </div>
+                <div className="h-[56%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                  <ImageSlot slotId={slots[1]?.id || 'grid-2'} defaultUrl={slots[1]?.defaultUrl} label={slots[1]?.label} className="w-full h-full object-cover" />
+                </div>
+              </div>
+              {/* Right Sub-Column */}
+              <div className="flex flex-col gap-3 md:gap-4 h-full">
+                <div className="h-[56%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                  <ImageSlot slotId={slots[2]?.id || 'grid-3'} defaultUrl={slots[2]?.defaultUrl} label={slots[2]?.label} className="w-full h-full object-cover" />
+                </div>
+                <div className="h-[44%] rounded-2xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                  <ImageSlot slotId={slots[3]?.id || 'grid-4'} defaultUrl={slots[3]?.defaultUrl} label={slots[3]?.label} className="w-full h-full object-cover" />
+                </div>
               </div>
             </div>
 
-            {/* Bottom Footer */}
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-white/10 z-10 w-full">
-              <span>Brotas 360° · Presença Territorial e Audiovisual</span>
+            {/* Right Column: Editorial Serif Typography (Image 1 match) */}
+            <div className="w-full md:w-1/2 flex flex-col justify-between h-[380px] md:h-[500px] py-4 max-w-xl z-10">
+              <div className="space-y-4">
+                <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                  {slide.categoryLabel || 'Território & Presença'}
+                </span>
+
+                <h2
+                  className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#062a1d] leading-[1.12] tracking-tight"
+                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                >
+                  <SplitText
+                    text={slide.title}
+                    splitType="words"
+                    delay={35}
+                    duration={0.7}
+                    from={{ opacity: 0, y: 30 }}
+                    to={{ opacity: 1, y: 0 }}
+                  />
+                </h2>
+
+                <p className="text-xl md:text-2xl font-serif italic text-[#062a1d]/85 font-normal leading-snug">
+                  Presença territorial forte, estratégica e multiplataforma para Brotas
+                </p>
+              </div>
+
+              {slide.texts && (
+                <div className="space-y-3 text-gray-600 text-sm md:text-base leading-relaxed max-w-md">
+                  {slide.texts.map((t, idx) => (
+                    <p key={idx}>{t}</p>
+                  ))}
+                </div>
+              )}
+
+              <div className="text-xs font-serif italic text-[#062a1d]/40 pt-4">
+                Brotas 360° · Presença Territorial e Audiovisual
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="absolute bottom-3 left-8 right-8 flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Brotas 360° · Território</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
       }
 
-      // 7. HUB & SPOKE (REDE RADIAL INTERCONECTADA COM FLUXO ANIMADO)
+      // 7. HUB SPOKE
       case 'hub_spoke': {
         const spokes = slide.hubSpokes || [
-          'CMS de Conteúdo',
-          'Analytics Dashboard',
-          'Chatbot de Atendimento',
-          'App Mobile',
-          'Integração WhatsApp',
-          'Mapa Interativo'
+          'Diagnóstico',
+          'Planejamento',
+          'Criação',
+          'Conteúdo',
+          'Redes Sociais',
+          'Imprensa',
+          'Crise',
+          'Dados',
+          'Comunidade'
         ];
         const numSpokes = spokes.length;
-        const radiusX = 38; // percentage radius on X
-        const radiusY = 36; // percentage radius on Y
+        const radiusX = 38;
+        const radiusY = 36;
 
-        // Calculate positions on an ellipse
         const nodePositions = spokes.map((_, i) => {
           const angle = (2 * Math.PI * i) / numSpokes - Math.PI / 2;
           return {
@@ -749,18 +800,13 @@ export default function BrotasSlideRenderer({
         });
 
         return (
-          <div className="relative w-full h-full bg-white p-8 md:p-12 flex flex-col justify-between overflow-hidden select-none">
-            {/* Background Corner Decors */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/10 rounded-tr-full pointer-events-none"></div>
-
-            {/* Top Title & Category */}
+          <div className="relative w-full h-full bg-[#FBFBFA] p-8 md:p-12 flex flex-col justify-between overflow-hidden select-none">
             <div className="z-10 text-center">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 inline-block">
-                {slide.categoryLabel || 'Tecnologia'}
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold mb-1 inline-block">
+                {slide.categoryLabel || 'Ecossistema'}
               </span>
               <h2
-                className="text-3xl md:text-5xl font-black text-gray-950 tracking-tight"
+                className="text-3xl md:text-5xl font-serif font-black text-[#062a1d] tracking-tight"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
               >
                 <SplitText
@@ -774,138 +820,57 @@ export default function BrotasSlideRenderer({
               </h2>
             </div>
 
-            {/* Central Radial Network Stage */}
             <div className="relative w-full max-w-6xl mx-auto h-[460px] md:h-[530px] my-auto flex items-center justify-center">
-              {/* CSS Animation Keyframes for Energy Beam Flow */}
-              <style>{`
-                @keyframes energyFlow {
-                  from { stroke-dashoffset: 32; }
-                  to { stroke-dashoffset: 0; }
-                }
-                @keyframes glowPulse {
-                  0%, 100% { transform: scale(1); opacity: 0.8; }
-                  50% { transform: scale(1.15); opacity: 0.3; }
-                }
-                .conduit-flow {
-                  animation: energyFlow 1.2s linear infinite;
-                }
-                .glow-pulse {
-                  animation: glowPulse 2.5s ease-in-out infinite;
-                }
-              `}</style>
-
-              {/* Glowing Ambient Radial Backdrop */}
-              <div className="absolute w-[460px] h-[340px] rounded-full bg-gradient-to-r from-[#00A859]/15 via-[#0074BC]/10 to-[#FFB800]/15 blur-3xl pointer-events-none"></div>
-
-              {/* SVG Conduit Lines Layer Connecting Hub to Orbiting Nodes */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
-                <defs>
-                  {/* Linear Gradient for Conduit Energy Pipes */}
-                  <linearGradient id="beamGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00A859" stopOpacity="0.9" />
-                    <stop offset="50%" stopColor="#0074BC" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#FFB800" stopOpacity="0.9" />
-                  </linearGradient>
-
-                  {/* Glow filter for conduits */}
-                  <filter id="conduitGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="2.5" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-
                 {nodePositions.map((pos, idx) => (
-                  <g key={idx}>
-                    {/* Base Conduit Tube */}
-                    <line
-                      x1="50%"
-                      y1="50%"
-                      x2={`${pos.x}%`}
-                      y2={`${pos.y}%`}
-                      stroke="#E2E8F0"
-                      strokeWidth="2.5"
-                      strokeDasharray="4 4"
-                      className="opacity-70"
-                    />
-
-                    {/* Animated Pulsing Energy Conduit Beam */}
-                    <line
-                      x1="50%"
-                      y1="50%"
-                      x2={`${pos.x}%`}
-                      y2={`${pos.y}%`}
-                      stroke="url(#beamGradient)"
-                      strokeWidth="3"
-                      strokeDasharray="8 16"
-                      filter="url(#conduitGlow)"
-                      className="conduit-flow"
-                      style={{
-                        animationDirection: idx % 2 === 0 ? 'normal' : 'reverse',
-                        animationDuration: `${1.4 + (idx % 3) * 0.3}s`
-                      }}
-                    />
-                  </g>
+                  <line
+                    key={idx}
+                    x1="50%"
+                    y1="50%"
+                    x2={`${pos.x}%`}
+                    y2={`${pos.y}%`}
+                    stroke="#DDE2DC"
+                    strokeWidth="2"
+                    strokeDasharray="4 4"
+                  />
                 ))}
               </svg>
 
-              {/* Central Glowing Hub Orb */}
+              {/* Central Core */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
-                {/* Outer Glow Wave Rings */}
-                <div className="absolute w-44 md:w-52 h-44 md:h-52 rounded-full bg-[#00A859]/20 hub-glow-ring pointer-events-none"></div>
-                <div className="absolute w-36 md:w-44 h-36 md:h-44 rounded-full border-2 border-[#00A859]/40 animate-pulse pointer-events-none"></div>
-
-                {/* Central Core */}
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.6, ease: 'easeOut' }}
-                  className="w-32 md:w-40 h-32 md:h-40 rounded-full bg-gradient-to-br from-[#00C853] via-[#00A859] to-[#0B4D3C] text-white shadow-2xl flex flex-col items-center justify-center text-center p-3 border-4 border-white z-10 cursor-pointer hover:scale-105 transition-transform"
+                  className="w-32 md:w-40 h-32 md:h-40 rounded-full bg-[#062a1d] text-white shadow-2xl flex flex-col items-center justify-center text-center p-3 border-4 border-white z-10 cursor-pointer hover:scale-105 transition-transform"
                 >
-                  <span className="text-[9px] md:text-[10px] font-mono font-black uppercase tracking-widest text-[#FFD000] drop-shadow">
-                    SISTEMA CENTRAL
+                  <span className="text-[9px] font-mono uppercase tracking-widest text-[#FFC20E]">
+                    NÚCLEO INTEGRADO
                   </span>
                   <span
-                    className="text-base md:text-xl font-black leading-tight text-white mt-1 drop-shadow-md"
+                    className="text-base md:text-lg font-serif font-black leading-tight text-white mt-1"
                     style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
                   >
-                    {slide.hubCenter || 'Portal Brotas'}
+                    {slide.hubCenter || 'BROTAS 360°'}
                   </span>
-                  <div className="w-2 h-2 rounded-full bg-[#FFD000] mt-1.5 animate-ping"></div>
                 </motion.div>
               </div>
 
-              {/* Orbiting Surrounding Cards with Floating Animation */}
+              {/* Orbiting Cards */}
               {nodePositions.map((pos, idx) => {
                 const spoke = spokes[idx];
                 return (
                   <motion.div
                     key={idx}
                     initial={{ opacity: 0, scale: 0.6 }}
-                    animate={{
-                      opacity: 1,
-                      scale: 1,
-                      y: [0, -6, 0]
-                    }}
-                    transition={{
-                      opacity: { duration: 0.4, delay: idx * 0.08 },
-                      scale: { duration: 0.4, delay: idx * 0.08 },
-                      y: {
-                        duration: 3.5 + (idx % 3) * 0.6,
-                        repeat: Infinity,
-                        ease: 'easeInOut'
-                      }
-                    }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.06 }}
                     className="absolute z-30 -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
                     style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
                   >
-                    <div className="bg-white/95 backdrop-blur-md border-2 border-gray-100 hover:border-[#00A859] px-4 py-3 rounded-2xl shadow-xl hover:shadow-2xl flex items-center gap-3 transition-all duration-300 group-hover:scale-110">
-                      {/* Active Connection Indicator */}
-                      <div className="w-3 h-3 rounded-full bg-[#00A859] flex items-center justify-center shrink-0 shadow-sm shadow-[#00A859]">
-                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></div>
-                      </div>
-
-                      {/* Card Title */}
-                      <span className="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap group-hover:text-[#00A859] transition-colors">
+                    <div className="bg-white border border-gray-200 px-4 py-3 rounded-xl shadow-md hover:shadow-xl hover:border-[#00A859] flex items-center gap-2.5 transition-all group-hover:scale-105">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#00A859] shrink-0" />
+                      <span className="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">
                         {spoke}
                       </span>
                     </div>
@@ -914,16 +879,15 @@ export default function BrotasSlideRenderer({
               })}
             </div>
 
-            {/* Bottom Tag */}
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
-              <span>Brotas 360° · Ecossistema Integrado em Tempo Real</span>
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Brotas 360° · Ecossistema Integrado</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
       }
 
-      // 8. CYCLE DIAGRAM / RADIAL ORBITAL TIMELINE
+      // 8. CYCLE DIAGRAM
       case 'cycle_diagram': {
         const cycleItems = slide.cycleItems || [
           '1. Diagnóstico',
@@ -943,8 +907,8 @@ export default function BrotasSlideRenderer({
             id: idx + 1,
             title: cleanTitle,
             date: `Fase 0${idx + 1}`,
-            content: `Ciclo contínuo de ${cleanTitle} integrado à comunicação e inteligência do município de Brotas.`,
-            category: slide.categoryLabel || 'Ciclo de Trabalho',
+            content: `Ciclo contínuo de ${cleanTitle} integrado à comunicação e inteligência de Brotas.`,
+            category: slide.categoryLabel || 'Ciclo Contínuo',
             icon: iconsList[idx % iconsList.length],
             relatedIds: idx < cycleItems.length - 1 ? [idx + 2] : [1],
             status: (idx < 3 ? 'completed' : idx === 3 ? 'in-progress' : 'pending') as TimelineItem['status'],
@@ -953,15 +917,15 @@ export default function BrotasSlideRenderer({
         });
 
         return (
-          <div className="relative w-full h-full bg-white p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/10 rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C]/10 rounded-tr-full pointer-events-none"></div>
-
+          <div className="relative w-full h-full bg-[#FBFBFA] p-6 md:p-10 flex flex-col justify-between overflow-hidden select-none">
             <div className="z-10 text-center flex flex-col items-center">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1">
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold mb-1">
                 {slide.categoryLabel || 'Processo Contínuo'}
               </span>
-              <h2 className="text-2xl md:text-4xl font-black text-gray-950 mb-1 text-center" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+              <h2
+                className="text-2xl md:text-4xl font-serif font-black text-[#062a1d] mb-1 text-center"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
                 <SplitText
                   text={slide.title}
                   splitType="words"
@@ -981,25 +945,106 @@ export default function BrotasSlideRenderer({
               />
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
-              <span>Metodologia Cíclica Interativa de 9 Etapas</span>
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Metodologia Cíclica Interativa de 9 Etapas</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
       }
 
-      // 9. GRID CARDS
-      case 'grid_cards':
-        return (
-          <div className="relative w-full h-full bg-white p-10 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+      // 9. GRID CARDS / DONUT COMPARISON (IMAGE 6 REFERENCE)
+      case 'grid_cards': {
+        // Se houver 3 cards, renderizamos no estilo Donut Chart Cards (Image 6 reference)
+        if (slide.gridCards && slide.gridCards.length === 3) {
+          const donutPercentages = [50, 70, 20];
+          return (
+            <div className="relative w-full h-full bg-[#FBFBFA] p-8 md:p-14 flex flex-col justify-between overflow-hidden select-none">
+              <div className="text-center max-w-2xl mx-auto z-10 space-y-1">
+                <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                  {slide.categoryLabel || 'Entregas'}
+                </span>
+                <h2
+                  className="text-3xl md:text-5xl font-serif font-black text-[#062a1d] mb-2"
+                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                >
+                  <SplitText
+                    text={slide.title}
+                    splitType="words"
+                    delay={35}
+                    duration={0.7}
+                    from={{ opacity: 0, y: 30 }}
+                    to={{ opacity: 1, y: 0 }}
+                  />
+                </h2>
+                {slide.subtitle && <p className="text-gray-500 text-sm">{slide.subtitle}</p>}
+              </div>
 
+              {/* 3 Dark Green Cards with Donut Charts (Image 6 Match) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto max-w-5xl mx-auto w-full z-10">
+                {slide.gridCards.map((card, idx) => {
+                  const pct = donutPercentages[idx % 3];
+                  return (
+                    <motion.div
+                      key={idx}
+                      {...getAnim(idx)}
+                      className="bg-[#062a1d] text-white p-7 rounded-2xl shadow-xl flex flex-col items-center text-center space-y-5"
+                    >
+                      <span className="text-xl font-serif font-bold text-white/90">{pct}%</span>
+
+                      {/* Donut Chart SVG */}
+                      <div className="relative w-28 h-28 flex items-center justify-center">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                          <path
+                            className="text-white/10"
+                            strokeWidth="4"
+                            stroke="currentColor"
+                            fill="none"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          />
+                          <path
+                            className="text-[#FFC20E]"
+                            strokeDasharray={`${pct}, 100`}
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            stroke="currentColor"
+                            fill="none"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          />
+                        </svg>
+                        <span className="absolute text-base font-serif font-bold text-white">
+                          {pct}%
+                        </span>
+                      </div>
+
+                      <div className="space-y-1.5 w-full pt-2 border-t border-white/10">
+                        <h4 className="text-base font-serif font-bold text-[#FFC20E]">{card.title}</h4>
+                        <p className="text-xs text-white/70 leading-relaxed">{card.description}</p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+                <span className="font-serif italic text-gray-500">Brotas 360° · Metodologia Estruturada</span>
+                <span>{slide.slideNumber}</span>
+              </div>
+            </div>
+          );
+        }
+
+        // Layout tradicional limpo com 6 cards
+        return (
+          <div className="relative w-full h-full bg-[#FBFBFA] p-8 md:p-14 flex flex-col justify-between overflow-hidden select-none">
             <div className="z-10">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold mb-1 block">
                 {slide.categoryLabel || 'Entregas'}
               </span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-1" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+              <h2
+                className="text-3xl md:text-4xl font-serif font-black text-[#062a1d] mb-1"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
                 <SplitText
                   text={slide.title}
                   splitType="words"
@@ -1009,7 +1054,7 @@ export default function BrotasSlideRenderer({
                   to={{ opacity: 1, y: 0 }}
                 />
               </h2>
-              {slide.subtitle && <p className="text-gray-600 text-sm mb-4">{slide.subtitle}</p>}
+              {slide.subtitle && <p className="text-gray-500 text-sm mb-4">{slide.subtitle}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 my-auto max-w-5xl mx-auto w-full z-10">
@@ -1019,11 +1064,11 @@ export default function BrotasSlideRenderer({
                   <motion.div
                     key={idx}
                     {...getAnim(idx)}
-                    className="bg-white border border-gray-100 hover:border-[#00A859]/50 p-5 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group"
+                    className="bg-white border border-gray-200/80 hover:border-[#00A859] p-5 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group"
                   >
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"
-                      style={{ backgroundColor: card.color ? `${card.color}15` : '#00A85915', color: card.color || '#00A859' }}
+                      style={{ backgroundColor: card.color ? `${card.color}15` : '#00A85915', color: card.color || '#062a1d' }}
                     >
                       <IconComponent className="w-5 h-5" />
                     </div>
@@ -1034,24 +1079,76 @@ export default function BrotasSlideRenderer({
               })}
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
-              <span>Brotas 360° · Metodologia Estruturada</span>
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Brotas 360° · Metodologia Estruturada</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
+      }
 
-      // 10. LEVELS BAR
+      // 10. LEVELS BAR / 4-COLUMN PRICING & TIERS (IMAGE 4 REFERENCE)
       case 'levels_bar':
-        return (
-          <div className="relative w-full h-full bg-white p-10 md:p-16 flex flex-col justify-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-52 h-52 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
+      case 'comparative_table': {
+        const tiers = [
+          {
+            name: 'Informativo',
+            headerBg: 'bg-[#0a3828]',
+            summary: 'O que foi feito — obras, editais, horários e serviços à comunidade.',
+            features: [
+              'Boletins diários de obras',
+              'Avisos de saúde e educação',
+              'Canais oficiais atualizados',
+              'Transparência com a população'
+            ],
+            badge: '1° Nível'
+          },
+          {
+            name: 'Educativo',
+            headerBg: 'bg-[#062a1d]',
+            summary: 'Por que importa — benefícios coletivos, economia pública e sustentabilidade.',
+            features: [
+              'Explicação didática dos projetos',
+              'Vídeos explicativos curtos',
+              'Campanhas de conscientização',
+              'Participação ativa do cidadão'
+            ],
+            badge: '2° Nível'
+          },
+          {
+            name: 'Emocional',
+            headerBg: 'bg-[#0e4d3c]',
+            summary: 'Como impacta a vida — histórias reais de moradores e orgulho de viver em Brotas.',
+            features: [
+              'Documentários de pessoas reais',
+              'Orgulho cívico e valorização',
+              'Narrativas de transformação',
+              'Sentimento de pertencimento'
+            ],
+            badge: '3° Nível'
+          },
+          {
+            name: 'Estratégico',
+            headerBg: 'bg-[#062a1d]',
+            summary: 'Visão 360° — inteligência de dados, resposta rápida e aprovação de gestão.',
+            features: [
+              'Pesquisas de percepção',
+              'Monitoramento de sentimento',
+              'Gestão de crises em 2h',
+              'Fortalecimento de reputação'
+            ],
+            badge: 'Total 360°'
+          }
+        ];
 
-            <div className="max-w-4xl mx-auto w-full z-10">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                {slide.categoryLabel || 'Estrutura'}
-              </span>
-              <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-10" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+        return (
+          <div className="relative w-full h-full bg-[#FBFBFA] p-8 md:p-14 flex flex-col justify-between overflow-hidden select-none">
+            {/* Top Centered Header */}
+            <div className="text-center max-w-3xl mx-auto space-y-2 z-10">
+              <h2
+                className="text-3xl md:text-5xl font-serif font-black text-[#062a1d] tracking-tight"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
                 <SplitText
                   text={slide.title}
                   splitType="words"
@@ -1062,146 +1159,75 @@ export default function BrotasSlideRenderer({
                 />
               </h2>
 
-              <div className="space-y-6">
-                {[
-                  { level: 'Nível 1 · Informativo', desc: 'O que foi feito — obras, serviços, editais, horários', color: '#00A859' },
-                  { level: 'Nível 2 · Educativo', desc: 'Por que importa — benefícios coletivos, economia, sustentabilidade', color: '#FFB800' },
-                  { level: 'Nível 3 · Emocional', desc: 'Como impacta a vida — histórias de moradores, transformação e orgulho de Brotas', color: '#ED1C24' }
-                ].map((item, idx) => (
+              <p className="text-sm md:text-base text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
+                {slide.texts?.join(' ') || 'Estrutura estratégica em níveis de comunicação para que cada mensagem cumpra seu papel na mente do cidadão.'}
+              </p>
+            </div>
+
+            {/* 4 Vertical Columns with Downward Triangle Header (Image 4 Match) */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-200/80 p-6 max-w-6xl mx-auto w-full my-auto z-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                {tiers.map((t, idx) => (
                   <motion.div
                     key={idx}
                     {...getAnim(idx)}
-                    className="p-6 rounded-2xl shadow-lg text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                    style={{ backgroundColor: item.color }}
+                    className="flex flex-col justify-between px-4 py-2 space-y-5"
                   >
-                    <span className="text-lg font-bold tracking-wide">{item.level}</span>
-                    <span className="text-sm text-white/95 font-semibold">{item.desc}</span>
+                    {/* Header Banner with Downward Triangle */}
+                    <div className="relative">
+                      <div className={`${t.headerBg} text-white text-center py-3 px-4 rounded-t-xl font-serif font-bold text-base md:text-lg tracking-wide shadow-md`}>
+                        {t.name}
+                      </div>
+                      {/* Downward triangle pointer */}
+                      <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#062a1d] mx-auto -mt-0.5"></div>
+                    </div>
+
+                    <p className="text-xs text-gray-600 text-center leading-relaxed min-h-[44px]">
+                      {t.summary}
+                    </p>
+
+                    {/* Checklist */}
+                    <div className="space-y-2.5 pt-2">
+                      {t.features.map((f, fIdx) => (
+                        <div key={fIdx} className="flex items-start gap-2 text-xs text-gray-700">
+                          <Check className="w-3.5 h-3.5 text-[#00A859] shrink-0 mt-0.5" />
+                          <span>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Bottom Badge */}
+                    <div className="pt-4 text-center border-t border-gray-100">
+                      <span className="text-2xl font-serif font-black text-[#062a1d]">
+                        {t.badge}
+                      </span>
+                    </div>
                   </motion.div>
                 ))}
               </div>
             </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Brotas 360° · Estrutura em Níveis</span>
+              <span>{slide.slideNumber}</span>
+            </div>
           </div>
         );
+      }
 
       // 11. FAN OUT
       case 'fan_out':
         return (
-          <div className="relative w-full h-full bg-white p-10 md:p-16 flex flex-col justify-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
-
-            <div className="max-w-5xl mx-auto w-full z-10">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+          <div className="relative w-full h-full bg-[#FBFBFA] p-8 md:p-14 flex flex-col justify-between overflow-hidden select-none">
+            <div className="max-w-5xl mx-auto w-full z-10 text-center space-y-2">
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
                 {slide.categoryLabel || 'Canais'}
               </span>
-              <h2 className="text-3xl md:text-5xl font-black text-gray-950 mb-8" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                <SplitText
-                  text={slide.title}
-                  splitType="words"
-                  delay={35}
-                  duration={0.7}
-                  from={{ opacity: 0, y: 30 }}
-                  to={{ opacity: 1, y: 0 }}
-                />
-              </h2>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {[
-                  { name: 'Instagram', icon: 'Film', color: '#E1306C' },
-                  { name: 'Facebook', icon: 'Users', color: '#1877F2' },
-                  { name: 'TikTok', icon: 'Play', color: '#000000' },
-                  { name: 'YouTube', icon: 'Film', color: '#FF0000' },
-                  { name: 'Site Prefeitura', icon: 'Globe', color: '#00A859' },
-                  { name: 'WhatsApp', icon: 'MessageCircle', color: '#25D366' },
-                  { name: 'Rádio Local', icon: 'Zap', color: '#FF7A00' },
-                  { name: 'Imprensa & Clipping', icon: 'Newspaper', color: '#0074BC' }
-                ].map((channel, idx) => {
-                  const Icon = ICON_MAP[channel.icon] || Globe;
-                  return (
-                    <motion.div
-                      key={idx}
-                      {...getAnim(idx)}
-                      className="p-5 rounded-2xl border border-gray-100 shadow-md flex items-center gap-3 hover:shadow-xl transition-all bg-white"
-                    >
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
-                        style={{ backgroundColor: channel.color }}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <span className="text-sm font-bold text-gray-800">{channel.name}</span>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        );
-
-      // 12. MOCKUP TRIPLE / SYSTEM
-      case 'mockup_triple':
-      case 'mockup_system':
-        return (
-          <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
-
-            <div className="z-10">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                {slide.categoryLabel || 'Tecnologia'}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                <SplitText
-                  text={slide.title}
-                  splitType="words"
-                  delay={35}
-                  duration={0.7}
-                  from={{ opacity: 0, y: 30 }}
-                  to={{ opacity: 1, y: 0 }}
-                />
-              </h2>
-              {slide.texts && <p className="text-gray-600 text-sm">{slide.texts.join(' · ')}</p>}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 my-auto max-w-5xl mx-auto w-full h-[320px] z-10">
-              {(slide.imageSlots || [
-                { id: 'mockup-1', label: 'Dashboard' },
-                { id: 'mockup-2', label: 'App Mobile' },
-                { id: 'mockup-3', label: 'Portal Web' }
-              ]).map((slot, idx) => (
-                <motion.div
-                  key={slot.id}
-                  {...getAnim(idx)}
-                  className="rounded-2xl overflow-hidden shadow-2xl border-4 border-gray-800 bg-gray-900 relative flex flex-col"
-                >
-                  <div className="h-6 bg-gray-800 flex items-center px-3 gap-1.5 shrink-0">
-                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                    <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  </div>
-                  <div className="flex-1 overflow-hidden">
-                    <ImageSlot slotId={slot.id} label={slot.label} className="w-full h-full" />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
-              <span>Plataforma Integrada de Gestão</span>
-              <span>{slide.slideNumber}</span>
-            </div>
-          </div>
-        );
-
-      // 13. COMPARATIVE TABLE
-      case 'comparative_table':
-        return (
-          <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
-
-            <div className="z-10">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                {slide.categoryLabel || 'Comparativo'}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-4" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+              <h2
+                className="text-3xl md:text-5xl font-serif font-black text-[#062a1d]"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
                 <SplitText
                   text={slide.title}
                   splitType="words"
@@ -1213,106 +1239,139 @@ export default function BrotasSlideRenderer({
               </h2>
             </div>
 
-            <div className="overflow-x-auto my-auto max-w-5xl mx-auto w-full shadow-xl rounded-2xl border border-gray-200 z-10">
-              <table className="w-full text-left border-collapse text-xs md:text-sm">
-                <thead>
-                  <tr className="bg-[#00A859] text-white font-bold">
-                    {slide.tableHeaders?.map((header, idx) => (
-                      <th key={idx} className="p-3.5 md:p-4 uppercase tracking-wider font-mono text-xs">
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {slide.tableRows?.map((row, idx) => (
-                    <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="p-3 md:p-3.5 font-bold text-gray-900">{row.col1}</td>
-                      <td className="p-3 md:p-3.5 text-gray-600">{row.col2}</td>
-                      {row.col3 && <td className="p-3 md:p-3.5 text-gray-800 font-semibold">{row.col3}</td>}
-                      {row.col4 && <td className="p-3 md:p-3.5 text-[#00A859] font-black">{row.col4}</td>}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
-              <span>Brotas 360° · Solução Completa</span>
-              <span>{slide.slideNumber}</span>
-            </div>
-          </div>
-        );
-
-      // 14. DASHBOARD
-      case 'dashboard':
-        return (
-          <div className="relative w-full h-full bg-[#0A0F1A] p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859]/20 rounded-bl-full pointer-events-none"></div>
-
-            <div className="z-10">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
-                {slide.categoryLabel || 'Inteligência & Métricas'}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-                <SplitText
-                  text={slide.title}
-                  splitType="words"
-                  delay={35}
-                  duration={0.7}
-                  from={{ opacity: 0, y: 30 }}
-                  to={{ opacity: 1, y: 0 }}
-                />
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 my-auto max-w-5xl mx-auto w-full z-10">
-              {slide.gridCards?.map((card, idx) => {
-                const IconComponent = (card.icon && ICON_MAP[card.icon]) || TrendingUp;
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 my-auto max-w-5xl mx-auto w-full z-10">
+              {[
+                { name: 'Instagram', icon: 'Film', color: '#E1306C' },
+                { name: 'Facebook', icon: 'Users', color: '#1877F2' },
+                { name: 'TikTok', icon: 'Play', color: '#000000' },
+                { name: 'YouTube', icon: 'Film', color: '#FF0000' },
+                { name: 'Site Prefeitura', icon: 'Globe', color: '#00A859' },
+                { name: 'WhatsApp', icon: 'MessageCircle', color: '#25D366' },
+                { name: 'Rádio Local', icon: 'Zap', color: '#FF7A00' },
+                { name: 'Imprensa & Clipping', icon: 'Newspaper', color: '#0074BC' }
+              ].map((channel, idx) => {
+                const Icon = ICON_MAP[channel.icon] || Globe;
                 return (
                   <motion.div
                     key={idx}
                     {...getAnim(idx)}
-                    className="bg-[#111827] border border-white/10 p-6 rounded-2xl shadow-xl flex flex-col justify-between group hover:border-[#00A859] transition-all"
+                    className="p-5 rounded-2xl border border-gray-200/80 shadow-sm flex items-center gap-3 hover:shadow-xl transition-all bg-white"
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs text-gray-400 font-medium">{card.title}</span>
-                      <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: card.color ? `${card.color}20` : '#00A85920', color: card.color || '#00A859' }}
-                      >
-                        <IconComponent className="w-4 h-4" />
-                      </div>
-                    </div>
-                    <span
-                      className="text-2xl md:text-3xl font-black tracking-tight mb-1"
-                      style={{ color: card.color || '#00A859' }}
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
+                      style={{ backgroundColor: channel.color }}
                     >
-                      {card.description}
-                    </span>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-sm font-bold text-gray-800">{channel.name}</span>
                   </motion.div>
                 );
               })}
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-500 font-mono pt-2 border-t border-white/10 z-10">
-              <span>Resultados Estimados · 1° Ano</span>
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Distribuição Multiplataforma Brotas 360°</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
 
-      // 15. ORGANOGRAM
+      // 12. MOCKUP TRIPLE / LAPTOP HIGH-TECH MOCKUP (IMAGE 3 REFERENCE)
+      case 'mockup_triple':
+      case 'mockup_system':
+      case 'dashboard':
+        return (
+          <div className="relative w-full h-full bg-[#062a1d] text-white p-8 md:p-14 flex flex-col md:flex-row items-center justify-between overflow-hidden select-none">
+            {/* Left Side: Realistic MacBook Laptop Mockup (Image 3 Match) */}
+            <div className="w-full md:w-3/5 h-[340px] md:h-[480px] flex items-center justify-center z-10">
+              <div className="w-full max-w-xl flex flex-col items-center">
+                {/* Laptop Screen Bezel */}
+                <div className="w-full bg-[#111] rounded-t-2xl p-2.5 pb-0 border-2 border-gray-700 shadow-2xl relative">
+                  {/* Top Notch / Camera */}
+                  <div className="w-20 h-3 bg-black rounded-b-md mx-auto flex items-center justify-center mb-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/80"></div>
+                  </div>
+                  {/* Screen Content */}
+                  <div className="w-full h-64 md:h-72 bg-black rounded-t-lg overflow-hidden relative">
+                    <ImageSlot
+                      slotId={slide.imageSlots?.[0]?.id || `laptop-${slide.id}`}
+                      defaultUrl={slide.imageSlots?.[0]?.defaultUrl}
+                      label={slide.imageSlots?.[0]?.label || 'Dashboard / Sistema'}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+                {/* Laptop Base (Aluminum edge & notch) */}
+                <div className="w-[108%] h-3.5 bg-gradient-to-b from-gray-300 to-gray-500 rounded-b-xl shadow-2xl relative flex items-center justify-center">
+                  <div className="w-16 h-1 bg-gray-600 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side: High Technology Headline + Stat (Image 3 Match) */}
+            <div className="w-full md:w-2/5 flex flex-col justify-center pl-4 md:pl-8 space-y-5 z-10 max-w-lg">
+              <div className="space-y-2">
+                <span className="text-[#FFC20E] uppercase tracking-[0.25em] text-xs font-mono font-bold block">
+                  {slide.categoryLabel || 'Tecnologia'}
+                </span>
+                <h2
+                  className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-white leading-tight"
+                  style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                >
+                  <SplitText
+                    text={slide.title}
+                    splitType="words"
+                    delay={35}
+                    duration={0.7}
+                    from={{ opacity: 0, y: 30 }}
+                    to={{ opacity: 1, y: 0 }}
+                  />
+                </h2>
+                <p className="text-xl md:text-2xl font-serif italic text-white/80 font-normal">
+                  gestão inteligente & alta tecnologia
+                </p>
+              </div>
+
+              <p className="text-sm md:text-base text-gray-300 font-light leading-relaxed">
+                {slide.texts?.join(' ') || 'Plataforma integrada de dados, monitoramento e inteligência artificial para aproximar a prefeitura dos cidadãos de Brotas em tempo real.'}
+              </p>
+
+              {/* Big Metric Display */}
+              <div className="pt-3 border-t border-white/15 flex items-baseline gap-4">
+                <span className="text-5xl md:text-6xl font-serif font-black text-[#FFC20E]" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+                  360°
+                </span>
+                <div>
+                  <span className="text-sm font-bold text-white uppercase tracking-wide block">
+                    Visão Completa
+                  </span>
+                  <span className="text-xs text-gray-300 font-light block">
+                    Monitoramento e resposta ágil
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="absolute bottom-3 left-8 right-8 flex items-center justify-between text-xs text-white/40 font-mono pt-2 border-t border-white/10 z-10">
+              <span className="font-serif italic text-white/50">Brotas 360° · Sistema de Inteligência</span>
+              <span>{slide.slideNumber}</span>
+            </div>
+          </div>
+        );
+
+      // 13. ORGANOGRAM
       case 'organogram':
         return (
-          <div className="relative w-full h-full bg-white p-8 md:p-14 flex flex-col justify-between overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
-
-            <div className="z-10">
-              <span className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-1 block">
+          <div className="relative w-full h-full bg-[#FBFBFA] p-8 md:p-14 flex flex-col justify-between overflow-hidden select-none">
+            <div className="z-10 text-center max-w-3xl mx-auto space-y-1">
+              <span className="text-[#062a1d]/60 uppercase tracking-[0.25em] text-xs font-mono font-bold block">
                 {slide.categoryLabel || 'Equipe'}
               </span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+              <h2
+                className="text-3xl md:text-4xl font-serif font-black text-[#062a1d]"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              >
                 <SplitText
                   text={slide.title}
                   splitType="words"
@@ -1328,7 +1387,7 @@ export default function BrotasSlideRenderer({
               {slide.orgLevels?.map((level, idx) => (
                 <motion.div key={idx} {...getAnim(idx)} className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold font-mono uppercase bg-[#00A859] text-white px-3 py-1 rounded-full">
+                    <span className="text-[10px] font-bold font-mono uppercase bg-[#062a1d] text-white px-3 py-1 rounded-full">
                       {level.level}
                     </span>
                   </div>
@@ -1336,7 +1395,7 @@ export default function BrotasSlideRenderer({
                     {level.items.map((item, itemIdx) => (
                       <div
                         key={itemIdx}
-                        className="bg-gray-50 border border-gray-200 p-3.5 rounded-xl text-center text-xs font-bold text-gray-800 shadow-sm"
+                        className="bg-white border border-gray-200 p-3.5 rounded-xl text-center text-xs font-bold text-gray-800 shadow-sm"
                       >
                         {item}
                       </div>
@@ -1346,35 +1405,36 @@ export default function BrotasSlideRenderer({
               ))}
             </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-100 z-10">
-              <span>Equipe Multidisciplinar Dedicada</span>
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-2 border-t border-gray-200/60 z-10">
+              <span className="font-serif italic text-gray-500">Equipe Multidisciplinar Dedicada</span>
               <span>{slide.slideNumber}</span>
             </div>
           </div>
         );
 
-      // 16. BIG NUMBER
+      // 14. BIG NUMBER
       case 'big_number':
         return (
           <div
-            className={`relative w-full h-full flex flex-col items-center justify-center p-12 md:p-24 text-center overflow-hidden ${
-              slide.isDark ? 'bg-[#0A0F1A]' : 'bg-white'
+            className={`relative w-full h-full flex flex-col items-center justify-center p-12 md:p-24 text-center overflow-hidden select-none ${
+              slide.isDark ? 'bg-[#062a1d] text-white' : 'bg-[#FBFBFA] text-gray-900'
             }`}
           >
-            <div className="absolute top-0 right-0 w-52 h-52 bg-[#00A859] rounded-bl-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#0B4D3C] rounded-tr-full pointer-events-none"></div>
-
             {slide.categoryLabel && (
               <motion.span
                 {...getAnim(0)}
-                className="text-[#FFB800] uppercase tracking-widest text-xs font-bold font-mono mb-4 block z-10"
+                className={`uppercase tracking-[0.25em] text-xs font-mono font-bold mb-4 block z-10 ${
+                  slide.isDark ? 'text-[#FFC20E]' : 'text-[#062a1d]/60'
+                }`}
               >
                 {slide.categoryLabel}
               </motion.span>
             )}
 
             <h3
-              className={`text-2xl md:text-3xl font-light mb-6 z-10 ${slide.isDark ? 'text-gray-300' : 'text-gray-700'}`}
+              className={`text-2xl md:text-3xl font-serif font-light mb-6 z-10 ${
+                slide.isDark ? 'text-gray-200' : 'text-gray-700'
+              }`}
               style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
               <SplitText
@@ -1389,7 +1449,9 @@ export default function BrotasSlideRenderer({
 
             <motion.h1
               {...getAnim(2)}
-              className="text-7xl md:text-9xl font-black text-[#00A859] mb-4 tracking-tighter z-10"
+              className={`text-7xl md:text-9xl font-serif font-black mb-4 tracking-tighter z-10 ${
+                slide.isDark ? 'text-[#FFC20E]' : 'text-[#062a1d]'
+              }`}
               style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
               {slide.bigNumber || slide.title}
@@ -1398,7 +1460,9 @@ export default function BrotasSlideRenderer({
             {slide.bigNumberLabel && (
               <motion.p
                 {...getAnim(3)}
-                className="text-[#FFB800] text-xl md:text-2xl font-bold uppercase tracking-wider mb-6 z-10"
+                className={`text-lg md:text-xl font-serif italic uppercase tracking-wider mb-6 z-10 ${
+                  slide.isDark ? 'text-white/80' : 'text-[#062a1d]/80'
+                }`}
               >
                 {slide.bigNumberLabel}
               </motion.p>
@@ -1410,7 +1474,9 @@ export default function BrotasSlideRenderer({
                   <motion.p
                     key={idx}
                     {...getAnim(4 + idx)}
-                    className={`text-sm md:text-base font-light ${slide.isDark ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`text-sm md:text-base font-light ${
+                      slide.isDark ? 'text-gray-300' : 'text-gray-600'
+                    }`}
                   >
                     {t}
                   </motion.p>
@@ -1422,8 +1488,8 @@ export default function BrotasSlideRenderer({
 
       default:
         return (
-          <div className="w-full h-full flex flex-col items-center justify-center p-12 bg-white">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">{slide.title}</h2>
+          <div className="w-full h-full flex flex-col items-center justify-center p-12 bg-[#FBFBFA]">
+            <h2 className="text-3xl font-serif font-bold text-gray-800 mb-4">{slide.title}</h2>
             {slide.texts && <p className="text-gray-600 max-w-lg text-center">{slide.texts.join(' ')}</p>}
           </div>
         );

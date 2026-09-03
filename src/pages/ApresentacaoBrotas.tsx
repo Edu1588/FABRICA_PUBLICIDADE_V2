@@ -215,6 +215,20 @@ export default function ApresentacaoBrotas() {
       className="relative w-screen h-screen bg-black overflow-hidden select-none"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
+      {/* Top-Right Next Slide Tab Button (Exact Reference Match) */}
+      <button
+        onClick={goNext}
+        disabled={currentIndex === totalSlides - 1}
+        className="absolute top-0 right-6 md:right-14 z-50 bg-[#062a1d] hover:bg-[#0a3a27] text-white w-14 sm:w-16 md:w-20 h-11 sm:h-12 md:h-14 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.35)] transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer group"
+        title="Próximo slide (→ ou Espaço)"
+        aria-label="Próximo slide"
+      >
+        <svg viewBox="0 0 38 16" className="w-8 sm:w-9 md:w-10 h-3.5 sm:h-4 fill-none stroke-white stroke-[2.2] stroke-linecap-round stroke-linejoin-round transition-transform duration-200 group-hover:translate-x-1.5">
+          <line x1="2" y1="8" x2="34" y2="8" />
+          <polyline points="26,2 34,8 26,14" />
+        </svg>
+      </button>
+
       {/* Slides Container */}
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
