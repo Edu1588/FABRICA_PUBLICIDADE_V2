@@ -1199,24 +1199,27 @@ export default function Admin() {
                     <div 
                       key={client.id}
                       onClick={() => setSelectedClientId(client.id)}
-                      className={`bg-[#111116] hover:bg-[#161622] border-2 border-[#C46A1A]/50 hover:border-[#C46A1A] rounded-2xl p-7 cursor-pointer transition-all duration-300 group relative overflow-hidden shadow-[0_0_22px_rgba(196,106,26,0.14)] hover:shadow-[0_0_35px_rgba(196,106,26,0.32)] hover:-translate-y-1 client-card-${client.id}`}
+                      className={`bg-gradient-to-b from-[#1c140e] via-[#14100c] to-[#0e0b09] hover:from-[#251a12] hover:to-[#14100c] border-2 border-[#FF7A00] hover:border-[#FFA040] rounded-2xl p-7 cursor-pointer transition-all duration-300 group relative overflow-hidden shadow-[0_4px_25px_rgba(255,122,0,0.2)] hover:shadow-[0_8px_40px_rgba(255,122,0,0.38)] hover:-translate-y-1.5 client-card-${client.id}`}
                     >
-                      <div className="absolute top-0 right-0 w-36 h-36 bg-[#C46A1A]/10 rounded-full blur-2xl transition-colors pointer-events-none group-hover:bg-[#C46A1A]/20"></div>
+                      {/* Top Glowing Orange Accent Line */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#FF7A00] to-transparent opacity-90 group-hover:opacity-100"></div>
+
+                      <div className="absolute -top-12 -right-12 w-40 h-40 bg-[#FF7A00]/15 rounded-full blur-3xl pointer-events-none group-hover:bg-[#FF7A00]/25 transition-all"></div>
                       
                       <div className="flex justify-between items-start">
-                        <span className="text-[10px] font-outfit font-semibold bg-[#C46A1A]/20 text-[#FF9D42] border border-[#C46A1A]/40 px-2.5 py-1 rounded uppercase tracking-wider">
+                        <span className="text-[10px] font-outfit font-bold bg-[#FF7A00]/20 text-[#FFA040] border border-[#FF7A00]/60 px-3 py-1 rounded-md uppercase tracking-wider shadow-sm">
                           Ativo
                         </span>
                         {client.logoUrl ? (
-                          <div className="w-16 h-16 rounded-xl bg-black/40 border border-[#C46A1A]/40 flex items-center justify-center overflow-hidden p-2 shadow-sm group-hover:border-[#C46A1A] transition-colors">
+                          <div className="w-16 h-16 rounded-xl bg-black/60 border-2 border-[#FF7A00]/40 flex items-center justify-center overflow-hidden p-2 shadow-md group-hover:border-[#FF7A00] transition-colors">
                             <img src={client.logoUrl} alt={client.name} className="w-full h-full object-contain" />
                           </div>
                         ) : (
                           <div 
-                            className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold font-outfit shadow-sm border border-[#C46A1A]/50 group-hover:border-[#C46A1A] transition-colors"
+                            className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold font-outfit shadow-md border-2 border-[#FF7A00]/50 group-hover:border-[#FF7A00] transition-colors"
                             style={{ 
-                              backgroundColor: `${client.corCliente || '#C46A1A'}20`, 
-                              color: client.corCliente || '#FF9D42'
+                              backgroundColor: `${client.corCliente || '#FF7A00'}25`, 
+                              color: client.corCliente || '#FFA040'
                             }}
                           >
                             {client.name ? client.name.charAt(0).toUpperCase() : 'C'}
@@ -1224,17 +1227,18 @@ export default function Admin() {
                         )}
                       </div>
                       
-                      <h4 className="text-2xl font-light tracking-wide uppercase mt-5 mb-2 text-white group-hover:text-[#FF9D42] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
+                      <h4 className="text-2xl font-normal tracking-wide uppercase mt-5 mb-2 text-white group-hover:text-[#FFA040] transition-colors" style={{ fontFamily: 'var(--font-outfit)' }}>
                         {client.name || 'Sem Nome'}
                       </h4>
                       
-                      <p className="text-xs text-white/50 font-light leading-relaxed mb-6">
+                      <p className="text-xs text-white/60 font-light leading-relaxed mb-6">
                         {client.description || 'Sem descrição cadastrada.'}
                       </p>
                       
-                      <div className="flex items-center justify-between pt-4 border-t border-white/10 font-outfit text-[11px] uppercase tracking-widest text-[#FF9D42]/80 group-hover:text-[#FF9D42] transition-colors font-medium">
+                      {/* Prominent Action Button */}
+                      <div className="flex items-center justify-between py-2.5 px-4 rounded-xl bg-[#FF7A00]/15 border border-[#FF7A00]/40 group-hover:bg-[#FF7A00] group-hover:border-[#FF7A00] transition-all font-outfit text-xs font-bold uppercase tracking-widest text-[#FFA040] group-hover:text-black shadow-sm">
                         <span>Acessar Cliente</span>
-                        <ChevronRight className="w-4 h-4 text-[#FF9D42] group-hover:translate-x-1.5 transition-transform" />
+                        <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                       </div>
                     </div>
                     ))}
@@ -2933,8 +2937,11 @@ export default function Admin() {
                     {presentations.map((pres) => (
                       <div
                         key={pres.id}
-                        className="bg-[#111116] border-2 border-[#C46A1A]/50 hover:border-[#C46A1A] rounded-2xl p-6 transition-all duration-300 group flex flex-col justify-between shadow-[0_0_20px_rgba(196,106,26,0.12)] hover:shadow-[0_0_30px_rgba(196,106,26,0.22)]"
+                        className="bg-gradient-to-b from-[#1c140e] via-[#14100c] to-[#0e0b09] hover:from-[#251a12] hover:to-[#14100c] border-2 border-[#FF7A00] hover:border-[#FFA040] rounded-2xl p-7 transition-all duration-300 group flex flex-col justify-between shadow-[0_4px_25px_rgba(255,122,0,0.2)] hover:shadow-[0_8px_40px_rgba(255,122,0,0.38)] relative overflow-hidden"
                       >
+                        {/* Top Glowing Orange Accent Line */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#FF7A00] to-transparent opacity-90 group-hover:opacity-100"></div>
+
                         <div>
                           {/* Top Tag & Slide Count */}
                           <div className="flex items-center justify-between mb-4">
