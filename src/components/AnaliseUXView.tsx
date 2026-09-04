@@ -722,6 +722,9 @@ export function AnaliseUXView() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<UXAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState<number>(-1);
+  const [viewportMode, setViewportMode] = useState<"desktop" | "mobile">("desktop");
+  const [deviceImgLoading, setDeviceImgLoading] = useState(true);
+  const [deviceImgError, setDeviceImgError] = useState(false);
   const [generatingPdfType, setGeneratingPdfType] = useState<"comercial" | "interno" | null>(null);
   const isGeneratingPDF = generatingPdfType !== null;
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -955,8 +958,8 @@ export function AnaliseUXView() {
         permissionsPolicy: null
       },
       snapshots: {
-        desktop: `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url`,
-        mobile: `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`
+        desktop: `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3500`,
+        mobile: `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true&waitForTimeout=3500`
       },
       vulnerabilities: [
         ...(!isHttps ? [{ title: "Site Sem Criptografia SSL (HTTP Não Seguro)", severity: "Crítico", desc: "Os dados dos clientes podem ser interceptados em texto claro, gerando aviso de 'Site Não Seguro' no navegador." }] : []),
@@ -1072,9 +1075,9 @@ export function AnaliseUXView() {
       const logoBase64 = await fetchImageAsBase64(FABRICA_LOGO_URL);
 
       const desktopSnapshotUrl = analysisResult.extractedMetadata.integrityAudit?.snapshots?.desktop ||
-        `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url`;
+        `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3500`;
       const mobileSnapshotUrl = analysisResult.extractedMetadata.integrityAudit?.snapshots?.mobile ||
-        `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`;
+        `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true&waitForTimeout=3500`;
 
       const [desktopImgBase64, mobileImgBase64] = await Promise.all([
         fetchImageAsBase64(desktopSnapshotUrl),
@@ -2327,7 +2330,7 @@ export function AnaliseUXView() {
                 <div className="flex items-center gap-2 font-mono text-xs">
                   <button
                     type="button"
-                    onClick={() => setViewportMode("desktop")}
+                    onClick={() => { setViewportMode("desktop"); setDeviceImgLoading(true); setDeviceImgError(false); }}
                     className={`px-3 py-1.5 rounded border uppercase transition-all cursor-pointer ${
                       viewportMode === "desktop"
                         ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A]"
@@ -2338,7 +2341,7 @@ export function AnaliseUXView() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setViewportMode("mobile")}
+                    onClick={() => { setViewportMode("mobile"); setDeviceImgLoading(true); setDeviceImgError(false); }}
                     className={`px-3 py-1.5 rounded border uppercase transition-all cursor-pointer ${
                       viewportMode === "mobile"
                         ? "bg-[#C46A1A] text-black font-bold border-[#C46A1A]"
@@ -2352,7 +2355,7 @@ export function AnaliseUXView() {
 
               <div className="flex justify-center p-4 bg-black rounded-xl border border-white/10 overflow-hidden">
                 {viewportMode === "desktop" ? (
-                  <div className="w-full max-w-5xl rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-black">
+                  <div className="relative w-full max-w-5xl rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-[#07070a]">
                     <div className="bg-[#121218] px-4 py-2 flex items-center gap-2 border-b border-white/5">
                       <div className="flex gap-1.5">
                         <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
@@ -2362,24 +2365,50 @@ export function AnaliseUXView() {
                       <span className="text-[11px] font-mono text-white/40 truncate flex-1 text-center">
                         {analysisResult.url}
                       </span>
+                      <a
+                        href={analysisResult.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-mono text-[#C46A1A] hover:underline flex items-center gap-1"
+                      >
+                        <Globe className="w-3 h-3" />
+                        Abrir Site
+                      </a>
                     </div>
+                    {deviceImgLoading && (
+                      <div className="flex flex-col items-center justify-center py-24 space-y-3 bg-[#0a0a0f]">
+                        <Loader2 className="w-7 h-7 text-[#C46A1A] animate-spin" />
+                        <span className="text-xs font-mono text-white/70">Carregando visualização real do site...</span>
+                        <span className="text-[10px] text-white/40">Renderizando layout e proposta visual</span>
+                      </div>
+                    )}
                     <img
-                      src={securityAuditData?.snapshots?.desktop || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url`}
+                      src={securityAuditData?.snapshots?.desktop || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&waitForTimeout=3500`}
                       alt="Desktop Preview"
-                      className="w-full h-auto object-cover max-h-[600px] min-h-[350px] bg-[#0c0c12]"
+                      onLoad={() => setDeviceImgLoading(false)}
+                      onError={() => { setDeviceImgLoading(false); setDeviceImgError(true); }}
+                      className={`w-full h-auto object-cover max-h-[600px] min-h-[350px] transition-opacity duration-300 ${deviceImgLoading ? "opacity-0 h-0" : "opacity-100"}`}
                       loading="lazy"
                     />
                   </div>
                 ) : (
-                  <div className="w-[390px] rounded-[36px] p-3 border-4 border-white/20 shadow-2xl bg-black">
+                  <div className="relative w-[390px] rounded-[36px] p-3 border-4 border-white/20 shadow-2xl bg-[#07070a]">
                     <div className="w-full h-4 flex justify-center items-center mb-2">
                       <div className="w-24 h-3.5 bg-white/20 rounded-full" />
                     </div>
-                    <div className="rounded-[24px] overflow-hidden border border-white/10 bg-[#101018]">
+                    <div className="rounded-[24px] overflow-hidden border border-white/10 bg-[#101018] relative min-h-[450px]">
+                      {deviceImgLoading && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-3 bg-[#0a0a0f] z-10">
+                          <Loader2 className="w-6 h-6 text-[#C46A1A] animate-spin" />
+                          <span className="text-[11px] font-mono text-white/70 text-center">Carregando tela mobile...</span>
+                        </div>
+                      )}
                       <img
-                        src={securityAuditData?.snapshots?.mobile || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true`}
+                        src={securityAuditData?.snapshots?.mobile || `https://api.microlink.io?url=${encodeURIComponent(analysisResult.url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=390&viewport.height=844&viewport.isMobile=true&waitForTimeout=3500`}
                         alt="Mobile Preview"
-                        className="w-full h-auto object-cover max-h-[580px] min-h-[450px] bg-[#0c0c12]"
+                        onLoad={() => setDeviceImgLoading(false)}
+                        onError={() => { setDeviceImgLoading(false); setDeviceImgError(true); }}
+                        className={`w-full h-auto object-cover max-h-[580px] min-h-[450px] transition-opacity duration-300 ${deviceImgLoading ? "opacity-0" : "opacity-100"}`}
                         loading="lazy"
                       />
                     </div>

@@ -868,6 +868,16 @@
       "path": "/home",
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:154.0) Gecko/20100101 Firefox/154.0",
       "timestamp": "2026-08-20T20:28:57.902Z"
+    },
+    {
+      "path": "/home",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:154.0) Gecko/20100101 Firefox/154.0",
+      "timestamp": "2026-08-21T23:19:32.854Z"
+    },
+    {
+      "path": "/home",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:154.0) Gecko/20100101 Firefox/154.0",
+      "timestamp": "2026-08-21T23:19:32.859Z"
     }
   ],
   "leads": []
