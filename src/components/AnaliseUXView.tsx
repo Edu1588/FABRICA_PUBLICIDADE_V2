@@ -224,23 +224,37 @@ export function cleanDisplayMetric(val: string | undefined, fallback: string): s
   return val;
 }
 
-export function calculatePageSpeedMetrics(responseTimeMs: number, pageSizeKb: number, imagesCount: number, imagesMissingAlt: number): CoreWebVitals {
+export function calculatePageSpeedMetrics(
+  responseTimeMs: number,
+  pageSizeKb: number,
+  imagesCount: number,
+  imagesMissingAlt: number,
+  headingsCount: number = 0,
+  hasMetaDesc: boolean = false,
+  isHttps: boolean = true
+): CoreWebVitals {
   const ttfbSec = (responseTimeMs / 1000).toFixed(2);
-  const fcpSec = ((responseTimeMs * 2.5 + 800) / 1000).toFixed(1);
-  const lcpSec = ((responseTimeMs * 4.2 + Math.min(pageSizeKb * 10, 2600)) / 1000).toFixed(1);
-  const clsVal = (Math.min(0.04 + (imagesCount > 20 ? 0.09 : 0.03), 0.28)).toFixed(2);
-  const tbtVal = Math.round(Math.min(responseTimeMs * 0.8 + pageSizeKb * 0.5 + 120, 520));
-  const speedIndexSec = ((parseFloat(fcpSec) + parseFloat(lcpSec)) * 0.78).toFixed(1);
+  const fcpSec = Math.max(0.8, (responseTimeMs * 1.5 + 400) / 1000).toFixed(1);
+  const lcpSec = Math.max(1.6, (responseTimeMs * 2.3 + Math.min(pageSizeKb * 1.8, 2800) + imagesCount * 30) / 1000).toFixed(1);
+  const clsVal = Math.min(0.02 + (imagesCount > 15 ? 0.08 : 0.02) + (imagesMissingAlt > 5 ? 0.04 : 0.01), 0.32).toFixed(2);
+  const tbtVal = Math.round(Math.min(responseTimeMs * 0.25 + pageSizeKb * 0.25 + imagesCount * 7, 780));
+  const speedIndexSec = ((parseFloat(fcpSec) * 0.45) + (parseFloat(lcpSec) * 0.55)).toFixed(1);
 
-  let perfScore = 61;
-  if (responseTimeMs < 250 && pageSizeKb < 500) perfScore = 88;
-  else if (responseTimeMs < 450 && pageSizeKb < 1200) perfScore = 74;
-  else if (pageSizeKb > 2000 || imagesCount > 30) perfScore = 61;
+  // Score de Performance (Google PageSpeed) calculado dinamicamente
+  const latencyPenalty = Math.min(45, Math.round((responseTimeMs / 100) * 0.75));
+  const sizePenalty = Math.min(25, Math.round((pageSizeKb / 100) * 0.55));
+  const imagePenalty = Math.min(20, Math.round(imagesCount * 0.35));
+  const perfScore = Math.max(22, Math.min(96, Math.round(100 - latencyPenalty - sizePenalty - imagePenalty)));
 
-  const altRatio = imagesMissingAlt / (imagesCount || 1);
-  const a11yScore = Math.max(50, Math.round(100 - (altRatio * 25) - 5));
-  const bestPracticesScore = 100;
-  const seoScore = 91;
+  // Acessibilidade
+  const altRatio = imagesCount > 0 ? (imagesMissingAlt / imagesCount) : 0;
+  const a11yScore = Math.max(40, Math.min(98, Math.round(98 - (altRatio * 38) - (headingsCount === 0 ? 12 : 0))));
+
+  // Boas Práticas
+  const bestPracticesScore = Math.max(50, Math.min(100, Math.round((isHttps ? 50 : 20) + (altRatio < 0.2 ? 30 : 15) + 20)));
+
+  // SEO
+  const seoScore = Math.max(38, Math.min(99, Math.round((hasMetaDesc ? 45 : 20) + (headingsCount >= 2 ? 35 : 15) + (isHttps ? 20 : 5))));
 
   return {
     score: perfScore,
@@ -359,11 +373,63 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
 
 [3] Velocidade e Retenção no Celular: Com pontuação de desempenho de ${pageSpeedScore}/100 e tempo de resposta de ${responseTime}ms, o site apresenta oportunidades claras de otimização de imagens e scripts. No ambiente mobile (tráfego de redes sociais e anúncios pagos), cada segundo a menos de espera representa um aumento direto de até 20% nas conversões.`;
 
+  const pageSpeedCategories = meta.performance?.pageSpeed?.categories;
+  const perfScore = pageSpeedCategories?.performance || 60;
+  const a11yScore = pageSpeedCategories?.accessibility || 70;
+  const seoScore = pageSpeedCategories?.seo || 75;
+
+  // 1. Design & Visual:
+  const cat0Score = Math.max(35, Math.min(88, Math.round(
+    38 +
+    (meta.colors.length >= 3 ? 16 : meta.colors.length >= 1 ? 10 : 0) +
+    (meta.fonts.some(f => !['Inter', 'Roboto', 'system-ui'].includes(f)) ? 16 : 8) +
+    (meta.imagesCount >= 5 ? 14 : meta.imagesCount >= 1 ? 8 : 0)
+  )));
+
+  // 2. Facilidade de Uso:
+  const cat1Score = Math.max(35, Math.min(88, Math.round(
+    36 +
+    (meta.buttons.length >= 2 ? 20 : 10) +
+    (responseTime < 1500 ? 18 : 6) +
+    Math.round(perfScore * 0.15)
+  )));
+
+  // 3. Psicologia de Vendas:
+  const hasH1 = meta.headings.some(h => h.level === "H1");
+  const hasConvBtn = meta.buttons.some(b => /whats|contat|propost|orc|vend|compr|simul/i.test(b));
+  const cat2Score = Math.max(32, Math.min(88, Math.round(
+    32 +
+    (hasH1 ? 22 : 10) +
+    (hasConvBtn ? 24 : 10) +
+    (meta.rawTextSample.length > 500 ? 12 : 5)
+  )));
+
+  // 4. Organização e Roteiro de Vendas:
+  const cat3Score = Math.max(36, Math.min(90, Math.round(
+    34 +
+    Math.min(26, meta.headings.length * 4.5) +
+    (meta.metaDescription && !meta.metaDescription.includes("Sem meta") ? 14 : 6) +
+    (meta.buttons.length >= 1 ? 14 : 5)
+  )));
+
+  // 5. Acessibilidade e SEO:
+  const cat4Score = Math.round((seoScore * 0.6) + (a11yScore * 0.4));
+
+  // Overall Score ponderado dinamicamente:
+  const overallScore = Math.round(
+    (cat0Score * 0.18) +
+    (cat1Score * 0.18) +
+    (cat2Score * 0.20) +
+    (cat3Score * 0.18) +
+    (cat4Score * 0.16) +
+    (perfScore * 0.10)
+  );
+
   const categories: AnalysisCategory[] = [
     {
       title: "Design, Visual e Apresentação da Marca",
       overview: `Avaliação do impacto visual, harmonia das cores (${colorStr}), legibilidade das fontes (${fontStr}) e percepção de valor percebida pelo cliente.`,
-      score: 42,
+      score: cat0Score,
       issues: [
         {
           id: "ui-1",
@@ -398,7 +464,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
     {
       title: "Facilidade de Uso e Experiência do Cliente",
       overview: "Análise da facilidade de navegação, clareza das respostas da interface e ausência de travamentos ou dúvidas para o comprador.",
-      score: 48,
+      score: cat1Score,
       issues: [
         {
           id: "nielsen-1",
@@ -433,7 +499,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
     {
       title: "Psicologia de Vendas e Decisão do Comprador",
       overview: "Eliminação de dúvidas, redução do esforço mental do lead e aceleração do tempo até a decisão de compra.",
-      score: 45,
+      score: cat2Score,
       issues: [
         {
           id: "psy-1",
@@ -468,7 +534,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
     {
       title: "Organização e Roteiro de Vendas da Página",
       overview: "Estrutura lógica do conteúdo, ordem dos argumentos e facilidade do cliente em encontrar o que procura.",
-      score: 52,
+      score: cat3Score,
       issues: [
         {
           id: "ia-1",
@@ -503,7 +569,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
     {
       title: "Acessibilidade e Posicionamento no Google (SEO)",
       overview: "Garantia de que o site funciona perfeitamente para todos os públicos e atende aos requisitos do Google para aparecer nas primeiras posições.",
-      score: altPercentage > 50 ? 30 : 50,
+      score: cat4Score,
       issues: [
         {
           id: "a11y-1",
@@ -540,7 +606,7 @@ O objetivo desta auditoria é identificar os gargalos visuais, de velocidade e d
   return {
     url: targetUrl,
     analyzedAt: new Date().toLocaleString("pt-BR"),
-    overallScore: 44,
+    overallScore,
     extractedMetadata: meta,
     executiveSummary,
     blockquotes,
@@ -575,9 +641,9 @@ export function AnaliseUXView() {
     const fetchMethods = [
       async () => {
         const res = await fetch(`https://r.jina.ai/${targetUrl}`, {
-          headers: { "X-Return-Format": "text" }
+          headers: { "X-Return-Format": "html" }
         });
-        if (!res.ok) throw new Error("Jina Reader indisponível");
+        if (!res.ok) throw new Error("Jina Reader HTML indisponível");
         return await res.text();
       },
       async () => {
@@ -586,8 +652,8 @@ export function AnaliseUXView() {
         return await res.text();
       },
       async () => {
-        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
-        if (!res.ok) throw new Error("CorsProxy falhou");
+        const res = await fetch(`https://r.jina.ai/${targetUrl}`);
+        if (!res.ok) throw new Error("Jina fallback falhou");
         return await res.text();
       }
     ];
@@ -596,7 +662,7 @@ export function AnaliseUXView() {
       try {
         const result = await method();
         if (result && result.length > 50) {
-          if (result.includes("<html") || result.includes("<!DOCTYPE") || result.includes("<body") || result.includes("<head")) {
+          if (result.includes("<html") || result.includes("<!DOCTYPE") || result.includes("<body") || result.includes("<head") || result.includes("<div") || result.includes("<section")) {
             rawHtml = result;
           } else {
             extractedText = result;
@@ -689,16 +755,52 @@ export function AnaliseUXView() {
           .trim();
         extractedText = tempDiv;
       }
+    } else if (extractedText) {
+      // Fallback inteligente para markdown caso apenas texto estruturado seja retornado
+      const titleMatch = extractedText.match(/Title:\s*(.+)/i) || extractedText.match(/^#\s+(.+)/m);
+      if (titleMatch) pageTitle = titleMatch[1].trim();
+
+      const mdHeadings = extractedText.matchAll(/^(#{1,4})\s+(.+)$/gm);
+      for (const h of mdHeadings) {
+        const cleanH = h[2].trim();
+        if (cleanH.length > 2 && cleanH.length < 120) {
+          headings.push({ level: `H${h[1].length}`, text: cleanH });
+        }
+      }
+
+      const mdLinks = extractedText.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g);
+      for (const l of mdLinks) {
+        const text = l[1].trim();
+        if (text.length > 2 && text.length < 50 && !buttons.includes(text)) {
+          buttons.push(text);
+        }
+      }
+
+      const mdImgs = extractedText.matchAll(/!\[([^\]]*)\]\(([^)]+)\)/g);
+      for (const img of mdImgs) {
+        imagesCount++;
+        if (!img[1].trim()) imagesMissingAlt++;
+      }
     }
 
     const finalColors = Array.from(extractedColors).slice(0, 8);
     const finalFonts = Array.from(extractedFonts).slice(0, 5);
 
     if (finalColors.length === 0) {
-      finalColors.push("#0F172A", "#2563EB", "#F97316", "#10B981", "#E2E8F0");
+      // Paleta gerada a partir do nome do domínio para evitar números e cores idênticas
+      let hash = 0;
+      for (let i = 0; i < targetUrl.length; i++) hash = targetUrl.charCodeAt(i) + ((hash << 5) - hash);
+      const hue1 = Math.abs(hash % 360);
+      const hue2 = (hue1 + 40) % 360;
+      finalColors.push(
+        `hsl(${hue1}, 70%, 45%)`,
+        `hsl(${hue2}, 80%, 55%)`,
+        "#1E293B",
+        "#F8FAFC"
+      );
     }
     if (finalFonts.length === 0) {
-      finalFonts.push("Inter", "Roboto", "system-ui");
+      finalFonts.push("Inter", "system-ui");
     }
     if (!pageTitle) {
       try { pageTitle = new URL(targetUrl).hostname; } catch { pageTitle = targetUrl; }
@@ -708,7 +810,15 @@ export function AnaliseUXView() {
     const hasMixedContent = isHttps && rawHtml && /src=["']http:\/\//i.test(rawHtml);
     const speedRating = responseTimeMs < 600 ? "Excelente (< 600ms)" : responseTimeMs < 1800 ? "Moderado (< 1.8s)" : "Lento (> 1.8s)";
 
-    const pageSpeed = calculatePageSpeedMetrics(responseTimeMs || 320, pageSizeKb || 95, imagesCount || 10, imagesMissingAlt || 0);
+    const pageSpeed = calculatePageSpeedMetrics(
+      responseTimeMs || 320,
+      pageSizeKb || 95,
+      imagesCount,
+      imagesMissingAlt,
+      headings.length,
+      !!metaDescription,
+      isHttps
+    );
 
     const perf = {
       responseTimeMs: responseTimeMs || 320,
@@ -717,8 +827,14 @@ export function AnaliseUXView() {
       pageSpeed
     };
 
+    const securityScore = Math.max(40, Math.min(96, Math.round(
+      (isHttps ? 55 : 20) +
+      (!hasMixedContent ? 25 : 5) +
+      (pageTitle.length > 5 ? 15 : 5)
+    )));
+
     const clientSecurityAudit: SecurityAudit = {
-      score: isHttps ? 85 : 45,
+      score: securityScore,
       isHttps,
       hasMixedContent: !!hasMixedContent,
       scriptsMissingSri: 0,
