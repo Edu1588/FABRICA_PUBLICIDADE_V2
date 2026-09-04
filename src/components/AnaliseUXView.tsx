@@ -719,8 +719,8 @@ export function AnaliseUXView() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<UXAnalysisResult | null>(null);
   const [activeTab, setActiveTab] = useState<number>(-1);
-  const [viewportMode, setViewportMode] = useState<"desktop" | "mobile">("desktop");
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [generatingPdfType, setGeneratingPdfType] = useState<"comercial" | "interno" | null>(null);
+  const isGeneratingPDF = generatingPdfType !== null;
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -1055,11 +1055,15 @@ export function AnaliseUXView() {
     }
   };
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = async (mode: "comercial" | "interno" = "comercial") => {
     if (!analysisResult) return;
 
-    setIsGeneratingPDF(true);
-    showToast("Renderizando relatório executivo com gráficos circulares, prints do site e CTA...");
+    setGeneratingPdfType(mode);
+    showToast(
+      mode === "comercial"
+        ? "Renderizando Relatório Comercial de Prospecção..."
+        : "Renderizando Relatório Técnico Interno com Soluções..."
+    );
 
     try {
       const logoBase64 = await fetchImageAsBase64(FABRICA_LOGO_URL);
@@ -1120,18 +1124,24 @@ export function AnaliseUXView() {
         }
 
         pdf.setFontSize(9);
-        pdf.setFont("helvetica", "normal");
+        pdf.setFont("helvetica", "bold");
         pdf.setTextColor(196, 106, 26);
-        pdf.text("RELATÓRIO EXECUTIVO DE AUDITORIA: CONVERSÃO, VELOCIDADE & SEGURANÇA", margin, 26);
+        if (mode === "comercial") {
+          pdf.text("RELATÓRIO EXECUTIVO DE AUDITORIA: RISCO DE CONVERSÃO, VELOCIDADE & PERDA DE LEADS", margin, 26);
+        } else {
+          pdf.text("RELATÓRIO TÉCNICO INTERNO: AUDITORIA UX/UI, VELOCIDADE & ROTEIRO DE RESOLUÇÃO", margin, 26);
+        }
 
         pdf.setTextColor(200, 200, 210);
         pdf.setFontSize(8);
+        pdf.setFont("helvetica", "normal");
         pdf.text(`URL AUDITADA: ${analysisResult.url}`, margin, 32);
 
         const securityScore = analysisResult.extractedMetadata.integrityAudit?.score || 85;
         const psScore = analysisResult.extractedMetadata.performance?.pageSpeed?.categories?.performance || 61;
         const respTime = analysisResult.extractedMetadata.performance?.responseTimeMs || 320;
-        pdf.text(`DATA: ${analysisResult.analyzedAt} | SCORE GERAL: ${analysisResult.overallScore}/100 | VELOCIDADE: ${psScore}/100 | SEGURANÇA: ${securityScore}/100`, margin, 37);
+        const modeLabel = mode === "comercial" ? "PROSPECÇÃO COMERCIAL & IMPACTO DE VENDAS" : "ROTEIRO TÉCNICO INTERNO";
+        pdf.text(`DATA: ${analysisResult.analyzedAt} | SCORE GERAL: ${analysisResult.overallScore}/100 | VELOCIDADE: ${psScore}/100 | FINALIDADE: ${modeLabel}`, margin, 37);
       };
 
       const checkPageBreak = (neededHeight: number) => {
@@ -1143,7 +1153,10 @@ export function AnaliseUXView() {
           pdf.setTextColor(180, 180, 190);
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "normal");
-          pdf.text(`FÁBRICA PUBLICIDADE | AUDITORIA DE CONVERSÃO & VELOCIDADE — ${analysisResult.url}`, margin, 8);
+          const pageBreakHeader = mode === "comercial"
+            ? `FÁBRICA PUBLICIDADE | AUDITORIA DE IMPACTO COMERCIAL & CONVERSÃO — ${analysisResult.url}`
+            : `FÁBRICA PUBLICIDADE | ROTEIRO TÉCNICO INTERNO DE RESOLUÇÃO — ${analysisResult.url}`;
+          pdf.text(pageBreakHeader, margin, 8);
           currentY = 22;
         }
       };
@@ -1246,8 +1259,10 @@ export function AnaliseUXView() {
         pdf.setTextColor(80, 80, 90);
         pdf.text(metricsLines, margin + cardInnerPadding, currentY + 6);
         
-        pdf.setTextColor(16, 120, 60);
-        const diagText = `Diagnóstico Comercial: Otimizar o peso das fotos e carregar scripts de atendimento em segundo plano. Isso acelera o site no 4G/5G, reduz a perda de clientes no celular e aumenta o envio de mensagens no WhatsApp.`;
+        pdf.setTextColor(mode === "comercial" ? 185 : 16, mode === "comercial" ? 28 : 120, mode === "comercial" ? 28 : 60);
+        const diagText = mode === "comercial"
+          ? `Alerta Crítico de Conversão: A lentidão e instabilidade no celular 4G provocam abandono imediato de potenciais clientes. Estudos comprovam que 53% dos acessos são cancelados se o carregamento passar de 3s. Cada segundo de atraso custa até 20% em vendas perdidas.`
+          : `Diagnóstico Técnico Interno: Otimizar compressão de fotos para WebP/AVIF e adiar carregamento de scripts de atendimento. Reduz o tempo de resposta no 4G/5G, diminui a rejeição mobile e eleva o envio de formulários e WhatsApp.`;
         const diagLines = safeSplit(diagText, safeCardTextWidth, 7.5, "bold");
         pdf.text(diagLines, margin + cardInnerPadding, currentY + 11.5);
 
@@ -1269,33 +1284,35 @@ export function AnaliseUXView() {
         const barStartX = margin + barLabelW;
         const barMaxW = contentWidth - barLabelW - 4;
 
-        // Linha 1: Velocidade Atual (Vermelha)
+        // Linha 1: Velocidade Atual (Vermelha - Baixo Desempenho / Barra Menor)
         const b1Y = currentY + 10;
         pdf.setFontSize(6.5);
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(185, 28, 28);
         pdf.text("VELOCIDADE ATUAL:", margin + 4, b1Y + 3);
         pdf.setFillColor(239, 68, 68);
-        const actualBarW = Math.min(barMaxW * 0.65, barMaxW);
+        const lcpNum = parseFloat(cleanLcp) || 3.8;
+        const speedEfficiency = Math.max(0.18, Math.min(0.38, (0.8 / lcpNum) * 0.92));
+        const actualBarW = Math.min(barMaxW * speedEfficiency, barMaxW);
         pdf.roundedRect(barStartX, b1Y, actualBarW, 4, 1, 1, "F");
         pdf.setTextColor(120, 20, 20);
         pdf.setFontSize(6);
-        pdf.text(`${cleanLcp} (Lento)`, barStartX + actualBarW + 2, b1Y + 3);
+        pdf.text(`${cleanLcp} (Lento / Baixo Desempenho)`, barStartX + actualBarW + 2, b1Y + 3);
 
-        // Linha 2: Velocidade Ideal (Verde)
+        // Linha 2: Velocidade Ideal Fábrica (Verde - Alta Velocidade / Barra Grande Dominante)
         const b2Y = currentY + 17;
         pdf.setFontSize(6.5);
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(21, 128, 61);
         pdf.text("IDEAL FABRICA:", margin + 4, b2Y + 3);
         pdf.setFillColor(34, 197, 94);
-        const idealBarW = Math.min(barMaxW * 0.18, barMaxW);
+        const idealBarW = Math.min(barMaxW * 0.92, barMaxW);
         pdf.roundedRect(barStartX, b2Y, idealBarW, 4, 1, 1, "F");
         pdf.setTextColor(15, 90, 40);
         pdf.setFontSize(6);
-        pdf.text("0.8s (Rapido)", barStartX + idealBarW + 2, b2Y + 3);
+        pdf.text("0.8s (Ultra Rápido / Padrão Fábrica)", barStartX + idealBarW + 2, b2Y + 3);
 
-        // Linha 3: Retenção Atual (Vermelha)
+        // Linha 3: Retenção Atual (Vermelha - Baixa Retenção / Barra Menor)
         const b3Y = currentY + 26;
         pdf.setFontSize(6.5);
         pdf.setFont("helvetica", "bold");
@@ -1306,9 +1323,9 @@ export function AnaliseUXView() {
         pdf.roundedRect(barStartX, b3Y, retActualW, 4, 1, 1, "F");
         pdf.setTextColor(120, 20, 20);
         pdf.setFontSize(6);
-        pdf.text("38% dos visitantes", barStartX + retActualW + 2, b3Y + 3);
+        pdf.text("38% dos visitantes (Alta Perda de Vendas)", barStartX + retActualW + 2, b3Y + 3);
 
-        // Linha 4: Retenção Ideal (Verde)
+        // Linha 4: Retenção Ideal Fábrica (Verde - Alta Retenção / Barra Grande Dominante)
         const b4Y = currentY + 33;
         pdf.setFontSize(6.5);
         pdf.setFont("helvetica", "bold");
@@ -1319,7 +1336,7 @@ export function AnaliseUXView() {
         pdf.roundedRect(barStartX, b4Y, retIdealW, 4, 1, 1, "F");
         pdf.setTextColor(15, 90, 40);
         pdf.setFontSize(6);
-        pdf.text("88% dos visitantes", barStartX + retIdealW + 2, b4Y + 3);
+        pdf.text("88% dos visitantes retidos (Padrão Fábrica)", barStartX + retIdealW + 2, b4Y + 3);
 
         currentY += 46;
       }
@@ -1397,13 +1414,34 @@ export function AnaliseUXView() {
         currentY += 92;
       }
 
-      // Resumo Executivo Comercial
+      // Resumo Executivo
       checkPageBreak(40);
       pdf.setTextColor(196, 106, 26);
       pdf.setFontSize(11);
       pdf.setFont("helvetica", "bold");
-      pdf.text("3. RESUMO EXECUTIVO COMERCIAL & OPORTUNIDADES DE VENDAS", margin, currentY);
+      if (mode === "comercial") {
+        pdf.text("3. DIAGNÓSTICO CRÍTICO DE RISCO DE CONVERSÃO & PERDA DE VENDAS", margin, currentY);
+      } else {
+        pdf.text("3. RESUMO EXECUTIVO COMERCIAL & OPORTUNIDADES DE VENDAS", margin, currentY);
+      }
       currentY += 6;
+
+      if (mode === "comercial") {
+        checkPageBreak(18);
+        pdf.setFillColor(254, 242, 242);
+        pdf.roundedRect(margin, currentY, contentWidth, 14, 1.5, 1.5, "F");
+        pdf.setDrawColor(239, 68, 68);
+        pdf.roundedRect(margin, currentY, contentWidth, 14, 1.5, 1.5, "S");
+        pdf.setTextColor(185, 28, 28);
+        pdf.setFontSize(7.5);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("ALERTA DE DESPERDÍCIO DE TRÁFEGO PAGO & RISCO DE REJEIÇÃO:", margin + cardInnerPadding, currentY + 4.5);
+        pdf.setFontSize(6.5);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(120, 20, 20);
+        pdf.text("Os gargalos detectados abaixo provocam fuga imediata de potenciais clientes no celular. Cada clique de anúncio pago está gerando custo sem retorno.", margin + cardInnerPadding, currentY + 9.5);
+        currentY += 18;
+      }
 
       pdf.setTextColor(40, 40, 50);
       pdf.setFontSize(8.5);
@@ -1487,9 +1525,17 @@ export function AnaliseUXView() {
           const probLines = safeSplit(`Gargalo: ${issue.problem}`, safeCardTextWidth, 7.5, "normal");
           const probHeight = probLines.length * 3.8;
 
-          // 4. Como Resolver com respiro rigoroso em BOLD
-          const sugLines = safeSplit(`Como Resolver: ${issue.suggestion}`, safeCardTextWidth, 7.5, "bold");
-          const sugHeight = sugLines.length * 4.0;
+          // 4. Resolução Técnica (Interno) vs Impacto Comercial Crítico (Comercial)
+          let sugLines: string[] = [];
+          let sugHeight = 0;
+          if (mode === "interno") {
+            sugLines = safeSplit(`Como Resolver (Roteiro Técnico): ${issue.suggestion}`, safeCardTextWidth, 7.5, "bold");
+            sugHeight = sugLines.length * 4.0;
+          } else {
+            const impactText = `Impacto Comercial Crítico: Este gargalo causa desistência imediata de clientes no celular e afasta compradores qualificados. Requer reformulação especializada pela Fábrica de Publicidade.`;
+            sugLines = safeSplit(impactText, safeCardTextWidth, 7.5, "bold");
+            sugHeight = sugLines.length * 4.0;
+          }
 
           // 5. Boxes Comparativos com respiro
           const hasComp = !!issue.currentVsIdeal;
@@ -1499,7 +1545,8 @@ export function AnaliseUXView() {
           if (hasComp && issue.currentVsIdeal) {
             const compInnerW = safeCardTextWidth - 10;
             curTextLines = safeSplit(`X CENARIO ATUAL: ${issue.currentVsIdeal.current}`, compInnerW, 6.5, "bold");
-            idlTextLines = safeSplit(`+ IDEAL FABRICA: ${issue.currentVsIdeal.ideal}`, compInnerW, 6.5, "bold");
+            const idealLabel = mode === "comercial" ? "+ PADRAO FABRICA (ALTA CONVERSAO)" : "+ IDEAL FABRICA";
+            idlTextLines = safeSplit(`${idealLabel}: ${issue.currentVsIdeal.ideal}`, compInnerW, 6.5, "bold");
             compBoxHeight = 6 + curTextLines.length * 3.3 + 3 + idlTextLines.length * 3.3 + 4;
           }
 
@@ -1540,7 +1587,11 @@ export function AnaliseUXView() {
           pdf.text(probLines, margin + cardInnerPadding, innerY);
           innerY += probHeight + 2;
 
-          pdf.setTextColor(16, 120, 60);
+          if (mode === "interno") {
+            pdf.setTextColor(16, 120, 60);
+          } else {
+            pdf.setTextColor(185, 28, 28);
+          }
           pdf.setFontSize(7.5);
           pdf.setFont("helvetica", "bold");
           pdf.text(sugLines, margin + cardInnerPadding, innerY);
@@ -1709,8 +1760,11 @@ export function AnaliseUXView() {
         pdf.setTextColor(150, 150, 160);
         pdf.setFontSize(7);
         pdf.setFont("helvetica", "normal");
+        const pageFooter = mode === "comercial"
+          ? `Página ${p} de ${totalPages} | Fábrica Publicidade — Relatório Comercial de Conversão & Auditoria Digital`
+          : `Página ${p} de ${totalPages} | Fábrica Publicidade — Roteiro Técnico Interno de UX/UI, Velocidade & CRO`;
         pdf.text(
-          `Página ${p} de ${totalPages} | Fábrica Publicidade — Núcleo de Inteligência Comercial, UX/UI & Velocidade`,
+          pageFooter,
           pageWidth / 2,
           pageHeight - 8,
           { align: "center" }
@@ -1718,13 +1772,18 @@ export function AnaliseUXView() {
       }
 
       const domainSafe = new URL(analysisResult.url).hostname.replace(/[^a-zA-Z0-9]/g, "_");
-      pdf.save(`Auditoria_Comercial_UX_Velocidade_${domainSafe}_Fabrica.pdf`);
-      showToast("Relatório em PDF com gráficos e prints exportado com sucesso!");
+      if (mode === "comercial") {
+        pdf.save(`Auditoria_Comercial_Prospeccao_${domainSafe}_Fabrica.pdf`);
+        showToast("Relatório Comercial de Prospecção exportado com sucesso!");
+      } else {
+        pdf.save(`Auditoria_Tecnica_Interna_${domainSafe}_Fabrica.pdf`);
+        showToast("Relatório Técnico Interno exportado com sucesso!");
+      }
     } catch (err: any) {
       console.error("Erro ao gerar PDF:", err);
       showToast("Erro ao exportar PDF.");
     } finally {
-      setIsGeneratingPDF(false);
+      setGeneratingPdfType(null);
     }
   };
 
@@ -1799,27 +1858,48 @@ export function AnaliseUXView() {
       {/* RESULTADO DA AUDITORIA */}
       {analysisResult && (
         <div className="space-y-6">
-          {/* HEADER: RELATÓRIO DE AUDITORIA & BAIXAR RELATÓRIO */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-3 border-b border-white/10">
+          {/* HEADER: RELATÓRIO DE AUDITORIA & BAIXAR RELATÓRIOS */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-3 border-b border-white/10">
             <div className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-wider text-[#C46A1A]">
               <FileText className="w-4 h-4 text-[#C46A1A]" />
-              <span className="font-bold">RELATÓRIO DE AUDITORIA COMERCIAL</span>
+              <span className="font-bold">RELATÓRIO DE AUDITORIA</span>
               <span className="text-white/30">|</span>
-              <span className="text-white/60 font-sans normal-case text-xs">{analysisResult.url}</span>
+              <span className="text-white/60 font-sans normal-case text-xs truncate max-w-[280px]">{analysisResult.url}</span>
             </div>
 
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isGeneratingPDF}
-              className="border border-[#C46A1A] text-[#C46A1A] hover:bg-[#C46A1A] hover:text-white font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95"
-            >
-              {isGeneratingPDF ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Download className="w-3.5 h-3.5" />
-              )}
-              {isGeneratingPDF ? "GERANDO..." : "BAIXAR RELATÓRIO PDF"}
-            </button>
+            <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
+              {/* Botão 1: PDF Comercial (Destaque Principal de Prospecção) */}
+              <button
+                type="button"
+                onClick={() => handleDownloadPDF("comercial")}
+                disabled={generatingPdfType !== null}
+                title="Relatório comercial com tom crítico focado em perdas e fechamento (sem 'Como Resolver')"
+                className="flex-1 sm:flex-initial bg-[#C46A1A] hover:bg-[#a85914] text-white font-mono text-xs uppercase tracking-wider px-4 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95 disabled:opacity-50"
+              >
+                {generatingPdfType === "comercial" ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5" />
+                )}
+                <span>{generatingPdfType === "comercial" ? "GERANDO COMERCIAL..." : "BAIXAR PDF COMERCIAL"}</span>
+              </button>
+
+              {/* Botão 2: PDF Interno (Completo com Soluções Técnicas) */}
+              <button
+                type="button"
+                onClick={() => handleDownloadPDF("interno")}
+                disabled={generatingPdfType !== null}
+                title="Relatório técnico detalhado com soluções 'Como Resolver' para uso interno"
+                className="flex-1 sm:flex-initial border border-white/20 text-white/90 hover:bg-white/10 hover:border-white/40 font-mono text-xs uppercase tracking-wider px-4 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95 disabled:opacity-50"
+              >
+                {generatingPdfType === "interno" ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <FileCheck className="w-3.5 h-3.5 text-[#C46A1A]" />
+                )}
+                <span>{generatingPdfType === "interno" ? "GERANDO INTERNO..." : "BAIXAR PDF INTERNO"}</span>
+              </button>
+            </div>
           </div>
 
           {/* BARRA DE TABS ESTILO SISTEMA DE REFERÊNCIA */}
